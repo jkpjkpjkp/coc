@@ -74,6 +74,14 @@ class ObjectDetectionFactory:
     def grounding_dino(self, image: Img, texts: List[str]) -> List[Bbox]:
         image = image.convert('RGB')
 
+        # PATCH
+        # we decide to patch multi-object detection like this.
+        if len(texts) > 1:
+            detections = []
+            for text in texts:
+                detections.extend(self.grounding_dino(image, [text]))
+            return detections
+
         text = '. '.join(texts).strip().lower() + '.'
 
         inputs = self.gd_processor(
