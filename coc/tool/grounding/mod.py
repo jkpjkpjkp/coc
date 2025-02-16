@@ -90,7 +90,10 @@ class ObjectDetectionFactory:
 
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
         with torch.no_grad():
-            outputs = self.gd_model(**inputs)
+            gd_model_gpu = self.gd_model#.to(self.device)
+            outputs = gd_model_gpu(**inputs)
+            # del gd_model_gpu
+            # torch.cuda.empty_cache()
 
         results = self.gd_processor.post_process_grounded_object_detection(
             outputs,
@@ -128,7 +131,10 @@ class ObjectDetectionFactory:
             text=texts, images=image, return_tensors='pt'
         ).to(self.device)
         with torch.no_grad():
-            outputs = self.owlv2_model(**inputs)
+            owl_model_gpu = self.owlv2_model#.to(self.device)
+            outputs = owl_model_gpu(**inputs)
+            # del owl_model_gpu
+            # torch.cuda.empty_cache()
 
         target_sizes = torch.Tensor([image.size[::-1]]).to(self.device)
         processed_results = self.owlv2_processor.post_process_object_detection(
@@ -150,36 +156,37 @@ class ObjectDetectionFactory:
         return detections
 
     def _run(self, image: Img, texts: List[str]) -> List[Bbox]:
+        # if not isinstance(image, Img):
+        #     image = PIL.Image.fromarray(image)
         image = image.convert('RGB')
 
         owl_result = self.owl2(image, texts)
         g_dino_result = self.grounding_dino(image, texts)
         g_dino_result = type(self).trim_result(g_dino_result)
         nonempty = {x.label for x in owl_result}
-        return [x for x in g_dino_result if x.label in nonempty]
+        ret = [x for x in g_dino_result if x.label in nonempty]
+        if isinstance(ret, tuple) and len(ret) == 1:
+            ret = ret[0]
+        return ret
+
 
 if __name__ == '__main__':
     obj = ObjectDetectionFactory()
-    image = PIL.Image.open('data/sample/4girls.jpg')
+    image_path = '/home/jkp/hack/coc/data/sample/onions.jpg'
+    image = PIL.Image.open(image_path)
     from coc.tool.grounding.draw import draw
     from coc.util._51 import envision
-    # draw(
-    #     image,
-    #     obj.grounding_dino(
-    #         image=image,
-    #         texts=['a face']
-    #     ),
-    #     output_path = 'face.jpg'
-    # )
-    print('owl2')
-    print(obj.owl2(image, ['boy', 'girl', 'hand']))
-    print('gd')
-    print(obj.grounding_dino(image, ['boy', 'girl', 'hand']))
-    envision(
-        '/home/jkp/hack/coc/data/sample/4girls.jpg',
-        obj.grounding_dino(
-            texts=['boy', 'girl', 'hand'],
+    ret = obj._run(
+            texts=['boy', 'girl', 'an onion'],
             image=image
         ),
+    if isinstance(ret, tuple) and len(ret) == 1:
+        ret = ret[0]
+    print(ret)
+
+    draw(image, ret, 'raw_onions.jpg')
+    envision(
+        image_path,
+        ret,
         # output_path = 'raw_person.jpg'
     )

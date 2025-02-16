@@ -1,1 +1,1 @@
-from .mod import Bbox
+from .mod import Bbox, ObjectDetectionFactory
