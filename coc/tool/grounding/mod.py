@@ -62,14 +62,14 @@ class ObjectDetectionFactory:
         )
         self.gd_model = AutoModelForZeroShotObjectDetection.from_pretrained(
             'IDEA-Research/grounding-dino-base'
-        ).to(self.device)
+        )#.to(self.device)
 
         self.owlv2_processor = Owlv2Processor.from_pretrained(
             'google/owlv2-base-patch16-ensemble'
         )
         self.owlv2_model = Owlv2ForObjectDetection.from_pretrained(
             'google/owlv2-base-patch16-ensemble'
-        ).to(self.device)
+        )#.to(self.device)
 
     def grounding_dino(self, image: Img, texts: List[str]) -> List[Bbox]:
         image = image.convert('RGB')
@@ -90,9 +90,9 @@ class ObjectDetectionFactory:
 
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
         with torch.no_grad():
-            gd_model_gpu = self.gd_model#.to(self.device)
+            gd_model_gpu = self.gd_model.to(self.device)
             outputs = gd_model_gpu(**inputs)
-            # del gd_model_gpu
+            del gd_model_gpu
             # torch.cuda.empty_cache()
 
         results = self.gd_processor.post_process_grounded_object_detection(
@@ -131,9 +131,9 @@ class ObjectDetectionFactory:
             text=texts, images=image, return_tensors='pt'
         ).to(self.device)
         with torch.no_grad():
-            owl_model_gpu = self.owlv2_model#.to(self.device)
+            owl_model_gpu = self.owlv2_model.to(self.device)
             outputs = owl_model_gpu(**inputs)
-            # del owl_model_gpu
+            del owl_model_gpu
             # torch.cuda.empty_cache()
 
         target_sizes = torch.Tensor([image.size[::-1]]).to(self.device)
