@@ -89,10 +89,10 @@ class ObjectDetectionFactory:
         )
 
         inputs = {key: value.to(self.device) for key, value in inputs.items()}
+        self.gd_model.to(self.device)
         with torch.no_grad():
-            gd_model_gpu = self.gd_model.to(self.device)
-            outputs = gd_model_gpu(**inputs)
-            del gd_model_gpu
+            outputs = self.gd_model(**inputs)
+        # self.gd_model.to('cpu')
             # torch.cuda.empty_cache()
 
         results = self.gd_processor.post_process_grounded_object_detection(
@@ -130,10 +130,10 @@ class ObjectDetectionFactory:
         inputs = self.owlv2_processor(
             text=texts, images=image, return_tensors='pt'
         ).to(self.device)
+        self.owlv2_model.to(self.device)
         with torch.no_grad():
-            owl_model_gpu = self.owlv2_model.to(self.device)
-            outputs = owl_model_gpu(**inputs)
-            del owl_model_gpu
+            outputs = self.owlv2_model(**inputs)
+        # self.owlv2_model.to('cpu')
             # torch.cuda.empty_cache()
 
         target_sizes = torch.Tensor([image.size[::-1]]).to(self.device)
@@ -156,8 +156,8 @@ class ObjectDetectionFactory:
         return detections
 
     def _run(self, image: Img, texts: List[str]) -> List[Bbox]:
-        # if not isinstance(image, Img):
-        #     image = PIL.Image.fromarray(image)
+        if not isinstance(image, Img):
+            image = PIL.Image.fromarray(image)
         image = image.convert('RGB')
 
         owl_result = self.owl2(image, texts)
@@ -167,6 +167,7 @@ class ObjectDetectionFactory:
         ret = [x for x in g_dino_result if x.label in nonempty]
         if isinstance(ret, tuple) and len(ret) == 1:
             ret = ret[0]
+        torch.cuda.empty_cache()
         return ret
 
 
@@ -175,7 +176,7 @@ if __name__ == '__main__':
     image_path = '/home/jkp/hack/coc/data/sample/onions.jpg'
     image = PIL.Image.open(image_path)
     from coc.tool.grounding.draw import draw
-    from coc.util._51 import envision
+    from coc.tool.grounding._51 import envision
     ret = obj._run(
             texts=['boy', 'girl', 'an onion'],
             image=image
