@@ -1,4 +1,6 @@
 import os, sys
+from coc.config import TEMPERATURE
+from langchain_openai import ChatOpenAI
 os.environ['DEEPSEEK_API_KEY'] = 'sk-d1ff17b2b90a47d682453328f92cdc5f'
 os.environ['DEEPSEEK_BASE_URL'] = 'https://api.deepseek.com'
 
@@ -18,22 +20,21 @@ os.environ['OPENAI_API_BASE'] = 'https://chatapi.littlewheat.com/v1'
 os.environ['OPEN_ROUTER_API_KEY'] = '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'
 os.environ['OPEN_ROUTER_API_BASE'] = 'https://openrouter.ai/api/v1'
 
-from langchain_openai import ChatOpenAI
-
-# llm = ChatOpenAI(
-#     model=('deepseek-chat', 'deepseek-reasoner')[0],
-#     openai_api_key=os.environ['DEEPSEEK_API_KEY'],
-#     openai_api_base=os.environ['DEEPSEEK_BASE_URL'],
-#     max_tokens=2048,
-#     temperature=0,
-# )
-
 llm = ChatOpenAI(
     model='deepseek/deepseek-chat',
     openai_api_key=os.environ['OPEN_ROUTER_API_KEY'],
     openai_api_base=os.environ['OPEN_ROUTER_API_BASE'],
     max_tokens=4096,
-    temperature=0,
+    temperature=TEMPERATURE,
+)
+
+
+reasoner = ChatOpenAI(
+    model='deepseek/deepseek-r1',
+    openai_api_key=os.environ['OPEN_ROUTER_API_KEY'],
+    openai_api_base=os.environ['OPEN_ROUTER_API_BASE'],
+    max_tokens=128000,
+    temperature=TEMPERATURE,
 )
 
 gpt4o = ChatOpenAI(
@@ -41,5 +42,5 @@ gpt4o = ChatOpenAI(
     openai_api_key=os.environ['OPENAI_API_KEY'],
     openai_api_base=os.environ['OPENAI_API_BASE'],
     max_tokens=2048,
-    temperature=0,
+    temperature=TEMPERATURE,
 )

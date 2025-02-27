@@ -6,7 +6,7 @@ from typing import List, Literal
 
 from langchain_core.messages import HumanMessage
 from langchain_community.chat_models import ChatZhipuAI
-from .mod import temperature
+from coc.config import TEMPERATURE
 
 
 import base64
@@ -22,7 +22,7 @@ class GLM(BaseTool):
     def __init__(self, variant: Literal['flash', 'plus'] = 'plus'):
         mllm = ChatZhipuAI(
             model='glm-4v-' + variant,
-            temperature=temperature,
+            temperature=TEMPERATURE,
         )
         super().__init__(mllm=mllm)
 

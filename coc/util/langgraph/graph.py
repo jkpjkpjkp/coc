@@ -1,4 +1,4 @@
-from coc.bots.llm import llm, gpt4o
+from coc.tree.llm import llm, gpt4o
 
 
 from coc.exec.mod import Exec

@@ -1,0 +1,2 @@
+TEMPERATURE = 0
+SEED = 42

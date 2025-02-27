@@ -1,0 +1,35 @@
++++++++++++++++++++++++++
+'(' was never closed (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 53, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    print("hello"
+         ^
+SyntaxError: '(' was never closed
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'undefined_variable' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 89, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'undefined_variable' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+division by zeroTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 89, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+ZeroDivisionError: division by zero
+NoneType: None
+
+-------------------------
