@@ -53,5 +53,26 @@ class TestGPTOutput(unittest.TestCase):
         result = self.exec._run(code_str)
         self.assertIn('simpson', result.lower())
 
+class TestClone(unittest.TestCase):
+    def setUp(self):
+        self.exec = Exec('coc/exec/context.py')
+        self.exec.add_var('x', 42)
+
+    def test_clone(self):
+        cloned_exec = self.exec.clone()
+        self.assertEqual(cloned_exec.globals['x'], 42)
+
+        cloned_exec.add_var('y', 100)
+        self.assertIn('y', cloned_exec.globals)
+        self.assertNotIn('y', self.exec.globals)
+
+        cloned_exec._run('x += y')
+        self.assertEqual(cloned_exec.globals['x'], 142)
+        self.assertEqual(self.exec.globals['x'], 42)
+
+        self.exec._run('y = 200\nx += y')
+        self.assertEqual(self.exec.globals['x'], 242)
+        self.assertEqual(cloned_exec.globals['x'], 142)
+
 if __name__ == '__main__':
     unittest.main()

@@ -13,13 +13,10 @@ import base64
 from PIL.Image import Image as Img
 class GLM(BaseTool):
     name: str = 'VQA'
-    description: str = \
-        """performs VQA on an image.
-
-        Args:
-            image: Img
-            question: str
-        """
+    description: str = (
+        'performs VQA on an image. '
+        'Args: image: Img, question: str. '
+    )
     mllm: ChatZhipuAI
 
     def __init__(self, variant: Literal['flash', 'plus'] = 'plus'):
