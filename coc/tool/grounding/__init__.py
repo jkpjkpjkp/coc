@@ -1,1 +1,1 @@
-from .mod import Bbox, ObjectDetectionFactory
+from .mod import get_grounding

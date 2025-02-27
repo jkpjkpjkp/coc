@@ -2,14 +2,16 @@
 
 from ultralytics import SAM
 
-# Load a model
-model = SAM("/home/jkp/Pictures/sam2/checkpoints/sam2.1_l.pt")
+def get_sam():
+    return SAM("/home/jkp/Pictures/sam2/checkpoints/sam2.1_l.pt")
 
-# Display model information (optional)
-model.info()
+if __name__ == '__main__':
 
-# Run inference with bboxes prompt
-results = model("~/Images/ioi.png")
+    # Load a model
+    model = get_sam()
 
+    # Display model information (optional)
+    model.info()
 
-
+    # Run inference with bboxes prompt
+    results = model('~/Images/ioi.png')

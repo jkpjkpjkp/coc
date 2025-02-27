@@ -170,6 +170,8 @@ class ObjectDetectionFactory:
         torch.cuda.empty_cache()
         return ret
 
+def get_grounding():
+    return ObjectDetectionFactory()._run
 
 if __name__ == '__main__':
     obj = ObjectDetectionFactory()
