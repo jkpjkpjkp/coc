@@ -43,42 +43,13 @@ class TestAnalyzeCell(unittest.TestCase):
         self.assertEqual(defined, {'y', 'f'})
         self.assertEqual(used, {'print'})
 
-    # def test_build_dag_sequential(self):
-    #     cells = [
-    #         "x = 5",
-    #         "y = x + 1",
-    #         "z = y + x"
-    #     ]
-    #     expected = {
-    #         0: set(),
-    #         1: {0},
-    #         2: {0, 1}
-    #     }
-    #     self.assertEqual(build_dependency_dag(cells), expected)
-
-    # def test_build_dag_reassignment(self):
-    #     cells = [
-    #         "x = 0",
-    #         "x = x + 1",
-    #         "y = x + 2"
-    #     ]
-    #     expected = {
-    #         0: set(),
-    #         1: {0},
-    #         2: {1}
-    #     }
-    #     self.assertEqual(build_dependency_dag(cells), expected)
-
-    # def test_build_dag_import_dependency(self):
-    #     cells = [
-    #         "import numpy as np",
-    #         "data = np.array([1,2,3])"
-    #     ]
-    #     expected = {
-    #         0: set(),
-    #         1: {0}
-    #     }
-    #     self.assertEqual(build_dependency_dag(cells), expected)
+    def test_define_and_use(self):
+        code = 'x = x + 1'
+        ret = parse_cell_for_symbols(code)
+        defined = ret['defined']
+        used = ret['used']
+        self.assertEqual(defined, {'x'})
+        self.assertEqual(used, {'x'})
 
 if __name__ == '__main__':
     unittest.main()

@@ -50,22 +50,27 @@ class SymbolTracker(ast.NodeVisitor):
         return names
 
     def visit_Assign(self, node):
+        # Process the RHS and LHS before adding to defined_symbols
+        self.generic_visit(node)
         if len(self.scope_stack) == 1:
             for target in node.targets:
                 self._add_to_defined(target)
-        self.generic_visit(node)
 
     def _add_to_defined(self, target):
         names = self._get_names(target)
         self.defined_symbols.update(names)
 
     def visit_Import(self, node):
+        # Process child nodes first, though in reality Import has no children affecting this.
+        self.generic_visit(node)
         if len(self.scope_stack) == 1:
             for alias in node.names:
                 name = alias.asname or alias.name.split('.', 1)[0]
                 self.defined_symbols.add(name)
 
     def visit_ImportFrom(self, node):
+        # Process child nodes first, though similar to Import
+        self.generic_visit(node)
         if len(self.scope_stack) == 1:
             for alias in node.names:
                 name = alias.asname or alias.name
