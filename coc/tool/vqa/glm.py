@@ -99,11 +99,42 @@ class GLM(BaseTool):
 
         return response.content
 
+    def video_vqa(self, video_path: str, question: str) -> str:
+        """Perform Video Question Answering using ZhipuAI client.
+        Args:
+            video_path: Path to video file
+            question: Question about the video content
+        """
+        with open(video_path, 'rb') as video_file:
+            video_base = base64.b64encode(video_file.read()).decode('utf-8')
+
+        message = HumanMessage(
+            content=[
+                {
+                    "type": "video_url",
+                    "video_url": {"url": video_base}
+                },
+                {
+                    "type": "text",
+                    "text": question
+                }
+            ]
+        )
+        response = self.mllm.invoke([message])
+        return response.content
+
 
 if __name__ == '__main__':
-    from PIL import Image
-    image_path = 'data/sample/onions.jpg'
-    image = Image.open(image_path)
-    question = 'What is in the image?'
-    vqa = GLM()
-    print(vqa._run(image, question))
+    glm_tool = GLM(variant='plus')
+    response = glm_tool.video_vqa("data/sample/output.mp4", "Describe this video")
+    print(response)
+
+# HALLUCINATE:
+    output = \
+"""
+In the center of the screen, a yellow-skinned, bald man wearing a white shirt and blue pants is standing facing the camera.
+
+He first looks to the left side of the screen, then turns his head to the right side of the screen,   ### hallucinate. still-frame. 
+
+and then turns back to the left side of the screen. The camera zooms in, and the man's head is blocked by a patch of green grass. The camera zooms out, and the man is no longer in the frame. The background is a patch of green grass.
+"""
