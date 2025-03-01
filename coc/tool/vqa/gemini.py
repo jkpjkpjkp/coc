@@ -68,6 +68,9 @@ class Gemini(BaseTool):
         response = self.mllm.invoke([message])
         return response.content
 
+    def invoke(self, question: str) -> str:
+        return self.mllm.invoke(question).content
+
 
 if __name__ == '__main__':
     glm_tool = Gemini()

@@ -119,11 +119,11 @@ class Exec(BaseTool):
 
         if errors:
             with open(LOG_FILE, 'a') as f:
-                f.write('+++++++++++++++++++++++++\n')
+                from datetime import datetime
+                f.write(f'{datetime.now().strftime("%m/%d %H:%M:%S")}\n')
                 f.write(errors)
                 traceback.print_exc(file=f)
-                f.write('\n')
-                f.write('-------------------------\n')
+                f.write('\n\n')
 
         return (output, errors)
 

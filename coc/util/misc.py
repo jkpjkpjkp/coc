@@ -4,7 +4,8 @@ import numpy as np
 import random
 from typing import Generic, TypeVar, Iterator, Iterable
 import os
-from coc.data.interface import FullTask
+from coc.data.fulltask import FullTask
+from coc.tool.task import Task
 
 
 def image_to_numpy(image: Img) -> np.ndarray:
@@ -49,6 +50,7 @@ class Pair(Generic[T]):
 
 
 def generate_files(tasks: Iterable[FullTask], path: str):
+    """extracts to `path` the questions and answers of tasks as txt files. """
     # Construct file paths
     questions_path = os.path.join(path, "questions.txt")
     answers_path = os.path.join(path, "answers.txt")
@@ -68,3 +70,29 @@ def generate_files(tasks: Iterable[FullTask], path: str):
 
             # Write the indexed answer to answers.txt
             af.write(f"{index}. {task['answer']}\n")
+
+import logging
+import functools
+
+# Configure logging to file
+logging.basicConfig(
+    filename='vqa_mod.log',
+    level=logging.INFO,
+    format='%(asctime)s - %(message)s'
+)
+
+def _wrap_run_method(instance):
+    original_run = instance._run
+
+    @functools.wraps(original_run)
+    def wrapped_run(*args, **kwargs):
+        logging.info(f"Input to {instance.__class__.__name__}._run: args={args}, kwargs={kwargs}")
+        result = original_run(*args, **kwargs)
+        logging.info(f"Output from {instance.__class__.__name__}._run: {result}")
+        return result
+
+    instance._run = wrapped_run
+
+
+def fulltask_to_task(fulltask: FullTask) -> Task:
+    return Task(images=fulltask['images'], question=fulltask['question'])

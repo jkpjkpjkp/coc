@@ -18,18 +18,18 @@ class SimpleWrapper(ChatOpenAI):
         return self.invoke(*args, **kwargs)
 
 llm = SimpleWrapper(
-    model='deepseek/deepseek-chat',
-    openai_api_key=os.environ['OPEN_ROUTER_API_KEY'],
-    openai_api_base=os.environ['OPEN_ROUTER_API_BASE'],
+    model='deepseek-chat',
+    openai_api_key=os.environ['DEEPSEEK_API_KEY'],
+    openai_api_base=os.environ['DEEPSEEK_BASE_URL'],
     max_tokens=4096,
     temperature=TEMPERATURE,
 )
 
 
 reasoner = SimpleWrapper(
-    model='deepseek/deepseek-r1',
-    openai_api_key=os.environ['OPEN_ROUTER_API_KEY'],
-    openai_api_base=os.environ['OPEN_ROUTER_API_BASE'],
+    model='deepseek-reasoner',
+    openai_api_key=os.environ['DEEPSEEK_API_KEY'],
+    openai_api_base=os.environ['DEEPSEEK_BASE_URL'],
     max_tokens=128000,
     temperature=TEMPERATURE,
 )
@@ -51,4 +51,4 @@ gemini = SimpleWrapper(
 )
 
 if __name__ == '__main__':
-    print(gemini.invoke("hi, what's your name?"))
+    print(reasoner("hi, what's your name?"))

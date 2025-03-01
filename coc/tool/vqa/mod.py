@@ -14,3 +14,5 @@ def get_qwen():
 
 def get_gemini():
     return gemini._run
+
+gemini_as_llm = gemini.invoke

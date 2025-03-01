@@ -2,7 +2,7 @@ from datasets import load_from_disk, Dataset
 from langchain_core.tools import BaseTool
 
 from typing import Literal, Iterator
-from coc.data.interface import FullTask as Task
+from coc.data.fulltask import FullTask
 
 _muir_to_Task = {
     'question': 'question',
@@ -22,9 +22,9 @@ class LoadMuir(BaseTool):
         subtask_dataset = load_from_disk('data/muir/' + partition)
         super().__init__(subtask_dataset=subtask_dataset)
 
-    def convert_to_tasks(self) -> Iterator[Task]:
+    def convert_to_tasks(self) -> Iterator[FullTask]:
         for item in self.subtask_dataset:
-            yield Task(
+            yield FullTask(
                 task_type=item['task'],
                 images=[img_jpeg.convert('RGB') for img_jpeg in item['image_list']],
                 question=item['question'],
@@ -43,6 +43,9 @@ class LoadMuir(BaseTool):
 
     def _run(self):
         return self.convert_to_tasks(self.subtask_dataset)
+
+def muir(partition: Literal['Counting', 'Ordering']):
+    return LoadMuir(partition).convert_to_tasks()
 
 if __name__ == '__main__':
     data_loader = LoadMuir('Ordering')

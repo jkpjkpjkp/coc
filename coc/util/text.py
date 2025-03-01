@@ -10,7 +10,7 @@ def extract_code(llm_response: str) -> List[str]:
 
 def extract_boxed(llm_response: str) -> str:
     """Extracts boxed text from the LLM response, ensures there is only one (or none), and returns it (or '')."""
-    matches = re.findall(r"\[\[(.*?)\]\]", llm_response)
+    matches = re.findall(r"\\boxed{(.*?)}", llm_response)
     assert len(matches) <= 1, f"Multiple boxed texts found in the response {llm_response}."
     if len(matches) == 1:
         return matches[0]
