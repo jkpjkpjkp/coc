@@ -50,13 +50,11 @@ def muir(partition: Literal['Counting', 'Ordering']):
 class MuirToMarkdown(BaseTool):
     name: str = 'muir_to_markdown'
     description: str = 'Convert MUIR tasks to markdown format'
-    partition: Literal['Counting', 'Ordering']
-    output_path: str
     
     def __init__(self, partition: Literal['Counting', 'Ordering'], output_path: Optional[str] = None):
         super().__init__()
-        self.partition = partition
-        self.output_path = output_path or f'muir_{partition.lower()}.md'
+        self._partition = partition
+        self._output_path = output_path or f'muir_{partition.lower()}.md'
         
     def _format_task(self, task: FullTask) -> str:
         """Format a single task into markdown"""
@@ -75,8 +73,8 @@ class MuirToMarkdown(BaseTool):
     
     def _run(self):
         """Write all tasks to markdown file"""
-        loader = LoadMuir(self.partition)
-        output = Path(self.output_path)
+        loader = LoadMuir(self._partition)
+        output = Path(self._output_path)
         output.parent.mkdir(parents=True, exist_ok=True)
         
         task_count = 0
@@ -85,7 +83,7 @@ class MuirToMarkdown(BaseTool):
                 f.write(self._format_task(task))
                 task_count += 1
         
-        return f"Successfully wrote {task_count} tasks to {self.output_path}"
+        return f"Successfully wrote {task_count} tasks to {self._output_path}"
 
 def muir_to_markdown(partition: Literal['Counting', 'Ordering'], output_path: Optional[str] = None):
     """Convert MUIR tasks to markdown format"""
