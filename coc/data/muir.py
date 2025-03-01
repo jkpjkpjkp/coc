@@ -58,14 +58,14 @@ class MuirToMarkdown(BaseTool):
         
     def _format_task(self, task: FullTask) -> str:
         """Format a single task into markdown"""
-        return f"""## {task.task_type}
+        return f"""## {task['task_type']}
 
-**Question:** {task.question}
+**Question:** {task['question']}
 
 **Options:**
-{'\n'.join(f'- {opt}' for opt in task.choices)}
+{'\n'.join(f'- {opt}' for opt in task['choices'])}
 
-**Answer:** {task.answer}
+**Answer:** {task['answer']}
 
 ---
 
