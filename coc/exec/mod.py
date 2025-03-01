@@ -9,6 +9,12 @@ from langchain_core.tools import BaseTool
 import copy
 
 class Exec(BaseTool):
+    """Python code interpreter.
+
+    Execute python code snippets in a Jupyter notebook style,
+    with historical contexts, and
+    as in Jupyter, will print the last line of each cell.
+    """
     name: str = 'exec'
     description: str = (
         'Execute python code snippets '
@@ -16,7 +22,7 @@ class Exec(BaseTool):
     )
     globals: dict
 
-    def __init__(self, *args):
+    def __init__(self, *args, task=None):
         """Initialize a code environment.
 
         args: list of code files to execute in order.
@@ -26,6 +32,8 @@ class Exec(BaseTool):
             with open(code_path, 'r') as f:
                 init_code = f.read()
             self._run(init_code)
+        if task:
+            self.globals['task'] = copy.deepcopy(task)
 
     def _run(self, code):
         """Execute code in a Jupyter-style way.
@@ -123,9 +131,8 @@ class Exec(BaseTool):
         """Add a new variable into the execution environment."""
         self.globals[name] = value
 
-
     def clone(self):
-        """Create a deep copy of the current execution environment."""
+        """Make a deep copy."""
         new_exec = Exec()
         new_exec.globals = copy.deepcopy(self.globals)
         return new_exec

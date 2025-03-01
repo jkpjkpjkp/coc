@@ -1,5 +1,4 @@
-CONTEXT = 'coc/exec/context.py'
-
+from coc.exec import CONTEXT_FILE as CONTEXT
 import unittest
 
 class TestExec(unittest.TestCase):
@@ -25,7 +24,7 @@ class TestTask(unittest.TestCase):
         self.assertIn('counting', result.lower())
         self.assertEqual(error, '')
 
-        vqa, error = self.exec._run('print(vqa(tsk["images"][0], "What is in the picture?"))')
+        vqa, error = self.exec._run('print(glm(tsk["images"][0], "What is in the picture?"))')
         self.assertTrue('mitten' in vqa or 'glove' in vqa)
         self.assertEqual(error, '')
 
@@ -41,13 +40,13 @@ class TestGPTOutput(unittest.TestCase):
   from PIL import Image
   import numpy as np
 
-  #   def vqa(image: np.ndarray, question: str) -> str:
+  #   def glm(image: np.ndarray, question: str) -> str:
   #       ...
 
   image1 = tsk["images"][0]
   image2 = tsk["images"][1]
-  dense_caption1 = vqa(image1, "Generate dense caption for the image")
-  dense_caption2 = vqa(image2, "Generate dense caption for the image")
+  dense_caption1 = glm(image1, "Generate dense caption for the image")
+  dense_caption2 = glm(image2, "Generate dense caption for the image")
 
   dense_caption1, dense_caption2
 

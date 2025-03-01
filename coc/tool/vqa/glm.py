@@ -7,7 +7,7 @@ from typing import List, Literal
 from langchain_core.messages import HumanMessage
 from langchain_community.chat_models import ChatZhipuAI
 from coc.config import TEMPERATURE
-
+import coc.secret
 
 import base64
 from PIL.Image import Image as Img
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 """
 In the center of the screen, a yellow-skinned, bald man wearing a white shirt and blue pants is standing facing the camera.
 
-He first looks to the left side of the screen, then turns his head to the right side of the screen,   ### hallucinate. still-frame. 
+He first looks to the left side of the screen, then turns his head to the right side of the screen,   ### hallucinate. still-frame.
 
 and then turns back to the left side of the screen. The camera zooms in, and the man's head is blocked by a patch of green grass. The camera zooms out, and the man is no longer in the frame. The background is a patch of green grass.
 """

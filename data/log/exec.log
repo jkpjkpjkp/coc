@@ -33,3 +33,2086 @@ ZeroDivisionError: division by zero
 NoneType: None
 
 -------------------------
++++++++++++++++++++++++++
+unterminated string literal (detected at line 7) (<unknown>, line 7)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 7
+    - If the `vqa` tool does not provide a satisfactory answer, we can analyze the image's pixel data to determine the dominant color.
+                                                                                        ^
+SyntaxError: unterminated string literal (detected at line 7)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'S' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'S' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'p' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'p' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+invalid syntax (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    :
+    ^
+SyntaxError: invalid syntax
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'U' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'U' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 's' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 's' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'h' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'h' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'g' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'g' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'r' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'r' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'u' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'u' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'd' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'd' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'g' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'g' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'l' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'l' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'd' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'd' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'f' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'f' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'y' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'y' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'b' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'b' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'j' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'j' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'c' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'c' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 's' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 's' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'h' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'h' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'm' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'm' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'a' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'a' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'g' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'g' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'b' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'b' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'j' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'j' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'c' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'c' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 's' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 's' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+invalid syntax (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    =
+    ^
+SyntaxError: invalid syntax
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'g' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'g' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'r' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'r' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'u' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'u' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'd' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'd' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'g' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'g' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+'(' was never closed (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    (
+    ^
+SyntaxError: '(' was never closed
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'm' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'm' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'a' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'a' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'g' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'g' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+unmatched ')' (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    )
+    ^
+SyntaxError: unmatched ')'
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+not enough values to unpack (expected at least 1, got 0)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 65, in _run
+    *initial_statements, final_statement = body
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ValueError: not enough values to unpack (expected at least 1, got 0)
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'p' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'p' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'r' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'r' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'i' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'i' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'n' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'n' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+'(' was never closed (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    (
+    ^
+SyntaxError: '(' was never closed
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'o' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'o' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'b' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'b' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'j' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'j' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'e' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'e' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'c' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'c' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 't' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 't' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 's' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 's' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+unmatched ')' (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    )
+    ^
+SyntaxError: unmatched ')'
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 5, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 5, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 5, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 5, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+unmatched ')' (<unknown>, line 3)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 3
+    print)
+         ^
+SyntaxError: unmatched ')'
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 5, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 5, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 3, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 6, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 4, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'image' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 2, in <module>
+NameError: name 'image' is not defined. Did you mean: 'Image'?
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+'(' was never closed (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    print("hello"
+         ^
+SyntaxError: '(' was never closed
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'undefined_variable' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'undefined_variable' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+division by zeroTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+ZeroDivisionError: division by zero
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+errorTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 107, in _run
+    exec(compiled_final, self.globals)
+  File "<ast>", line 1, in <module>
+ValueError: error
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'vqa' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'vqa' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'vqa' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 71, in _run
+    exec(compiled_init, self.globals)
+  File "<ast>", line 10, in <module>
+NameError: name 'vqa' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+'(' was never closed (<unknown>, line 1)Traceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 61, in _run
+    parsed = ast.parse(code_str, mode='exec')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/jkp/.local/share/applications/anaconda3/envs/troi/lib/python3.12/ast.py", line 52, in parse
+    return compile(source, filename, mode, flags,
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<unknown>", line 1
+    print("hello"
+         ^
+SyntaxError: '(' was never closed
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+name 'undefined_variable' is not definedTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+NameError: name 'undefined_variable' is not defined
+NoneType: None
+
+-------------------------
++++++++++++++++++++++++++
+division by zeroTraceback (most recent call last):
+  File "/home/jkp/hack/coc/coc/exec/mod.py", line 97, in _run
+    val = eval(compiled_expr, self.globals)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<ast>", line 1, in <module>
+ZeroDivisionError: division by zero
+NoneType: None
+
+-------------------------

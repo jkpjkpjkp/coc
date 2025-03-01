@@ -2,7 +2,7 @@ import unittest
 import os
 import tempfile
 from PIL import Image
-from coc.util.visual.images_to_video import generate_video
+from coc.util.vision import generate_video
 
 class TestGenerateVideo(unittest.TestCase):
     @classmethod

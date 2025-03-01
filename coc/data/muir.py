@@ -1,7 +1,7 @@
 from datasets import load_from_disk, Dataset
 from langchain_core.tools import BaseTool
 
-from typing import Literal
+from typing import Literal, Iterator
 from coc.data.interface import FullTask as Task
 
 _muir_to_Task = {
@@ -22,7 +22,7 @@ class LoadMuir(BaseTool):
         subtask_dataset = load_from_disk('data/muir/' + partition)
         super().__init__(subtask_dataset=subtask_dataset)
 
-    def convert_to_tasks(self):
+    def convert_to_tasks(self) -> Iterator[Task]:
         for item in self.subtask_dataset:
             yield Task(
                 task_type=item['task'],
