@@ -19,7 +19,7 @@ class TestTask(unittest.TestCase):
 
     def test_task(self):
         task = next(self.data_loader.convert_to_tasks())
-        self.exec.add_var('tsk', task)
+        self.exec.set_var('tsk', task)
         result, error = self.exec._run('print(tsk["task_type"])')
         self.assertIn('counting', result.lower())
         self.assertEqual(error, '')
@@ -35,7 +35,7 @@ class TestGPTOutput(unittest.TestCase):
 
     def test_gpt_output(self):
         task = next(self.data_loader.convert_to_tasks())
-        self.exec.add_var('tsk', task)
+        self.exec.set_var('tsk', task)
         code_str = '''
   from PIL import Image
   import numpy as np
@@ -59,13 +59,13 @@ class TestGPTOutput(unittest.TestCase):
 class TestClone(unittest.TestCase):
     def setUp(self):
         self.exec = Exec(CONTEXT)
-        self.exec.add_var('x', 42)
+        self.exec.set_var('x', 42)
 
     def test_clone(self):
         cloned_exec = self.exec.clone()
         self.assertEqual(cloned_exec.globals['x'], 42)
 
-        cloned_exec.add_var('y', 100)
+        cloned_exec.set_var('y', 100)
         self.assertIn('y', cloned_exec.globals)
         self.assertNotIn('y', self.exec.globals)
 

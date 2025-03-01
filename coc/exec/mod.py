@@ -127,7 +127,10 @@ class Exec(BaseTool):
 
         return (output, errors)
 
-    def add_var(self, name: str, value):
+    def get_var(self, name: str):
+        return self.globals[name]
+
+    def set_var(self, name: str, value):
         """Add a new variable into the execution environment."""
         self.globals[name] = value
 

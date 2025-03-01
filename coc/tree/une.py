@@ -34,9 +34,10 @@ class CodeList:
     _: List[Code]
     env: Exec
 
-    def __init__(self, context: str):
+    def __init__(self, context: str, task: Task):
         self._ = []
         self.env = Exec(context)
+        self.env.set_var('task', task)
 
     def append(self, code: Union[str, Code]):
         if isinstance(code, str):
@@ -68,7 +69,7 @@ class TreeNode(Node):
 def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant: Literal['neutral', 'force code', 'force answer'] = 'neutral'):
     while node.depth <= max_depth:
         message = build_trunk(
-            task=task,
+            task=node.codelist.env.get_var('task'),
             init_code_path=CONTEXT_FILE,
             codes=node.codelist.to_list_of_pair_of_str(),
             tool=TOOLSET[randint(0, len(TOOLSET)-1)] if TOOLSET else None,
@@ -96,9 +97,9 @@ def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant
             node = child
     return None, node
 
-def root_factory() -> TreeNode:
+def root_factory(task: Task) -> TreeNode:
     return TreeNode(
-        codelist=CodeList(context=CONTEXT_FILE),
+        codelist=CodeList(context=CONTEXT_FILE, task=task),
         outputs=[],
         parent=None,
         children=[],
@@ -107,7 +108,7 @@ def root_factory() -> TreeNode:
 
 def force_code_then_answer_at_each_step(task: Task, max_depth: int = MAX_DEPTH):
     from coc.tree.llm import llm
-    root = root_factory()
+    root = root_factory(task)
     ret, node = rollout(task, root, llm, max_depth=max_depth, variant='force code')
     assert not ret, "Answer premature (force code failed)"
     ret, node = rollout(task, node, llm, max_depth=max_depth+1, variant='force answer')
