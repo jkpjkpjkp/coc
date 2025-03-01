@@ -73,7 +73,7 @@ Continue analyzing and write NEW CODE to progress toward solving the task.
 
 {}
 
-(however, if you are absolutely sure of a final answer, write no mode code and present your final answer after "Final Answer:".)
+(however, if you are absolutely sure of a final answer, write no mode code and present your final answer in \\boxed{{}}.)
 
 Let's think step by step.
 """
@@ -84,7 +84,7 @@ task: {}
 The following code was executed to gather information:
 
 {}{}{}
-Based on these outputs, provide the FINAL ANSWER to the task. Do NOT write more code. Present your final answer in \boxed{{}}. Let's think step by step.
+Based on these outputs, provide the FINAL ANSWER to the task. Do NOT write more code. Present your final answer in \\boxed{{}}. Let's think step by step.
 """
 
 def build_trunk(task: Task, init_code_path: str, codes: List[Pair[str]], tool: Optional[str] = None, variant: Literal['neutral', 'force code', 'force answer'] = 'neutral'):

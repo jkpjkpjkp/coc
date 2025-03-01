@@ -98,7 +98,7 @@ class ObjectDetectionFactory:
         results = self.gd_processor.post_process_grounded_object_detection(
             outputs,
             inputs['input_ids'],
-            box_threshold=0.2,
+            threshold=0.2,
             text_threshold=0.1,
             target_sizes=[image.size[::-1]]
         )
@@ -109,7 +109,7 @@ class ObjectDetectionFactory:
         detections = [
             Bbox(box=box.tolist(), score=score.item(), label=label)
             for box, score, label in \
-                zip(result['boxes'], result['scores'], result['labels'])
+                zip(result['boxes'], result['scores'], result['text_labels'])
         ]
         return detections
 
@@ -137,7 +137,7 @@ class ObjectDetectionFactory:
             # torch.cuda.empty_cache()
 
         target_sizes = torch.Tensor([image.size[::-1]]).to(self.device)
-        processed_results = self.owlv2_processor.post_process_object_detection(
+        processed_results = self.owlv2_processor.post_process_grounded_object_detection(
             outputs=outputs,
             target_sizes=target_sizes,
             threshold=0.1

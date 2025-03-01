@@ -83,7 +83,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
                     {
                         'boxes': torch.tensor([[0, 0, 10, 10]]),
                         'scores': torch.tensor([0.9]),
-                        'labels': ['cat']
+                        'text_labels': ['cat']
                     }
                 ]
             )
@@ -101,7 +101,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
     @patch('transformers.Owlv2ForObjectDetection.from_pretrained')
     def test_owlv2_process(self, mock_model, mock_processor):
         mock_processor.return_value = MagicMock(
-            post_process_object_detection=MagicMock(
+            post_process_grounded_object_detection=MagicMock(
                 return_value=[
                     {
                         'scores': torch.tensor([0.9]),
