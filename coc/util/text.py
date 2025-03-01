@@ -3,10 +3,13 @@ from typing import List
 from coc.util import Pair
 
 def extract_code(llm_response: str) -> List[str]:
-    """Extracts code blocks from the LLM response, returning them as a list of strings."""
-    matches = re.findall(r"```python\n(.*?)```", llm_response, re.DOTALL)
-    code_blocks = [match.strip() for match in matches]
-    return code_blocks
+    """Extracts code block from the LLM response.
+
+    since we set stop=['```\n'], there will only be atmost one.
+    and it (or None) will be returned.
+    """
+    matches = re.findall(r"```python\n(.*?)(?:\n```|$)", llm_response, re.DOTALL)
+    return matches
 
 def extract_boxed(llm_response: str) -> str:
     """Extracts boxed text from the LLM response, ensures there is only one (or none), and returns it (or '')."""

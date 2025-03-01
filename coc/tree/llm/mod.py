@@ -6,6 +6,9 @@ from langchain_openai import ChatOpenAI
 import coc.secret # sets environment variables
 
 class SimpleWrapper(ChatOpenAI):
+    def __init__(self, *args, **kwargs):
+        super().__init__(stop=['```\n'], *args, **kwargs)
+
     def invoke(self, *args, **kwargs):
         ret = super().invoke(*args, **kwargs).content
         with open(LOGFILE, 'a') as f:
