@@ -117,22 +117,24 @@ def force_code_then_answer_at_each_step(task: Task, max_depth: int = MAX_DEPTH):
 
 def compare(output: str, answer: str):
     from coc.tool.vqa.mod import gemini_as_llm as llm
-    return llm(textwrap.dedent(f'''
+    ret = llm(textwrap.dedent(f'''
                 compare the following two outputs and return True if they are the same (output is correct),
                     otherwise return False.
                 output: {output}
                 answer: {answer}'''
-            )).strip() == 'True'
+            ))
+    return 'True' in ret
 
 def judge_multichoice(output: str, choices: List[str], answer: str):
     from coc.tool.vqa.mod import gemini_as_llm as llm
-    return llm(textwrap.dedent(f'''
+    ret = llm(textwrap.dedent(f'''
                 judge the following output and return True if, given the choices available, the party offering this output has the capability of arriving at the correct choice,
                     otherwise return False.
                 output (cannot see the choices): {output}
                 choices: {choices}
                 answer (correct choice is): {answer}'''
-            )).strip() == 'True'
+            ))
+    return 'True' in ret
 
 def eval_a_batch(batch: Iterable[FullTask]):
     correct = 0
