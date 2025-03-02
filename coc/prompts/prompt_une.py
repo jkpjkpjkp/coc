@@ -40,6 +40,8 @@ trunk = """
 
     {}
 
+    (however, if you are absolutely sure of a final answer, write no mode code and present your final answer in \\boxed{{}}.)
+
     Let's think step by step.
 """
 
@@ -72,8 +74,6 @@ Use task['images'][0] to reference images. Write self-contained Python snippets 
 Continue analyzing and write NEW CODE to progress toward solving the task.
 
 {}
-
-(however, if you are absolutely sure of a final answer, write no mode code and present your final answer in \\boxed{{}}.)
 
 Let's think step by step.
 """

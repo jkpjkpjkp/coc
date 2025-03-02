@@ -1,5 +1,6 @@
 __pycache__/
 data/
+!coc/data
 .aider*
 coc/secret.py
 *.log
