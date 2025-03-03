@@ -1,0 +1,1 @@
+from .fulltask import FullTask

@@ -10,7 +10,11 @@ class SimpleWrapper(ChatOpenAI):
         super().__init__(stop=['```\n'], *args, **kwargs)
 
     def invoke(self, *args, **kwargs):
-        ret = super().invoke(*args, **kwargs).content
+        try:
+            ret = super().invoke(*args, **kwargs).content
+        except Exception as e:
+            print(e)
+            ret = str(e)
         with open(LOGFILE, 'a') as f:
             from datetime import datetime
             f.write(f'{datetime.now().strftime("%m/%d %H:%M:%S")}\n')
@@ -20,7 +24,7 @@ class SimpleWrapper(ChatOpenAI):
     def __call__(self, *args, **kwargs):
         return self.invoke(*args, **kwargs)
 
-llm = SimpleWrapper(
+v3 = SimpleWrapper(
     model='deepseek-chat',
     openai_api_key=os.environ['DEEPSEEK_API_KEY'],
     openai_api_base=os.environ['DEEPSEEK_BASE_URL'],
@@ -29,7 +33,7 @@ llm = SimpleWrapper(
 )
 
 
-reasoner = SimpleWrapper(
+r1 = SimpleWrapper(
     model='deepseek-reasoner',
     openai_api_key=os.environ['DEEPSEEK_API_KEY'],
     openai_api_base=os.environ['DEEPSEEK_BASE_URL'],
@@ -37,7 +41,7 @@ reasoner = SimpleWrapper(
     temperature=TEMPERATURE,
 )
 
-gpt4o = SimpleWrapper(
+o4 = SimpleWrapper(
     model='gpt-4o',
     openai_api_key=os.environ['OPENAI_API_KEY'],
     openai_api_base=os.environ['OPENAI_API_BASE'],
@@ -53,5 +57,14 @@ gemini = SimpleWrapper(
     temperature=TEMPERATURE,
 )
 
+claude = SimpleWrapper(
+    model='claude-3-7-sonnet-20250219',
+    openai_api_key=os.environ['ANTHROPIC_API_KEY'],
+    openai_api_base=os.environ['ANTHROPIC_BASE_URL'],
+    temperature=TEMPERATURE,
+)
+
+llm = v3
+
 if __name__ == '__main__':
-    print(reasoner("hi, what's your name?"))
+    print(llm("hi, what model are you?"))

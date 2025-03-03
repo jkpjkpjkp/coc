@@ -1,5 +1,5 @@
 
-MAX_DEPTH = 2
+MAX_DEPTH = 7
 
 from coc.data.fulltask import FullTask
 from typing import List, Union, Optional, Literal, Iterable
@@ -116,17 +116,17 @@ def force_code_then_answer_at_each_step(task: Task, max_depth: int = MAX_DEPTH):
     return ret, node
 
 def compare(output: str, answer: str):
-    from coc.tool.vqa.mod import gemini_as_llm as llm
+    from coc.tool.vqa import gemini_as_llm as llm
     ret = llm(textwrap.dedent(f'''
                 compare the following two outputs and return True if they are the same (output is correct),
                     otherwise return False.
                 output: {output}
                 answer: {answer}'''
             ))
-    return 'True' in ret
+    return 'False' not in ret and 'True' in ret
 
 def judge_multichoice(output: str, choices: List[str], answer: str):
-    from coc.tool.vqa.mod import gemini_as_llm as llm
+    from coc.tool.vqa import gemini_as_llm as llm
     ret = llm(textwrap.dedent(f'''
                 judge the following output and return True if, given the choices available, the party offering this output has the capability of arriving at the correct choice,
                     otherwise return False.
@@ -134,14 +134,14 @@ def judge_multichoice(output: str, choices: List[str], answer: str):
                 choices: {choices}
                 answer (correct choice is): {answer}'''
             ))
-    return 'True' in ret
+    return 'False' not in ret and 'True' in ret
 
 def eval_a_batch(batch: Iterable[FullTask]):
     correct = 0
     total = 0
     batch = list(batch)
-    for task in tqdm(batch[::3]):
-        ret, node = force_code_then_answer_at_each_step(fulltask_to_task(task), MAX_DEPTH + total)
+    for i, task in tqdm(enumerate(batch[::3][18:])):
+        ret, node = force_code_then_answer_at_each_step(fulltask_to_task(task), MAX_DEPTH)
         correct += judge_multichoice(ret, task['choices'], task['answer'])
         total += 1
 

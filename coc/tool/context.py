@@ -65,6 +65,23 @@ def gemini(image: Img, question: str) -> str:
 
 
 
+### other tools
+"""other tools.
+
+the above are tools whose implementation is somehow tricky.
+feel free to implement other helper function/code.
+
+for example, all tools cannot detect objects that is too small; in which case it will be helpful to apply sliding window, passing each window to the tool.
+
+also, you may draw helper lines/bbox/circles to focus vlm's attention.
+
+also, you may wish to crop/zoomin the image.
+
+also, you may wish to superpose mask returns with the orignal image to better understand the result.
+
+
+all these tools can be simply implemented with various python packages (remember to import them before use), and you are encouraged to do so.
+"""
 
 
 
