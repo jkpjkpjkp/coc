@@ -10,7 +10,7 @@ from coc.tree.une import (
     judge_multichoice,
     fulltask_to_task
 )
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Iterable
 from coc.prompts.prompt_une import build_trunk
 from coc.exec import Exec, CONTEXT_FILE
 from langchain_core.messages import AIMessage
