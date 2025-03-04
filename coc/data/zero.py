@@ -21,6 +21,8 @@ class LoadZero(TaskLoader):
                 choices=None,  # ZeroBench does not provide choices
                 answer=item['question_answer']
             )
+def zero() -> Iterator[FullTask]:
+    return LoadZero().convert_to_tasks()
 
 if __name__ == "__main__":
     data_loader = LoadZero()

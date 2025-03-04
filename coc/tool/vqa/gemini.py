@@ -101,6 +101,9 @@ class Gemini(BaseTool):
         response = self.mllm.invoke([message])
         return response.content
 
+    def run_freestyle(self, prompt: List[str]):
+        pass
+
 
 
     def invoke(self, question: str) -> str:

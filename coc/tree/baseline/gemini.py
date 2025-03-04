@@ -38,4 +38,5 @@ if __name__ == '__main__':
     from coc.util.misc import set_seed
     set_seed()
     from coc.data.muir import muir
-    print(eval_a_batch(muir('Ordering')))
+    from coc.data.zero import zero
+    print(eval_a_batch(zero()))
