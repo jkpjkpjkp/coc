@@ -23,6 +23,19 @@ from tqdm import tqdm
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+import logging
+from datetime import datetime
+from pathlib import Path
+
+# Configure logging
+log_dir = Path("data/log/fe")
+log_dir.mkdir(parents=True, exist_ok=True)
+logging.basicConfig(
+    filename=log_dir / f"fe_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 def calculate_diversity(samples: List[str]) -> np.ndarray:
     """Calculate pairwise diversity scores using TF-IDF and cosine similarity"""
@@ -173,14 +186,21 @@ def eval_a_batch_with_diversity(batch: Iterable[FullTask], n1: int = 5, n2: int 
         correct += judge_multichoice(ret, task['choices'], task['answer'])
         total += 1
 
+        logger.info(f"Progress: Correct={correct}, Total={total}, Accuracy={correct/total:.2f}")
         print(correct, total)
 
         if total - 2 * correct > 4:
+            logger.info(f"Early termination: Correct={correct}, Total={total}, Accuracy={correct/total:.2f}")
             return correct, total
+    logger.info(f"Final results: Correct={correct}, Total={total}, Accuracy={correct/total:.2f}")
     return correct, total
 
 if __name__ == '__main__':
     from coc.util.misc import set_seed
     set_seed()
     from coc.data.zero import zero
-    print(eval_a_batch_with_diversity(zero()))
+    
+    logger.info("Starting evaluation with diversity-based search")
+    correct, total = eval_a_batch_with_diversity(zero())
+    logger.info(f"Evaluation complete. Final results: Correct={correct}, Total={total}, Accuracy={correct/total:.2f}")
+    print(f"Final results: Correct={correct}, Total={total}, Accuracy={correct/total:.2f}")
