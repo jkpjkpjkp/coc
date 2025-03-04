@@ -51,10 +51,12 @@ def select_diverse_nodes(nodes: List[TreeNode], n: int) -> List[TreeNode]:
 
     # Start with most diverse pair
     i, j = np.unravel_index(np.argmax(diversity), diversity.shape)
-    selected.append(i)
-    selected.append(j)
-    remaining.remove(i)
-    remaining.remove(j)
+    if i in remaining:
+        selected.append(i)
+        remaining.remove(i)
+    if j in remaining and j != i:  # Ensure we don't add the same index twice
+        selected.append(j)
+        remaining.remove(j)
 
     # Add remaining nodes that maximize diversity
     while len(selected) < n and remaining:
