@@ -36,26 +36,26 @@ def select_diverse_nodes(nodes: List[TreeNode], n: int) -> List[TreeNode]:
     """Select n most diverse nodes based on their code outputs"""
     if len(nodes) <= n:
         return nodes
-        
+
     # Get all code outputs as strings
     outputs = []
     for node in nodes:
         outputs.append("\n".join([code.output for code in node.codelist._]))
-        
+
     # Calculate diversity matrix
     diversity = calculate_diversity(outputs)
-    
+
     # Greedy selection of diverse nodes
     selected = []
     remaining = set(range(len(nodes)))
-    
+
     # Start with most diverse pair
     i, j = np.unravel_index(np.argmax(diversity), diversity.shape)
     selected.append(i)
     selected.append(j)
     remaining.remove(i)
     remaining.remove(j)
-    
+
     # Add remaining nodes that maximize diversity
     while len(selected) < n and remaining:
         # Calculate average diversity to selected nodes
@@ -64,7 +64,7 @@ def select_diverse_nodes(nodes: List[TreeNode], n: int) -> List[TreeNode]:
         next_idx = list(remaining)[np.argmax(avg_diversity)]
         selected.append(next_idx)
         remaining.remove(next_idx)
-        
+
     return [nodes[i] for i in selected]
 
 def rollout_diverse(
@@ -79,7 +79,7 @@ def rollout_diverse(
     """Rollout with diversity-based branching"""
     if node.depth > max_depth:
         return None, node
-        
+
     # Generate N1 candidate responses
     candidates = []
     for _ in range(n1):
@@ -93,11 +93,11 @@ def rollout_diverse(
         response = llm(message)
         codes = extract_code(response)
         answer = extract_boxed(response)
-        
+
         if answer:
             # If we get an answer, return immediately
             return answer, node
-            
+
         # Create candidate node
         child_codelist = copy.deepcopy(node.codelist)
         for code in codes:
@@ -110,19 +110,19 @@ def rollout_diverse(
             depth=node.depth + 1,
         )
         candidates.append(candidate)
-        
+
     # Select N2 most diverse candidates to keep
     selected = select_diverse_nodes(candidates, n2)
-    
+
     # Add selected nodes as children
     node.children.extend(selected)
-    
+
     # Continue rollout from each selected node
     for child in selected:
         result, final_node = rollout_diverse(task, child, llm, n1, n2, max_depth, variant)
         if result:
             return result, final_node
-            
+
     return None, node
 
 def force_code_then_answer_with_diversity(
@@ -134,25 +134,25 @@ def force_code_then_answer_with_diversity(
     """Force code then answer with diversity-based branching"""
     from coc.tree.llm import llm
     root = root_factory(task)
-    
+
     # First phase: force code exploration
     ret, node = rollout_diverse(
-        task, root, llm, 
+        task, root, llm,
         n1=n1, n2=n2,
         max_depth=max_depth,
         variant='force code'
     )
     assert not ret, "Answer premature (force code failed)"
-    
+
     # Second phase: force answer
     ret, node = rollout_diverse(
         task, node, llm,
-        n1=n1, n2=n2, 
+        n1=n1, n2=n2,
         max_depth=max_depth+1,
         variant='force answer'
     )
     assert ret, "Answer not found (force answer failed)"
-    
+
     return ret, node
 
 def eval_a_batch_with_diversity(batch: Iterable[FullTask], n1: int = 5, n2: int = 2):
@@ -160,7 +160,7 @@ def eval_a_batch_with_diversity(batch: Iterable[FullTask], n1: int = 5, n2: int 
     correct = 0
     total = 0
     batch = list(batch)
-    
+
     for i, task in tqdm(enumerate(batch[::3][18:])):
         ret, node = force_code_then_answer_with_diversity(
             fulltask_to_task(task),
@@ -180,5 +180,5 @@ def eval_a_batch_with_diversity(batch: Iterable[FullTask], n1: int = 5, n2: int 
 if __name__ == '__main__':
     from coc.util.misc import set_seed
     set_seed()
-    from coc.data.muir import muir
-    print(eval_a_batch_with_diversity(muir('Ordering')))
+    from coc.data.zero import zero
+    print(eval_a_batch_with_diversity(zero()))
