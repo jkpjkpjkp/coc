@@ -58,7 +58,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
     @patch.object(ObjectDetectionFactory, 'grounding_dino')
     @patch.object(ObjectDetectionFactory, 'owl2')
     def test_run_combines_results(self, mock_owl, mock_gdino):
-        mock_owl.return_value = [Bbox([], 0.8, 'cat')]
+        mock_owl.return_value = [Bbox(box=[], score=0.8, label='cat')]
         mock_gdino.return_value = [
             Bbox([], 0.7, 'cat'),
             Bbox([], 0.6, 'dog'),
@@ -123,7 +123,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
     def test_run_with_empty_detections(self):
         factory = ObjectDetectionFactory()
         factory.owl2 = MagicMock(return_value=[])
-        factory.grounding_dino = MagicMock(return_value=[Bbox([], 0.5, 'cat')])
+        factory.grounding_dino = MagicMock(return_value=[Bbox(box=[], score=0.5, label='cat')])
         image = Image.new('RGB', (100, 100))
         result = factory._run(image, ['cat'])
         self.assertEqual(len(result), 0)
