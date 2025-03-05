@@ -21,7 +21,7 @@ class TestBbox(unittest.TestCase):
 class TestBoxTrim(unittest.TestCase):
     def test_no_overlap(self):
         boxes = [
-            Bbox([0.0, 0.0, 1.0, 1.0], 0.9, 'cat'),
+            Bbox(box=[0.0, 0.0, 1.0, 1.0], score=0.9, label='cat'),
             Bbox([1.1, 1.1, 2.0, 2.0], 0.8, 'dog'),
         ]
         result = box_trim(boxes)
@@ -29,8 +29,8 @@ class TestBoxTrim(unittest.TestCase):
 
     def test_high_overlap_reject(self):
         boxes = [
-            Bbox([0.0, 0.0, 10.0, 10.0], 0.9, 'cat'),
-            Bbox([0.0, 0.0, 9.0, 9.0], 0.8, 'cat'),
+            Bbox(box=[0.0, 0.0, 10.0, 10.0], score=0.9, label='cat'),
+            Bbox(box=[0.0, 0.0, 9.0, 9.0], score=0.8, label='cat'),
         ]
         result = box_trim(boxes)
         self.assertEqual(len(result), 1)
@@ -39,7 +39,7 @@ class TestBoxTrim(unittest.TestCase):
     def test_low_overlap_accept(self):
         boxes = [
             Bbox([0.0, 0.0, 10.0, 10.0], 0.9, 'cat'),
-            Bbox([8.0, 8.0, 12.0, 12.0], 0.8, 'cat'),
+            Bbox(box=[8.0, 8.0, 12.0, 12.0], score=0.8, label='cat'),
         ]
         result = box_trim(boxes)
         self.assertEqual(len(result), 2)
@@ -47,7 +47,7 @@ class TestBoxTrim(unittest.TestCase):
     def test_zero_area_accepted_box(self):
         # Accepted box has zero area (invalid), should be skipped
         boxes = [
-            Bbox([0.0, 0.0, 0.0, 0.0], 0.9, 'cat'),
+            Bbox(box=[0.0, 0.0, 0.0, 0.0], score=0.9, label='cat'),
             Bbox([0.0, 0.0, 1.0, 1.0], 0.8, 'cat'),
         ]
         result = box_trim(boxes)

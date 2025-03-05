@@ -23,7 +23,8 @@ class TestCode(unittest.TestCase):
 
 class TestCodeList(unittest.TestCase):
     def test_append_and_to_list_of_pairs(self):
-        codelist = CodeList(CONTEXT_FILE)
+        mock_task = Mock()
+        codelist = CodeList(CONTEXT_FILE, mock_task)
         codelist.append("print('Hello')")
         self.assertEqual(len(codelist._), 1)
         self.assertEqual(codelist._[0].output, "Hello\n")

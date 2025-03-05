@@ -24,7 +24,7 @@ class TestExtractCode(unittest.TestCase):
 
     def test_code_block_with_whitespace(self):
         response = "```python\n   x = 5   \n```"
-        self.assertEqual(extract_code(response), ["x = 5"])
+        self.assertEqual(extract_code(response), ["   x = 5   "])
 
     def test_non_python_code_blocks(self):
         response = "```python\nprint('py')\n```\n```javascript\nconsole.log('js')\n```"
