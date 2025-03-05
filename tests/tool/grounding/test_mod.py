@@ -13,9 +13,9 @@ class TestBbox(unittest.TestCase):
         score = 0.8
         label = "cat"
         bbox = Bbox(box=box, score=score, label=label)
-        self.assertEqual(bbox.box, box)
-        self.assertEqual(bbox.score, score)
-        self.assertEqual(bbox.label, label)
+        self.assertEqual(bbox['box'], box)
+        self.assertEqual(bbox['score'], score)
+        self.assertEqual(bbox['label'], label)
 
 
 class TestBoxTrim(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestBoxTrim(unittest.TestCase):
         ]
         result = box_trim(boxes)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].score, 0.9)
+        self.assertEqual(result[0]['score'], 0.9)
 
     def test_low_overlap_accept(self):
         boxes = [
@@ -68,7 +68,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
         result = factory._run(image, ['cat', 'dog'])
         # Only 'cat' is present in both results
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].label, 'cat')
+        self.assertEqual(result[0]['label'], 'cat')
 
     @patch('transformers.AutoProcessor.from_pretrained')
     @patch('transformers.AutoModelForZeroShotObjectDetection.from_pretrained')
@@ -95,7 +95,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
         factory.gd_model = mock_model.return_value
         result = factory.grounding_dino(image, texts)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].label, 'cat')
+        self.assertEqual(result[0]['label'], 'cat')
 
     @patch('transformers.Owlv2Processor.from_pretrained')
     @patch('transformers.Owlv2ForObjectDetection.from_pretrained')
@@ -118,7 +118,7 @@ class TestObjectDetectionFactory(unittest.TestCase):
         factory.owlv2_model = mock_model.return_value
         result = factory.owl2(image, texts)
         self.assertEqual(len(result), 1)
-        self.assertEqual(result[0].label, 'cat')
+        self.assertEqual(result[0]['label'], 'cat')
 
     def test_run_with_empty_detections(self):
         factory = ObjectDetectionFactory()
@@ -160,9 +160,9 @@ class TestGroundingNoMock(unittest.TestCase):
 
         result = self.obj._run(image, texts)
 
-        boys = [x for x in result if 'boy' in x.label]
-        girls = [x for x in result if 'girl' in x.label]
-        hands = [x for x in result if 'hand' in x.label]
+        boys = [x for x in result if 'boy' in x['label']]
+        girls = [x for x in result if 'girl' in x['label']]
+        hands = [x for x in result if 'hand' in x['label']]
 
         self.assertEqual(len(boys), 0)
         self.assertEqual(len(girls), 4)
