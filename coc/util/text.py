@@ -9,7 +9,8 @@ def extract_code(llm_response: str) -> List[str]:
     and it (or None) will be returned.
     """
     matches = re.findall(r"```python\n(.*?)(?:\n```|$)", llm_response, re.DOTALL)
-    return matches
+    # Strip leading/trailing whitespace from each code block while preserving internal indentation
+    return [match.strip() for match in matches]
 
 def extract_boxed(llm_response: str) -> str:
     """Extracts boxed text from the LLM response, ensures there is only one (or none), and returns it (or '')."""
