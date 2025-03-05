@@ -46,7 +46,7 @@ def process_image(input_image, object_list_text, confidence_threshold=0.5):
         return input_image, f"Error in detection: {str(e)}"
 
     # Filter by confidence threshold
-    filtered_detections = [det for det in detections if det.score >= confidence_threshold]
+    filtered_detections = [det for det in detections if det['score'] >= confidence_threshold]
 
     # Create a copy of the image to draw on
     result_image = pil_image.copy()
@@ -65,15 +65,15 @@ def process_image(input_image, object_list_text, confidence_threshold=0.5):
             int(255 * ((hash(label) // 10) % 10) / 10),
             int(255 * ((hash(label) // 100) % 10) / 10)
         )
-        for label in set(det.label for det in filtered_detections)
+        for label in set(det['label'] for det in filtered_detections)
     }
 
     results_text = f"Found {len(filtered_detections)} objects:\n"
 
     for det in filtered_detections:
-        box = det.box
-        label = det.label
-        score = det.score
+        box = det['box']
+        label = det['label']
+        score = det['score']
 
         # Convert box coordinates if they are normalized
         if max(box) <= 1.0:

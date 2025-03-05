@@ -5,17 +5,6 @@ You will interact with them by writing python code calling them.
 '''
 
 
-bbox = '''
-
-from dataclasses import dataclass
-@dataclass
-class Bbox:
-    box: List[float]
-    score: float
-    label: str
-'''
-
-
 task = '''
 
 class Task(TypedDict):

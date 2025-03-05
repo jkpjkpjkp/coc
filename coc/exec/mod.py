@@ -7,6 +7,10 @@ import textwrap
 import ast
 from langchain_core.tools import BaseTool
 import copy
+import os
+import logging
+from datetime import datetime
+import pickle
 
 class Exec(BaseTool):
     """Python code interpreter.
@@ -121,6 +125,9 @@ class Exec(BaseTool):
             with open(LOG_FILE, 'a') as f:
                 from datetime import datetime
                 f.write(f'{datetime.now().strftime("%m/%d %H:%M:%S")}\n')
+                f.write(code)
+                f.write('\n')
+                f.write('=' * 20)
                 f.write(errors)
                 traceback.print_exc(file=f)
                 f.write('\n\n')
@@ -133,9 +140,60 @@ class Exec(BaseTool):
     def set_var(self, name: str, value):
         """Add a new variable into the execution environment."""
         self.globals[name] = value
+    def __deepcopy__(self, memo):
+        """
+        Custom deep copy method that handles globals carefully.
 
-    def clone(self):
-        """Make a deep copy."""
-        new_exec = Exec()
-        new_exec.globals = copy.deepcopy(self.globals)
+        This method creates a new Exec instance and copies only
+        serializable global variables, logging skipped items.
+        """
+        # Setup logging
+        log_dir = os.path.join(os.getcwd(), 'data/log/deepcopy')
+        os.makedirs(log_dir, exist_ok=True)
+
+        # Create a unique log filename with timestamp
+        log_filename = os.path.join(log_dir, f'deepcopy_skipped_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
+
+        # Configure logging
+        logging.basicConfig(
+            filename=log_filename,
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s: %(message)s'
+        )
+        logger = logging.getLogger(__name__)
+
+        # Create a new instance of the class
+        new_exec = self.__class__()
+
+        # Copy the name and description
+        new_exec.name = copy.deepcopy(self.name)
+        new_exec.description = copy.deepcopy(self.description)
+
+        # Create a new globals dictionary with only serializable items
+        new_exec.globals = {}
+        skipped_items = {}
+
+        for key, value in self.globals.items():
+            try:
+                # Try to deep copy the value
+                new_exec.globals[key] = copy.deepcopy(value)
+            except (TypeError, pickle.PicklingError) as e:
+                # Log detailed information about skipped items
+                skipped_items[key] = {
+                    'type': type(value).__name__,
+                    'error': str(e),
+                    'traceback': traceback.format_exc()
+                }
+                logger.warning(f"Skipped item: {key}")
+                logger.warning(f"Type: {type(value).__name__}")
+                logger.warning(f"Error: {e}")
+                logger.warning(f"Traceback:\n{traceback.format_exc()}")
+
+        # Log summary of skipped items
+        if skipped_items:
+            logger.info(f"Total skipped items: {len(skipped_items)}")
+            logger.info("Skipped items details:")
+            for key, details in skipped_items.items():
+                logger.info(f"{key}: {details}")
+
         return new_exec

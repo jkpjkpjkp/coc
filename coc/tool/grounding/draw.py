@@ -10,7 +10,7 @@ import PIL.ImageDraw
 def draw(image: Img, result: List[Bbox], output_path: str):
     draw = PIL.ImageDraw.Draw(image)
     for x in result:
-        draw.rectangle(x.box, outline="green", width=2)
+        draw.rectangle(x['box'], outline="green", width=2)
     image.save(output_path)
     print(f"Image with bounding boxes saved to {output_path}")
 

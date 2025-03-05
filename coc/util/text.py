@@ -1,6 +1,7 @@
 import re
 from typing import List
 from coc.util import Pair
+import textwrap
 
 def extract_code(llm_response: str) -> List[str]:
     """Extracts code block from the LLM response.
@@ -10,7 +11,7 @@ def extract_code(llm_response: str) -> List[str]:
     """
     matches = re.findall(r"```python\n(.*?)(?:\n```|$)", llm_response, re.DOTALL)
     # Strip leading/trailing whitespace from each code block while preserving internal indentation
-    return [match.strip() for match in matches]
+    return [textwrap.dedent(match) for match in matches]
 
 def extract_boxed(llm_response: str) -> str:
     """Extracts boxed text from the LLM response, ensures there is only one (or none), and returns it (or '')."""

@@ -1,44 +1,13 @@
-from typing import List, Optional, TypedDict, Dict, Any, Type, TypeVar
+from typing import List, TypedDict, Union
 from PIL.Image import Image as Img
 from coc.tool.factory import *
-from dataclasses import dataclass, fields
 
 
-T = TypeVar('T')
-class DictAttrAccess:
-    """Mixin that enables both dictionary-style and attribute access to fields."""
-
-    def __getitem__(self, key: str) -> Any:
-        if hasattr(self, key):
-            return getattr(self, key)
-        raise KeyError(key)
-
-    def __setitem__(self, key: str, value: Any) -> None:
-        setattr(self, key, value)
-
-    def __contains__(self, key: str) -> bool:
-        return hasattr(self, key)
-
-    def keys(self) -> List[str]:
-        return [f.name for f in fields(self)]
-
-    def values(self) -> List[Any]:
-        return [getattr(self, f.name) for f in fields(self)]
-
-    def items(self) -> List[tuple]:
-        return [(f.name, getattr(self, f.name)) for f in fields(self)]
-
-    @classmethod
-    def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
-        return cls(**data)
-
-@dataclass
-class Bbox(DictAttrAccess):
+class Bbox(TypedDict):
     """'bbox' stands for 'bounding box'"""
     box: List[float] # [x1, y1, x2, y2]
     score: float
     label: str
-
 
 ### grounding tools (add bbox to objects)
 
@@ -94,6 +63,24 @@ def gemini(image: Img, question: str) -> str:
     return get_gemini()(image, question)
 
 
+### general experience with existing tools
+"""experience.
+
+VLMs has the best understanding of images, and greatly aligns with text.
+however, they will ignore details, and cannot see very clearly.
+but when the information of interest occupies a large portion of the image, they are reliable.
+
+so a good strategy, for example, of counting things, would be to first use grouding to get some bboxes,
+then zoom in on each one, querying a vlm for each bbox.
+the benefit of this strategy is that it uses vlm's strength to compensate for that grounding tool may sometimes hallucinate, or think multiple objects are one.
+
+this stragegy, of course, will fail if some object of interest is completely unnoticed by the grounding tool.
+
+in which case and other potential pitfalls, it is up to your ingenuity to think of compensating strategies or further validations.
+(for this particular pitfall, one may, e.g., use a sliding window focus that covers the whole image, and use vlm to count objects in each.)
+"""
+
+
 
 ### other tools
 """other tools.
@@ -110,12 +97,14 @@ also, you may wish to crop/zoomin the image.
 also, you may wish to superpose mask returns with the orignal image to better understand the result.
 
 
-all these tools can be simply implemented with various python packages (remember to import them before use). You are encouraged to write your own tools.
+all these tools can be simply implemented with various python packages (remember to import them before use), and you are encouraged to do so.
+
+remember, we do not care how much resource you use, but a strong and correct conclusion is paramountly important.
 """
 
 
-@dataclass
-class Task(DictAttrAccess):
+
+class Task(TypedDict):
     images: List[Img]
     question: str
 

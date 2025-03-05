@@ -2,14 +2,8 @@ initial_prompt = """Here are some tools that can help you. All are python codes.
 The images has their own coordinate system. The upper left corner of the image is the origin (0, 0). All coordinates are normalized, i.e., the range is [0, 1].
 All bounding boxes are in the format of [x, y, w, h], which is a python list. x is the horizontal coordinate of the upper-left corner of the box, y is the vertical coordinate of that corner, w is the box width, and h is the box height.
 Notice that you, as an AI assistant, is not good at locating things and describe them with coordinate. You can use tools to generate bounding boxes.
-You are also not good at answering questions about small visual details in the image. You can use tools to zoom in on the image to see the details. Below are the tools in tools.py:
+You can zoom in on the image to see the details. Below are the tools in tools.py:
 ```python
-class AnnotatedImage:
-    # A class to represent an annotated image. It contains the annotated image and the original image.
-
-    def __init__(self, annotated_image: Image.Image, original_image: Image.Image=None):
-        self.annotated_image = annotated_image
-        self.original_image = original_image
 
 def detection(image, objects):
     \"\"\"Object detection using Grounding DINO model. It returns the annotated image and the bounding boxes of the detected objects.
@@ -33,34 +27,6 @@ def detection(image, objects):
         display(output_image.annotated_image)
         print(boxes) # [[0.24, 0.21, 0.3, 0.4], [0.6, 0.3, 0.2, 0.3]]
         # you need to double-check the detected objects. Some objects may be missed or wrongly detected.
-    \"\"\"
-
-def sliding_window_detection(image, objects):
-    \"\"\"Use this when you are searching for objects in the image, but the objects are not detected by the object detection model.
-    In that case, the most common reason is that the object is too small such that both the vision-language model and the object detection model fail to detect it.
-    This function tries to detect the object by sliding window search.
-    With the help of the detection model, it tries to detect the object in the zoomed-in patches.
-    The function returns a list of annotated images that may contain at leas one of the objects, annotated with bounding boxes.
-    It also returns a list of a list of bounding boxes of the detected objects.
-
-    Args:
-        image (PIL.Image.Image): the input image
-        objects (List[str]): a list of objects to detect. Each object should be a simple noun or a simple phrase. Should not be hard or abstract concepts like "text" or "number".
-
-    Returns:
-        possible_patches (List[AnnotatedImage]): a list of annotated zoomed-in images that may contain the object, annotated with bounding boxes.
-        possible_boxes (List[List[List[Float]]]): For each image in possible_patches, a list of bounding boxes of the detected objects.
-            The coordinates are w.r.t. each zoomed-in image. The order of the boxes is the same as the order of the images in possible_patches.
-
-    Example:
-        image = Image.open("sample_img.jpg")
-        possible_patches, possible_boxes = search_object_and_zoom(image, ["bird", "sign"])
-        for i, patch in enumerate(possible_patches):
-            print(f"Patch {i}:")
-            display(patch.annotated_image)
-
-        # print the bounding boxes of the detected objects in the first patch
-        print(possible_boxes[0]) # [[0.24, 0.21, 0.3, 0.4], [0.6, 0.3, 0.2, 0.3]]
     \"\"\"
 
 def segment_and_mark(image, anno_mode:list = ['Mask', 'Mark']):
@@ -111,48 +77,6 @@ def depth(image):
         output_image = depth(image)
         display(output_image)
     \"\"\"
-
-def zoom_in_image_by_bbox(image, box, padding=0.05):
-    \"\"\"A simple wrapper function to crop the image based on the bounding box.
-    When you want to answer question about visual details in a bounding box annotated by the detection tool, you would like to zoom in on the object using this function.
-
-    Args:
-        image (PIL.Image.Image): the input image
-        box (List[float]): the bounding box in the format of [x, y, w, h]
-        padding (float, optional): The padding for the image crop, outside of the bounding box. Defaults to 0.1. The zoom factor cannot be too small. Minimum is 0.05
-
-    Returns:
-        cropped_img (PIL.Image.Image): the cropped image
-
-    Example:
-        image = Image.open("sample_img.jpg")
-        annotated_img, boxes = detection(image, "bus")
-        cropped_img = zoom_in_image_by_bbox(image, boxes[0], padding=0.05)
-        display(cropped_img)
-    \"\"\"
-
-def overlay_images(background_img, overlay_img, alpha=0.3, bounding_box=[0, 0, 1, 1]):
-    \"\"\"
-    Overlay an image onto another image with transparency.
-    This is particularly useful visualizing heatmap while preserving some info from the original image.
-    For example, you can overlay a segmented image on a heatmap to better understand the spatial relationship between objects.
-    It will also help seeing the labels, circles on the original image that may not be visible on the heatmap.
-
-    Args:
-    background_img_pil (PIL.Image.Image): The background image in PIL format.
-    overlay_img_pil (PIL.Image.Image): The image to overlay in PIL format.
-    alpha (float): Transparency of the overlay image.
-    bounding_box (List[float]): The bounding box of the overlay image. The format is [x, y, w, h]. The coordinates are normalized to the background image. Defaults to [0, 0, 1, 1].
-
-    Returns:
-    PIL.Image.Image: The resulting image after overlay, in PIL format.
-    s
-    Example:
-        image = Image.open('original.jpg')
-        depth_map = depth(image)
-        overlayed_image = overlay_images(depth_map, image, alpha=0.3)
-        display(overlayed_image)
-    \"\"\"
 ```
 # GOAL #: Based on the above tools, I want you to reason about how to solve the # USER REQUEST # and generate the actions step by step (each action is a python jupyter notebook code block) to solve the request.
 You may need to use the tools above to process the images and make decisions based on the visual outputs of the previous code blocks.
@@ -170,8 +94,6 @@ from tools import *
 2. The arguments of a tool must be the same number, modality, and format specified in # TOOL LIST #;
 3. If you think you got the answer, use ANSWER: <your answer> to provide the answer, and ends with TERMINATE.
 4. All images in the initial user request are stored in PIL Image objects named image_1, image_2, ..., image_n. You can use these images in your code blocks. Use display() function to show the image in the notebook for you too see.
-5. Use as few tools as possible. Only use the tools for the use cases written in the tool description. You can use multiple tools in a single action.
-6. You must return an answer with the choice letter if the user request is a multiple-choice question.
 7. When detection tool failed to detect an object, you can use the sliding_window_detection tool to search for the object.
 8. Bounding boxes may be wrong and misled you. When answering questions about small objects in bounding boxes, you should zoom in on the object to see the details.
 9. Segmentation and marking tool can help you better reason about the relationship between objects. Example use cases are spatial reasoning (e.g., left/right/above/below/on) and counting.
@@ -222,7 +144,7 @@ THOUGHT 1: The bucket has been detected and is labeled as "bucket 1" in the imag
 ACTION 1:
 ```python
 bucket_box = image_1_bucket_boxes[0]
-zoomed_bucket = zoom_in_image_by_bbox(image_1, bucket_box)
+# zoom-in to bucket_box (with padding for context), code omitted.
 display(zoomed_bucket)
 ```
 OBSERVATION: Execution success. The output is as follows:
@@ -261,7 +183,7 @@ OBSERVATION: Execution success. The output is as follows:
 THOUGHT 2: I can confirm that there is an animal drawn on the red signicade. I will zoom in to see what animal it is.
 ACTION 2:
 ```python
-animal_box = relevant_patch.boxes[2]
+animal_box = relevant_patch['box']es[2]
 zoomed_patch = zoom_in_image_by_bbox(relevant_patch.original_image, animal_box)
 display(zoomed_patch)
 ```

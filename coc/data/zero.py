@@ -1,5 +1,5 @@
 from datasets import load_dataset
-from typing import Iterator
+from typing import Iterator, Literal
 from datasets import Dataset
 from coc.data.fulltask import FullTask, TaskLoader
 
@@ -21,8 +21,8 @@ class LoadZero(TaskLoader):
                 choices=None,  # ZeroBench does not provide choices
                 answer=item['question_answer']
             )
-def zero() -> Iterator[FullTask]:
-    return LoadZero().convert_to_tasks()
+def zero(offer: Literal['full', 'sub'] = 'sub') -> Iterator[FullTask]:
+    return LoadZero(split_name='zerobench_subquestions'if offer == 'sub' else 'zerobench').convert_to_tasks()
 
 if __name__ == "__main__":
     data_loader = LoadZero()

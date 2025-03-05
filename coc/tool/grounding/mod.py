@@ -3,21 +3,20 @@
 import torch
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection,\
                          Owlv2Processor, Owlv2ForObjectDetection
-from dataclasses import dataclass
-from typing import List
+from typing import List, TypedDict
 import PIL.Image
 from PIL.Image import Image as Img
 
-@dataclass
-class Bbox:
-    box: List[float]
+class Bbox(TypedDict):
+    """'bbox' stands for 'bounding box'"""
+    box: List[float] # [x1, y1, x2, y2]
     score: float
     label: str
 
 def box_trim(detections: List[Bbox]) -> List[Bbox]:
     occlusion_threshold = 0.3
 
-    sorted_detections = sorted(detections, key=lambda x: x.score, reverse=True)
+    sorted_detections = sorted(detections, key=lambda x: x['score'], reverse=True)
     accepted = []
 
     def area(box: List[float]) -> float:
@@ -35,8 +34,8 @@ def box_trim(detections: List[Bbox]) -> List[Bbox]:
     for candidate in sorted_detections:
         keep = True
         for accepted_bbox in accepted:
-            inter_area = intersection_area(candidate.box, accepted_bbox.box)
-            accepted_area = area(accepted_bbox.box)
+            inter_area = intersection_area(candidate['box'], accepted_bbox['box'])
+            accepted_area = area(accepted_bbox['box'])
             if accepted_area == 0:
                 continue
             ioa = inter_area / accepted_area
@@ -116,10 +115,10 @@ class ObjectDetectionFactory:
     @classmethod
     def trim_result(cls, detections: List[Bbox]) -> List[Bbox]:
         # Group by label and trim each group
-        unique_labels = {bbox.label for bbox in detections}
+        unique_labels = {bbox['label'] for bbox in detections}
         trimmed_results = []
         for label in unique_labels:
-            label_detections = [d for d in detections if d.label == label]
+            label_detections = [d for d in detections if d['label'] == label]
             trimmed = box_trim(label_detections)
             trimmed_results.extend(trimmed)
         return trimmed_results
@@ -163,8 +162,8 @@ class ObjectDetectionFactory:
         owl_result = self.owl2(image, texts)
         g_dino_result = self.grounding_dino(image, texts)
         g_dino_result = type(self).trim_result(g_dino_result)
-        nonempty = {x.label for x in owl_result}
-        ret = [x for x in g_dino_result if x.label in nonempty]
+        nonempty = {x['label'] for x in owl_result}
+        ret = [x for x in g_dino_result if x['label'] in nonempty]
         if isinstance(ret, tuple) and len(ret) == 1:
             ret = ret[0]
         torch.cuda.empty_cache()

@@ -23,9 +23,18 @@ def eval_a_batch(batch: Iterable[FullTask]):
     correct = 0
     total = 0
     batch = list(batch)
-    for task in tqdm(batch[::3][20:]):
+    for i, task in tqdm(enumerate(batch[1:])):
         ret = vlm_direct_infer(gemini, fulltask_to_task(task))
-        correct += judge_multichoice(ret, task['choices'], task['answer'])
+        ret = judge_multichoice(ret, task['choices'], task['answer'])
+        correct += ret
+        if not ret:
+            crea = gemini(task['images'], build_trunk(task=task, offer='creativity'))
+            # print to a file along with task id and question
+            with open('creativity.txt', 'a') as f:
+                f.write(f"task id: {i}\n")
+                f.write(f"question: {task['question']}\n")
+                f.write(f"creativity: {crea}\n")
+                f.write('\n\n')
         total += 1
 
         print(correct, total)

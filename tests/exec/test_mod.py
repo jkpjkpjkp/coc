@@ -1,9 +1,10 @@
-from coc.exec import CONTEXT_FILE as CONTEXT
+from coc.exec import CONTEXT_FILE
 import unittest
+import copy
 
 class TestExec(unittest.TestCase):
     def setUp(self):
-        self.exec = Exec(CONTEXT)
+        self.exec = Exec(CONTEXT_FILE)
 
     def test_exec(self):
         result, error = self.exec._run('print("hello")')
@@ -14,7 +15,7 @@ from coc.data.muir import LoadMuir
 from coc.exec.mod import Exec
 class TestTask(unittest.TestCase):
     def setUp(self):
-        self.exec = Exec(CONTEXT)
+        self.exec = Exec(CONTEXT_FILE)
         self.data_loader = LoadMuir('Counting')
 
     def test_task(self):
@@ -30,7 +31,7 @@ class TestTask(unittest.TestCase):
 
 class TestGPTOutput(unittest.TestCase):
     def setUp(self):
-        self.exec = Exec(CONTEXT)
+        self.exec = Exec(CONTEXT_FILE)
         self.data_loader = LoadMuir('Ordering')
 
     def test_gpt_output(self):
@@ -58,11 +59,11 @@ class TestGPTOutput(unittest.TestCase):
 
 class TestClone(unittest.TestCase):
     def setUp(self):
-        self.exec = Exec(CONTEXT)
+        self.exec = Exec(CONTEXT_FILE)
         self.exec.set_var('x', 42)
 
     def test_clone(self):
-        cloned_exec = self.exec.clone()
+        cloned_exec = copy.deepcopy(self.exec)
         self.assertEqual(cloned_exec.globals['x'], 42)
 
         cloned_exec.set_var('y', 100)
@@ -79,7 +80,7 @@ class TestClone(unittest.TestCase):
 
 class TestError(unittest.TestCase):
     def setUp(self):
-        self.exec = Exec(CONTEXT)
+        self.exec = Exec(CONTEXT_FILE)
 
     def test_error(self):
         # Test syntax error
@@ -96,6 +97,38 @@ class TestError(unittest.TestCase):
         result, error = self.exec._run('print(1/0)')
         self.assertEqual(result, '')
         self.assertIn('ZeroDivisionError', error)
+
+class TestBbox(unittest.TestCase):
+    def setUp(self):
+        self.exec = Exec(CONTEXT_FILE)
+
+    def test_bbox_sub(self):
+        result, error = self.exec._run(
+'''
+box = Bbox(
+    box=[0,0,1,1],
+    score=1.0,
+    label='white',
+)
+print(box['box'])
+''')
+        self.assertEqual(result, '[0, 0, 1, 1]\n')
+        self.assertEqual(error, '')
+
+    def test_bbox_dot(self):
+        result, error = self.exec._run(
+'''
+box = Bbox(
+    box=[0,0,1,1],
+    score=1.0,
+    label='white',
+)
+print(box['box'])
+''')
+        self.assertEqual(result, '')
+        self.assertNotEqual(error, '')
+
+
 
 if __name__ == '__main__':
     unittest.main()

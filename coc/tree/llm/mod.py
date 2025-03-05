@@ -65,6 +65,8 @@ claude = SimpleWrapper(
 )
 
 llm = v3
+reasoner = r1
+gpt4o = o4
 
 if __name__ == '__main__':
     print(llm("hi, what model are you?"))

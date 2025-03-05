@@ -1,5 +1,5 @@
 
-MAX_DEPTH = 7
+MAX_DEPTH = 5
 
 from coc.data.fulltask import FullTask
 from typing import List, Union, Optional, Literal, Iterable
@@ -29,6 +29,9 @@ class Code:
     def to_pair_of_str(self):
         return Pair(self.code, self.output)
 
+import copy
+from typing import List, Union
+
 @dataclass
 class CodeList:
     _: List[Code]
@@ -36,7 +39,7 @@ class CodeList:
 
     def __init__(self, context: str, task: Task):
         self._ = []
-        self.env = Exec(context)
+        self.env = Exec(CONTEXT_FILE)
         self.env.set_var('task', task)
 
     def append(self, code: Union[str, Code]):
@@ -47,6 +50,15 @@ class CodeList:
     def to_list_of_pair_of_str(self):
         return [code.to_pair_of_str() for code in self._ if not code.error]
 
+    def deepcopy(self):
+        # Create a new instance
+        result = CodeList(context="", task=None)  # Create with dummy values
+
+        # Deep copy all attributes
+        result._ = copy.deepcopy(self._)
+        result.env = copy.deepcopy(self.env)
+
+        return result
 class Node:
     def __init__(self, codelist: CodeList, outputs: List[AIMessage]):
         self.codelist = codelist
@@ -140,7 +152,7 @@ def eval_a_batch(batch: Iterable[FullTask]):
     correct = 0
     total = 0
     batch = list(batch)
-    for i, task in tqdm(enumerate(batch[::3][18:])):
+    for i, task in tqdm(enumerate(batch[2:])):
         ret, node = force_code_then_answer_at_each_step(fulltask_to_task(task), MAX_DEPTH)
         correct += judge_multichoice(ret, task['choices'], task['answer'])
         total += 1
@@ -154,5 +166,5 @@ def eval_a_batch(batch: Iterable[FullTask]):
 if __name__ == '__main__':
     from coc.util.misc import set_seed
     set_seed()
-    from coc.data.muir import muir
-    print(eval_a_batch(muir('Ordering')))
+    from coc.data.zero import zero
+    print(eval_a_batch(zero(offer='sub')))

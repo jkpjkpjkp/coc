@@ -1,9 +1,47 @@
-from typing import List, Optional, TypedDict
+"""TODO: spawn.
+
+maybe, for context window reasons,
+authorizing the agent to subtask and
+spawn an exact duplicate of itself is a good idea.
+"""
+
+
+from typing import List, Optional, TypedDict, Dict, Any, Type, TypeVar
 from PIL.Image import Image as Img
 from coc.tool.factory import *
+from dataclasses import dataclass, fields
 
 
-class Bbox(TypedDict):
+T = TypeVar('T')
+class DictAttrAccess:
+    """Mixin that enables both dictionary-style and attribute access to fields."""
+
+    def __getitem__(self, key: str) -> Any:
+        if hasattr(self, key):
+            return getattr(self, key)
+        raise KeyError(key)
+
+    def __setitem__(self, key: str, value: Any) -> None:
+        setattr(self, key, value)
+
+    def __contains__(self, key: str) -> bool:
+        return hasattr(self, key)
+
+    def keys(self) -> List[str]:
+        return [f.name for f in fields(self)]
+
+    def values(self) -> List[Any]:
+        return [getattr(self, f.name) for f in fields(self)]
+
+    def items(self) -> List[tuple]:
+        return [(f.name, getattr(self, f.name)) for f in fields(self)]
+
+    @classmethod
+    def from_dict(cls: Type[T], data: Dict[str, Any]) -> T:
+        return cls(**data)
+
+@dataclass
+class Bbox(DictAttrAccess):
     """'bbox' stands for 'bounding box'"""
     box: List[float] # [x1, y1, x2, y2]
     score: float
@@ -23,7 +61,8 @@ def grounding(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
        but is limited by the capabilitie of pre-trained grounding dino 1.0.
     """
     return get_grounding()(image, objects_of_interest)
- 
+
+def grounding_dino(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
     """grounding dino 1.0.
 
     boxes may duplicated (same object, multiple boxes) or hallucinate
@@ -79,12 +118,12 @@ also, you may wish to crop/zoomin the image.
 also, you may wish to superpose mask returns with the orignal image to better understand the result.
 
 
-all these tools can be simply implemented with various python packages (remember to import them before use), and you are encouraged to do so.
+all these tools can be simply implemented with various python packages (remember to import them before use). You are encouraged to write your own tools.
 """
 
 
-
-class Task(TypedDict):
+@dataclass
+class Task(DictAttrAccess):
     images: List[Img]
     question: str
 

@@ -12,7 +12,7 @@ from langchain_core.messages import HumanMessage
 import os, sys
 
 # Configure logging
-log_dir = Path("logs/vqa")
+log_dir = Path("data/log/gemini")
 log_dir.mkdir(parents=True, exist_ok=True)
 logging.basicConfig(
     filename=log_dir / f"gemini_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
@@ -51,7 +51,7 @@ class Gemini(BaseTool):
             image = np.array(image.convert('RGB'))
         # Log image dimensions
         logger.info(f"Processing image with dimensions: {image.shape}")
-        
+
         # Encode the NumPy array as a JPEG image in memory
         success, buffer = cv2.imencode('.jpg', image[:, :, ::-1])  # BGR→RGB if needed
         if not success:

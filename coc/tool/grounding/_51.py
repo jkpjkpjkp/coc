@@ -21,12 +21,12 @@ def envision(img_path: str, bbox_list):
     def convert_bboxes(bbox_list):
         detections = []
         for bbox in bbox_list:
-            x1, y1, x2, y2 = bbox.box
-            normalized_box = xyxy_to_rel_midpoint(bbox.box, img_width, img_height)
+            x1, y1, x2, y2 = bbox['box']
+            normalized_box = xyxy_to_rel_midpoint(bbox['box'], img_width, img_height)
             detections.append(fo.Detection(
-                label=str(bbox.label),  # Labels must be strings
+                label=str(bbox['label']),  # Labels must be strings
                 bounding_box=normalized_box,
-                confidence=float(bbox.score),
+                confidence=float(bbox['score']),
                 # Force visual properties
                 fill=True,          # <<< Critical for visibility
                 opacity=0.7         # <<< Avoid 0% transparency

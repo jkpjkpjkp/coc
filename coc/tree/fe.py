@@ -86,7 +86,7 @@ def rollout_diverse(
     task: Task,
     node: TreeNode,
     llm,
-    n1: int = 5,
+    n1: int = 3,
     n2: int = 2,
     max_depth: int = MAX_DEPTH,
     variant: Literal['neutral', 'force code', 'force answer'] = 'neutral'
@@ -142,7 +142,7 @@ def rollout_diverse(
 
 def force_code_then_answer_with_diversity(
     task: Task,
-    n1: int = 5,
+    n1: int = 3,
     n2: int = 2,
     max_depth: int = MAX_DEPTH
 ):
@@ -170,13 +170,13 @@ def force_code_then_answer_with_diversity(
 
     return ret, node
 
-def eval_a_batch_with_diversity(batch: Iterable[FullTask], n1: int = 5, n2: int = 2):
+def eval_a_batch_with_diversity(batch: Iterable[FullTask], n1: int = 3, n2: int = 2):
     """Evaluate batch with diversity-based search"""
     correct = 0
     total = 0
     batch = list(batch)
 
-    for i, task in tqdm(enumerate(batch[::3][18:])):
+    for i, task in tqdm(enumerate(batch[::3][:3])):
         ret, node = force_code_then_answer_with_diversity(
             fulltask_to_task(task),
             n1=n1,
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     from coc.util.misc import set_seed
     set_seed()
     from coc.data.zero import zero
-    
+
     logger.info("Starting evaluation with diversity-based search")
     correct, total = eval_a_batch_with_diversity(zero())
     logger.info(f"Evaluation complete. Final results: Correct={correct}, Total={total}, Accuracy={correct/total:.2f}")
