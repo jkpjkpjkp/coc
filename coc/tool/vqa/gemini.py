@@ -34,6 +34,7 @@ class Gemini(BaseTool):
         'Args: image: Img, question: str. '
     )
     mllm: ChatOpenAI
+    LOGFILE: str = 'data/log/big_gemini.log'
 
     def __init__(self):
         mllm = ChatOpenAI(
@@ -127,7 +128,67 @@ class Gemini(BaseTool):
         return response.content
 
     def run_freestyle(self, prompt: List[str]):
-        pass
+        # Log the input (original prompt)
+        input_log = prompt
+
+        text_parts = []
+        images = []
+
+        for s in prompt:
+            if os.path.isfile(s):
+                try:
+                    # Verify and process image
+                    with Image.open(s) as img:
+                        img.verify()
+                    with Image.open(s) as img:
+                        img_base64 = self._encode_image(img)
+                        images.append({
+                            'type': 'image_url',
+                            'image_url': {'url': img_base64}
+                        })
+                except Exception as e:
+                    # Add as text if any error occurs
+                    text_parts.append(s)
+            else:
+                text_parts.append(s)
+
+        concatenated_text = ' '.join(text_parts)
+        content = []
+        # Add all images first in their original order
+        content.extend(images)
+        # Add concatenated text if not empty
+        if concatenated_text:
+            content.append({
+                'type': 'text',
+                'text': concatenated_text
+            })
+
+        # Create the message
+        message = HumanMessage(content=content)
+
+        # Invoke the model and handle errors
+        try:
+            response = self.mllm.invoke([message])
+            response_content = response.content
+            error_message = None
+        except Exception as e:
+            response_content = None
+            error_message = str(e)
+
+        # Log to LOGFILE if set
+        if Gemini.LOGFILE is not None:
+            with open(Gemini.LOGFILE, 'a', encoding='utf-8') as f:
+                f.write(f"Input: {input_log}\n")
+                if error_message is not None:
+                    f.write(f"Error: {error_message}\n")
+                else:
+                    f.write(f"Response: {response_content}\n")
+
+        # Return or raise error
+        if error_message is not None:
+            raise RuntimeError(error_message)
+        else:
+            return response_content
 
 
 

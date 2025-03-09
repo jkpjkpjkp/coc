@@ -70,7 +70,7 @@ class ObjectDetectionFactory:
             'google/owlv2-base-patch16-ensemble'
         )#.to(self.device)
 
-    def grounding_dino(self, image: Img, texts: List[str]) -> List[Bbox]:
+    def grounding_dino(self, image: Img, texts: List[str], threshold=0.2, text_threshold=0.1) -> List[Bbox]:
         image = image.convert('RGB')
 
         # PATCH
@@ -185,7 +185,6 @@ def demo1():
     image_path = '/home/jkp/hack/coc/data/sample/onions.jpg'
     image = PIL.Image.open(image_path)
     from coc.tool.grounding.draw import draw
-    from coc.tool.grounding._51 import envision
     ret = obj._run(
             texts=['boy', 'girl', 'an onion'],
             image=image
@@ -195,11 +194,6 @@ def demo1():
     print(ret)
 
     draw(image, ret, 'raw_onions.jpg')
-    envision(
-        image_path,
-        ret,
-        # output_path = 'raw_person.jpg'
-    )
 
 def demo2():
     import gradio as gr
