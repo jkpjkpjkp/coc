@@ -31,8 +31,7 @@ class Exec(BaseTool):
 
         args: list of code files to execute in order.
         """
-        super().__init__()
-        self.globals = {}
+        super().__init__(globals={})
         for code_path in args:
             with open(code_path, 'r') as f:
                 init_code = f.read()

@@ -3,13 +3,11 @@
 import torch
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection,\
                          Owlv2Processor, Owlv2ForObjectDetection
-from dataclasses import dataclass
-from typing import List
+from typing import List, TypedDict
 import PIL.Image
 from PIL.Image import Image as Img
 
-@dataclass
-class Bbox:
+class Bbox(TypedDict):
     """'bbox' stands for 'bounding box'"""
     box: List[float] # [x1, y1, x2, y2]
     score: float
