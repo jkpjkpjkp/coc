@@ -71,16 +71,16 @@ def format_detections(detections: List[Bbox]) -> str:
 
 def process_dino(image, object_list_text, confidence, box_threshold, text_threshold):
     if image is None:
-        return None, "Please upload an image."
+        return None, "Please upload an image.", []
     objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
     if not objects:
-        return image, "Please specify at least one object."
+        return image, "Please specify at least one object.", []
     try:
         detections = obj.grounding_dino(image, objects, threshold=box_threshold, text_threshold=text_threshold)
         filtered_detections = [det for det in detections if det['score'] >= confidence]
         drawn_image = draw_boxes(image.copy(), filtered_detections)
         details = format_detections(filtered_detections)
-        return drawn_image, details
+        return drawn_image, details, filtered_detections
     except Exception as e:
         return image, f"Error: {str(e)}"
 
@@ -101,7 +101,7 @@ with gr.Blocks(title="Grounding DINO Object Detection") as demo:
     detect_button.click(
         fn=process_dino,
         inputs=[image_input, objects_input, confidence, box_threshold, text_threshold],
-        outputs=[output_image, output_text]
+        outputs=[output_image, output_text, gr.State()]
     )
 
 

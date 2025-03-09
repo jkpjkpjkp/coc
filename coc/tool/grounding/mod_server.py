@@ -168,11 +168,30 @@ with gr.Blocks(title="Combined Object Detection") as demo:
     )
 
 def launch_all():
-    from .dino_server import launch as dino_launch
-    from .owl_server import launch as owl_launch
-    dino_launch()
-    owl_launch()
-    demo.launch(server_port=int(os.environ['grounding_port']))  # Default port
+    import multiprocessing
+    import time
+    
+    # Launch DINO server in a separate process
+    dino_process = multiprocessing.Process(
+        target=lambda: __import__('coc.tool.grounding.dino_server').tool.grounding.dino_server.launch()
+    )
+    dino_process.start()
+    
+    # Launch OWL server in a separate process
+    owl_process = multiprocessing.Process(
+        target=lambda: __import__('coc.tool.grounding.owl_server').tool.grounding.owl_server.launch()
+    )
+    owl_process.start()
+    
+    # Wait for servers to initialize
+    time.sleep(5)
+    
+    # Launch main interface
+    demo.launch(server_port=int(os.environ['grounding_port']))
+    
+    # Cleanup processes when done
+    dino_process.join()
+    owl_process.join()
 
 if __name__ == "__main__":
     launch_all()

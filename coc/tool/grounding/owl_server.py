@@ -65,16 +65,16 @@ def format_detections(detections: List[Bbox]) -> str:
 
 def process_owl(image, object_list_text, confidence, threshold):
     if image is None:
-        return None, "Please upload an image."
+        return None, "Please upload an image.", []
     objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
     if not objects:
-        return image, "Please specify at least one object."
+        return image, "Please specify at least one object.", []
     try:
         detections = obj.owl2(image, objects, threshold=threshold)
         filtered_detections = [det for det in detections if det['score'] >= confidence]
         drawn_image = draw_boxes(image.copy(), filtered_detections)
         details = format_detections(filtered_detections)
-        return drawn_image, details
+        return drawn_image, details, filtered_detections
     except Exception as e:
         return image, f"Error: {str(e)}"
 
@@ -94,7 +94,7 @@ with gr.Blocks(title="OWLv2 Object Detection") as demo:
     detect_button.click(
         fn=process_owl,
         inputs=[image_input, objects_input, confidence, threshold],
-        outputs=[output_image, output_text]
+        outputs=[output_image, output_text, gr.State()]
     )
 
 def launch():
