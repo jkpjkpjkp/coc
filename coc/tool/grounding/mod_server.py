@@ -136,6 +136,10 @@ def process_combined(image, object_list_text, confidence, dino_box_threshold, di
                 raise ValueError('Invalid response format from DINO API')
                 
             dino_detections = dino_data[1].get('value', [])
+        except Exception as e:
+            print(f"DINO API error: {str(e)}")
+            dino_detections = []
+        
         if isinstance(dino_detections, list) and not dino_detections:
             dino_detections = []
         else:
