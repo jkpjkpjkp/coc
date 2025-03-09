@@ -1,3 +1,8 @@
+"""prompt used by paper 'Visual Sketchpad'
+
+which is a 24.06 nips paper highly related. 
+"""
+
 initial_prompt = """Here are some tools that can help you. All are python codes. They are in tools.py and will be imported for you.
 The images has their own coordinate system. The upper left corner of the image is the origin (0, 0). All coordinates are normalized, i.e., the range is [0, 1].
 All bounding boxes are in the format of [x, y, w, h], which is a python list. x is the horizontal coordinate of the upper-left corner of the box, y is the vertical coordinate of that corner, w is the box width, and h is the box height.
