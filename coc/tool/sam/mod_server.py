@@ -33,14 +33,21 @@ if device.type == "cuda":
 
 from sam2.build_sam import build_sam2
 from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
+from typing import Literal
 
-sam2_checkpoint = "/home/jkp/Pictures/sam2/checkpoints/sam2.1_hiera_tiny.pt"
-model_cfg = "configs/sam2.1/sam2.1_hiera_t.yaml"
+variant: Literal['t', 'l'] = 't'
+_variant = {
+    't': 'tiny',
+    'l': 'large'
+}
+
+sam2_checkpoint = f"/home/jkp/Pictures/sam2/checkpoints/sam2.1_hiera_{_variant[variant]}.pt"
+model_cfg = f"configs/sam2.1/sam2.1_hiera_{variant}.yaml"
 
 sam2 = build_sam2(model_cfg, sam2_checkpoint, device='cuda', apply_postprocessing=False)
 model = sam2
 
-mask_generator = SAM2AutomaticMaskGenerator(sam2)
+# mask_generator = SAM2AutomaticMaskGenerator(sam2)
 
 def show_anns(anns, borders=True):
     if len(anns) == 0:

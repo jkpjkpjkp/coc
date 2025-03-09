@@ -81,8 +81,8 @@ def format_detections(detections: List[Bbox]) -> str:
     return text
 
 # API endpoints for the small servers (adjust URLs based on where they are running)
-DINO_API_URL = "http://localhost:{os.environ['dino_port']}/api/predict"
-OWL_API_URL = "http://localhost:{os.environ['owl_port']}/api/predict"
+DINO_API_URL = f"http://localhost:{os.environ['dino_port']}/api/predict"
+OWL_API_URL = f"http://localhost:{os.environ['owl_port']}/api/predict"
 
 def process_combined(image, object_list_text, confidence, dino_box_threshold, dino_text_threshold, owl_threshold):
     if image is None:
@@ -166,30 +166,40 @@ with gr.Blocks(title="Combined Object Detection") as demo:
         inputs=[image_input, objects_input, confidence, dino_box_threshold, dino_text_threshold, owl_threshold],
         outputs=[output_image, output_text]
     )
+import multiprocessing
+import time
+import socket
+
+def is_port_open(port):
+    """Check if a port is open on localhost."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(('localhost', int(port))) == 0
 
 def launch_all():
-    import multiprocessing
-    import time
-    
-    # Launch DINO server in a separate process
-    dino_process = multiprocessing.Process(
-        target=lambda: __import__('coc.tool.grounding.dino_server').tool.grounding.dino_server.launch()
-    )
+    from coc.tool.grounding import dino_server, owl_server
+    dino_process = multiprocessing.Process(target=dino_server.launch)
+    owl_process = multiprocessing.Process(target=owl_server.launch)
     dino_process.start()
-    
-    # Launch OWL server in a separate process
-    owl_process = multiprocessing.Process(
-        target=lambda: __import__('coc.tool.grounding.owl_server').tool.grounding.owl_server.launch()
-    )
     owl_process.start()
-    
-    # Wait for servers to initialize
-    time.sleep(5)
-    
+
+    # Wait for servers to be ready
+    max_wait = 60  # Maximum wait time in seconds
+    start_time = time.time()
+    dino_port = int(os.environ['dino_port'])
+    owl_port = int(os.environ['owl_port'])
+
+    while time.time() - start_time < max_wait:
+        if is_port_open(dino_port) and is_port_open(owl_port):
+            print(f"Servers are up - DINO on {dino_port}, OWL on {owl_port}")
+            break
+        time.sleep(1)
+    else:
+        raise RuntimeError(f"Servers did not start within {max_wait} seconds. Check DINO on port {dino_port} and OWL on port {owl_port}.")
+
     # Launch main interface
     demo.launch(server_port=int(os.environ['grounding_port']))
-    
-    # Cleanup processes when done
+
+    # Cleanup
     dino_process.join()
     owl_process.join()
 
