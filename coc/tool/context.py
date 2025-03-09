@@ -63,6 +63,12 @@ def gemini(image: Img, question: str) -> str:
     return get_gemini()(image, question)
 
 
+### search the web (text only)
+def google_search(query: str) -> List[str]:
+    """google search"""
+    return google_search(query)
+
+
 ### general experience with existing tools
 """experience.
 

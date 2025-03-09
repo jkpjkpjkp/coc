@@ -123,7 +123,7 @@ box = Bbox(
     score=1.0,
     label='white',
 )
-print(box['box'])
+print(box.box)
 ''')
         self.assertEqual(result, '')
         self.assertNotEqual(error, '')

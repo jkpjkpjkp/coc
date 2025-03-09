@@ -40,7 +40,7 @@ class TestCodeList(unittest.TestCase):
         ])
 
     def test_exclude_errors(self):
-        codelist = CodeList(CONTEXT_FILE)
+        codelist = CodeList(CONTEXT_FILE, task=None)
         codelist.append("print('Hello')")
         codelist.append("raise ValueError('error')")
         pairs = codelist.to_list_of_pair_of_str()
@@ -48,7 +48,7 @@ class TestCodeList(unittest.TestCase):
 
 class TestTreeNode(unittest.TestCase):
     def test_initialization(self):
-        codelist = CodeList(CONTEXT_FILE)
+        codelist = CodeList(CONTEXT_FILE, task=None)
         node = TreeNode(
             codelist=codelist,
             outputs=[],
