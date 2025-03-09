@@ -10,12 +10,40 @@ class Bbox(TypedDict):
     label: str
 
 class ObjectDetectionFactory:
+    """Grounding DINO object detection service.
+    
+    Attributes:
+        device: Computation device (cuda or cpu)
+        gd_processor: Grounding DINO processor
+        gd_model: Grounding DINO model
+    """
+    
     def __init__(self):
+        """Initialize model and move to appropriate device."""
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.gd_processor = AutoProcessor.from_pretrained('IDEA-Research/grounding-dino-base')
         self.gd_model = AutoModelForZeroShotObjectDetection.from_pretrained('IDEA-Research/grounding-dino-base')
 
     def grounding_dino(self, image: Image.Image, texts: List[str], threshold=0.2, text_threshold=0.1) -> List[Bbox]:
+        """Detect objects in image using Grounding DINO.
+        
+        Args:
+            image: Input PIL image
+            texts: List of text descriptions to detect
+            threshold: Box confidence threshold
+            text_threshold: Text recognition confidence threshold
+            
+        Returns:
+            List of detected bounding boxes with scores and labels
+            
+        Raises:
+            ValueError: If invalid input is provided
+        """
+        if not texts:
+            raise ValueError('At least one text description required')
+        if not image:
+            raise ValueError('Valid image required')
+            
         image = image.convert('RGB')
         if len(texts) > 1:
             detections = []

@@ -85,6 +85,25 @@ DINO_API_URL = f"http://localhost:{os.environ['dino_port']}/api/predict"
 OWL_API_URL = f"http://localhost:{os.environ['owl_port']}/api/predict"
 
 def process_combined(image, object_list_text, confidence, dino_box_threshold, dino_text_threshold, owl_threshold):
+    """Combine results from DINO and OWL detection services.
+    
+    Args:
+        image: Input PIL image
+        object_list_text: Comma-separated list of objects to detect
+        confidence: Minimum confidence threshold for final results
+        dino_box_threshold: DINO box detection threshold
+        dino_text_threshold: DINO text recognition threshold
+        owl_threshold: OWL detection threshold
+        
+    Returns:
+        Tuple of (annotated image, detection details)
+    """
+    # Validate inputs
+    if not image or not hasattr(image, 'size'):
+        return None, "Invalid or missing input image"
+        
+    if not isinstance(object_list_text, str) or len(object_list_text.strip()) == 0:
+        return image, "Please provide valid object descriptions"
     if image is None:
         return None, "Please upload an image."
     objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
@@ -97,20 +116,26 @@ def process_combined(image, object_list_text, confidence, dino_box_threshold, di
     img_byte_arr = img_byte_arr.getvalue()
 
     try:
-        # Call Grounding DINO API
+        # Call Grounding DINO API with timeout
         dino_payload = {
             "data": [
                 {"image": img_byte_arr.hex(), "mime_type": "image/png"},
                 object_list_text,
-                confidence,
-                dino_box_threshold,
-                dino_text_threshold
+                float(confidence),
+                float(dino_box_threshold),
+                float(dino_text_threshold)
             ]
         }
-        dino_response = requests.post(DINO_API_URL, json=dino_payload)
-        dino_response.raise_for_status()
-        dino_data = dino_response.json()['data']
-        dino_detections = eval(dino_data[1].replace("Error:", "")) if "Error:" in dino_data[1] else dino_data[1]['value'].split('\n')[1:-1]
+        
+        try:
+            dino_response = requests.post(DINO_API_URL, json=dino_payload, timeout=30)
+            dino_response.raise_for_status()
+            dino_data = dino_response.json().get('data', [])
+            
+            if len(dino_data) < 2 or not isinstance(dino_data[1], dict):
+                raise ValueError('Invalid response format from DINO API')
+                
+            dino_detections = dino_data[1].get('value', [])
         if isinstance(dino_detections, list) and not dino_detections:
             dino_detections = []
         else:
