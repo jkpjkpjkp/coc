@@ -192,8 +192,8 @@ class Gemini(BaseTool):
 
 
 
-    def invoke(self, question: str) -> str:
-        return self.mllm.invoke(question).content
+    def invoke(self, messages: List[HumanMessage]) -> str:
+        return self.mllm(messages).content
 
 
 if __name__ == '__main__':
