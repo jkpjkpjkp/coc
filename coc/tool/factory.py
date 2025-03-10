@@ -1,7 +1,5 @@
 from coc.tool.grounding.dino import launch as dino_launch
 from coc.tool.grounding.owl import launch as owl_launch
-dino_launch()
-owl_launch()
 from coc.tool.sam.ultralytic import get_sam
 from coc.tool.vqa import get_glm, get_qwen, get_gemini
 # from coc.tool.grounding.mod import get_grounding, get_grounding_dino, get_owl
@@ -9,7 +7,7 @@ from coc.config import dino_port
 from gradio_client import Client, handle_file
 from PIL.Image import Image as Img
 from typing import *
-
+import multiprocessing
 
 class Bbox(TypedDict):
     """'bbox' stands for 'bounding box'"""
@@ -19,9 +17,13 @@ class Bbox(TypedDict):
 
 class DinoFactory():
     def __init__(self):
-        # Initialize the Gradio client for each test
-        # Assumes the server is running at http://localhost:{dino_port}
+        self.dino_proc = multiprocessing.Process(target=dino_launch)
+        self.dino_proc.start()
         self.client = Client(f"http://localhost:{dino_port}")
+
+    def __del__(self):
+        if self.dino_process.is_alive():
+            self.dino_process.join()
 
     def _run(self, image: Img, objects_of_interest: List[str]) -> List[Bbox]:
         # Test with a valid image and input
