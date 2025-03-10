@@ -75,8 +75,13 @@ with gr.Blocks(title="Grounding DINO Object Detection") as demo:
         with gr.Column():
             output_image = gr.Image(label="Detection Results")
             output_text = gr.Textbox(label="Detection Details", lines=10)
-    detect_button.click(process_dino, [image_input, objects_input, confidence, box_threshold, text_threshold], [output_image, output_text, gr.State()], api_name="predict")
-
+            output_detections = gr.JSON(label="Detections (for API)", visible=False)  # Added hidden JSON component
+    detect_button.click(
+        process_dino,
+        [image_input, objects_input, confidence, box_threshold, text_threshold],
+        [output_image, output_text, output_detections],  # Updated outputs
+        api_name="predict"
+    )
+    
 if __name__ == "__main__":
-    import os
     demo.launch(server_port=dino_port)
