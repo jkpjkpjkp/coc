@@ -1,43 +1,27 @@
-# test_api.py
-from gradio_client import Client, handle_file
-from PIL import Image
-import unittest
-from coc.config import owl_port
+import pytest
+import torch
+from coc.tool.grounding.owl import OwlObjectDetectionFactory
+from coc.tool.context import create_dummy_image, check_bbox_list
 
-class TestOwlAPI(unittest.TestCase):
-    def setUp(self):
-        # Initialize the Gradio client for each test
-        # Assumes the server is running at http://localhost:{owl_port}
-        self.client = Client(f"http://localhost:{owl_port}")
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires CUDA")
+class TestOwlObjectDetection:
+    def setup_method(self):
+        self.factory = OwlObjectDetectionFactory()
+        self.test_image = create_dummy_image()
+        self.test_texts = ["object"]
 
-    def test_predict_valid_input(self):
-        # Test with a valid image and input
-        image_path = "data/sample/4girls.jpg"  # Replace with a real test image path
-        result = self.client.predict(
-            image=handle_file(image_path),
-            object_list_text="cat, dog, person",
-            threshold=0.1,
-            api_name="/predict"
+    def test_factory_init(self):
+        assert self.factory.owlv2_processor is not None
+        assert self.factory.owlv2_model is not None
+
+    def test_basic_detection(self):
+        detections = self.factory.owl2(
+            image=self.test_image,
+            texts=self.test_texts,
+            threshold=0.1
         )
-        print(result)
-        self.assertIsInstance(result[0], str)  # Output image path
-        self.assertIsInstance(result[1], str)  # Detection details text
-        self.assertIsInstance(result[2], list)  # Detections list
-        self.assertTrue("Found" in result[1] or "No objects detected" in result[1])
+        check_bbox_list(detections)
 
-    def test_predict_no_objects(self):
-        # Test with no objects specified
-        image_path = "data/sample/onions.jpg"  # Replace with a real test image path
-        result = self.client.predict(
-            image=handle_file(image_path),
-            object_list_text="",
-            threshold=0.1,
-            api_name="/predict"
-        )
-        print(result)
-        self.assertIsInstance(result[0], str)  # Image path returned unchanged
-        self.assertIn("Please specify at least one object", result[1])  # Error message
-        self.assertEqual(result[2], [])  # Empty detections list
-
-if __name__ == "__main__":
-    unittest.main()
+    def test_invalid_input(self):
+        with pytest.raises(ValueError):
+            self.factory.owl2(None, ["object"])
