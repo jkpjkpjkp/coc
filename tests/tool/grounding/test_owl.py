@@ -2,13 +2,13 @@
 from gradio_client import Client, handle_file
 from PIL import Image
 import unittest
-from coc.config import dino_port
+from coc.config import owl_port
 
-class TestDinoAPI(unittest.TestCase):
+class TestOwlAPI(unittest.TestCase):
     def setUp(self):
         # Initialize the Gradio client for each test
-        # Assumes the server is running at http://localhost:{dino_port}
-        self.client = Client(f"http://localhost:{dino_port}")
+        # Assumes the server is running at http://localhost:{owl_port}
+        self.client = Client(f"http://localhost:{owl_port}")
 
     def test_predict_valid_input(self):
         # Test with a valid image and input
@@ -16,10 +16,10 @@ class TestDinoAPI(unittest.TestCase):
         result = self.client.predict(
             image=handle_file(image_path),
             object_list_text="cat, dog, person",
-            box_threshold=0.2,
-            text_threshold=0.1,
+            threshold=0.1,
             api_name="/predict"
         )
+        print(result)
         self.assertIsInstance(result[0], str)  # Output image path
         self.assertIsInstance(result[1], str)  # Detection details text
         self.assertIsInstance(result[2], list)  # Detections list
@@ -31,8 +31,7 @@ class TestDinoAPI(unittest.TestCase):
         result = self.client.predict(
             image=handle_file(image_path),
             object_list_text="",
-            box_threshold=0.2,
-            text_threshold=0.1,
+            threshold=0.1,
             api_name="/predict"
         )
         print(result)

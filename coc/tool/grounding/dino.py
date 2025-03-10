@@ -49,7 +49,7 @@ def draw_boxes(image: Image.Image, detections: List[Bbox]) -> Image.Image:
 def format_detections(detections: List[Bbox]) -> str:
     return "No objects detected." if not detections else f"Found {len(detections)} objects:\n" + "\n".join(f"- {det['label']}: score {det['score']:.2f}, box {[int(b) for b in det['box']]}" for det in detections)
 
-def process_dino(image, object_list_text, confidence, box_threshold, text_threshold):
+def process_dino(image, object_list_text, box_threshold, text_threshold):
     if not image:
         return None, "Please upload an image.", []
     objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
@@ -57,8 +57,7 @@ def process_dino(image, object_list_text, confidence, box_threshold, text_thresh
         return image, "Please specify at least one object.", []
     try:
         detections = obj.grounding_dino(image, objects, box_threshold, text_threshold)
-        filtered_detections = [det for det in detections if det['score'] >= confidence]
-        return draw_boxes(image.copy(), filtered_detections), format_detections(filtered_detections), filtered_detections
+        return draw_boxes(image.copy(), detections), format_detections(detections), detections
     except Exception as e:
         return image, f"Error: {str(e)}", []
 
@@ -68,7 +67,6 @@ with gr.Blocks(title="Grounding DINO Object Detection") as demo:
         with gr.Column():
             image_input = gr.Image(type="pil", label="Input Image")
             objects_input = gr.Textbox(label="Objects to Detect (comma-separated)")
-            confidence = gr.Slider(0.1, 1.0, value=0.2, step=0.05, label="Confidence Threshold")
             box_threshold = gr.Slider(0.1, 1.0, value=0.2, step=0.05, label="Box Threshold")
             text_threshold = gr.Slider(0.1, 1.0, value=0.1, step=0.05, label="Text Threshold")
             detect_button = gr.Button("Detect Objects")
@@ -78,10 +76,10 @@ with gr.Blocks(title="Grounding DINO Object Detection") as demo:
             output_detections = gr.JSON(label="Detections (for API)", visible=False)  # Added hidden JSON component
     detect_button.click(
         process_dino,
-        [image_input, objects_input, confidence, box_threshold, text_threshold],
+        [image_input, objects_input, box_threshold, text_threshold],
         [output_image, output_text, output_detections],  # Updated outputs
         api_name="predict"
     )
-    
+
 if __name__ == "__main__":
     demo.launch(server_port=dino_port)
