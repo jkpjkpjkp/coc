@@ -1,3 +1,7 @@
+"""only code.
+
+since only code returns visual information, whis version (still a chain) retains only code and its output.
+"""
 
 MAX_DEPTH = 5
 
@@ -34,6 +38,10 @@ from typing import List, Union
 
 @dataclass
 class CodeList:
+    """a ipynb notebook.
+
+    env is a env after executing sequentially all codeblocks in _
+    """
     _: List[Code]
     env: Exec
 

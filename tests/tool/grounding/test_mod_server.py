@@ -19,18 +19,18 @@ MOD_API_URL = f"http://localhost:{os.environ['grounding_port']}/api/predict"
 @pytest.fixture(scope="module", autouse=True)
 def start_servers():
     # Import and start servers
-    from coc.tool.grounding.mod_server import launch_all
+    from coc.tool.grounding.mod import launch_all
     import multiprocessing
-    
+
     # Start servers in background
     server_process = multiprocessing.Process(target=launch_all)
     server_process.start()
-    
+
     # Wait for servers to start
     time.sleep(10)
-    
+
     yield
-    
+
     # Cleanup
     server_process.terminate()
 
@@ -40,7 +40,7 @@ def test_dino_server():
         # Load image
         with open(img_path, "rb") as f:
             img_bytes = f.read()
-        
+
         # Prepare payload
         payload = {
             "data": [
@@ -51,11 +51,11 @@ def test_dino_server():
                 0.1   # text_threshold
             ]
         }
-        
+
         # Make request
         response = requests.post(DINO_API_URL, json=payload)
         assert response.status_code == 200
-        
+
         # Check response
         data = response.json()['data']
         assert len(data) == 3  # image, text, bboxes
@@ -68,7 +68,7 @@ def test_owl_server():
         # Load image
         with open(img_path, "rb") as f:
             img_bytes = f.read()
-        
+
         # Prepare payload
         payload = {
             "data": [
@@ -78,11 +78,11 @@ def test_owl_server():
                 0.1   # threshold
             ]
         }
-        
+
         # Make request
         response = requests.post(OWL_API_URL, json=payload)
         assert response.status_code == 200
-        
+
         # Check response
         data = response.json()['data']
         assert len(data) == 3  # image, text, bboxes
@@ -95,7 +95,7 @@ def test_mod_server():
         # Load image
         with open(img_path, "rb") as f:
             img_bytes = f.read()
-        
+
         # Prepare payload
         payload = {
             "data": [
@@ -107,11 +107,11 @@ def test_mod_server():
                 0.1   # owl_threshold
             ]
         }
-        
+
         # Make request
         response = requests.post(MOD_API_URL, json=payload)
         assert response.status_code == 200
-        
+
         # Check response
         data = response.json()['data']
         assert len(data) == 2  # image, text

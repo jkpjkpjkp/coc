@@ -2,6 +2,7 @@
 
 coc/ and tests/ has exactly the same structure, where test file of a file is prepended with test_
 logs are kept under data/log, and every module should log its io and errors in 2 files; log with timestamp.
+various images under data/sample can be used for testing, e.g. onions.png is a pile of onions, and 4girls.png is 4 girls. 
 
 ## idea
 in tree/ many vlm(mllm) tree-search inference strategies will be spawned, each writes code to interact with tool/
@@ -13,6 +14,4 @@ use single quote ', but use """ for google style docstring.
 should use no mocking when writing tests, since this is a small project.
 
 
-## current task
-implement gradio servers that wraps visual models, and write unittest for them.
-each server will mainly be called programatically, but should as well have a human-friendly web interface. 
+## trees
