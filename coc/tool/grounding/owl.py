@@ -1,55 +1,21 @@
 import torch
 from transformers import Owlv2Processor, Owlv2ForObjectDetection
-from typing import List, TypedDict
-from PIL import Image, ImageDraw, ImageFont
-from .dino import Bbox, draw_boxes, format_detections
+from typing import List
+from PIL import Image
 import threading
 
 class OwlObjectDetectionFactory:
-    """OWLv2 object detection service.
-
-    Attributes:
-        device: Computation device (cuda or cpu)
-        owlv2_processor: OWLv2 processor
-        owlv2_model: OWLv2 model
-    """
-    def __init__(self, max_parallel=1):
-        """Initialize model and move to appropriate device."""
+    """OWLv2 object detection service."""
+    def __init__(self):
+        """Initialize model and processor eagerly."""
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self._owlv2_processor = None
-        self._owlv2_model = None
-        self.semaphore = threading.Semaphore(max_parallel)
+        self.owlv2_processor = Owlv2Processor.from_pretrained('google/owlv2-base-patch16-ensemble')
+        self.owlv2_model = Owlv2ForObjectDetection.from_pretrained('google/owlv2-base-patch16-ensemble')
 
-    @property
-    def owlv2_processor(self):
-        if self._owlv2_processor is None:
-            self._owlv2_processor = Owlv2Processor.from_pretrained('google/owlv2-base-patch16-ensemble')
-        return self._owlv2_processor
-
-    @property
-    def owlv2_model(self):
-        if self._owlv2_model is None:
-            self._owlv2_model = Owlv2ForObjectDetection.from_pretrained('google/owlv2-base-patch16-ensemble')
-        return self._owlv2_model
-
-    def _run(self, image: Image.Image, texts: List[str], threshold=0.1) -> List[Bbox]:
-        """Detect objects in image using OWLv2.
-
-        Args:
-            image: Input PIL image
-            texts: List of text descriptions to detect
-            threshold: Detection confidence threshold
-
-        Returns:
-            List of detected bounding boxes with scores and labels
-
-        Raises:
-            ValueError: If invalid input is provided
-        """
-        if not texts:
-            raise ValueError('At least one text description required')
-        if not image:
-            raise ValueError('Valid image required')
+    def _run(self, image: Image.Image, texts: List[str], threshold=0.1) -> List['Bbox']:
+        """Detect objects in an image using OWLv2."""
+        if not texts or not image:
+            raise ValueError('Valid image and at least one text description required')
 
         image = image.convert('RGB')
         inputs = self.owlv2_processor(text=texts, images=image, return_tensors='pt').to(self.device)
@@ -67,22 +33,45 @@ class OwlObjectDetectionFactory:
         ]
         return detections
 
-# Initialize the factory
-_owl = OwlObjectDetectionFactory()
+# Placeholder for Bbox class (assumed to be defined elsewhere)
+class Bbox:
+    def __init__(self, box, score, label):
+        self.box = box
+        self.score = score
+        self.label = label
 
-def process_owl(image, object_list_text, threshold):
-    if image is None:
-        return None, "Please upload an image.", []
-    objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
-    if not objects:
-        return image, "Please specify at least one object.", []
-    try:
-        detections = _owl._run(image, objects, threshold=threshold)
-        drawn_image = draw_boxes(image.copy(), detections)
-        details = format_detections(detections)
-        return drawn_image, details, detections
-    except Exception as e:
-        return image, f"Error: {str(e)}", []
+# Module-level variables for singleton and semaphore
+_owl = None
+_semaphore = None
+_lock = threading.Lock()
 
-def get_owl():
+def get_owl(max_parallel=1):
+    """Return a concurrency-controlled object detection function with shared resources."""
+    global _owl, _semaphore
+
+    # Lazy initialization of _owl and _semaphore
+    if _owl is None or _semaphore is None:
+        with _lock:
+            if _owl is None:
+                _owl = OwlObjectDetectionFactory()  # Eagerly loads models
+            if _semaphore is None:
+                _semaphore = threading.Semaphore(max_parallel)
+
+    def process_owl(image, object_list_text, threshold):
+        """Process an image for object detection with concurrency control."""
+        if image is None:
+            return None, "Please upload an image.", []
+        objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
+        if not objects:
+            return image, "Please specify at least one object.", []
+        try:
+            with _semaphore:  # Use the shared semaphore
+                detections = _owl._run(image, objects, threshold=threshold)
+            # Assuming draw_boxes and format_detections are defined elsewhere
+            drawn_image = draw_boxes(image.copy(), detections)
+            details = format_detections(detections)
+            return drawn_image, details, detections
+        except Exception as e:
+            return image, f"Error: {str(e)}", []
+
     return process_owl

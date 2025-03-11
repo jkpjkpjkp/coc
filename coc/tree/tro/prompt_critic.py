@@ -1,0 +1,1 @@
+a = 'is there a step that simply assumes information without getting it from image? '
