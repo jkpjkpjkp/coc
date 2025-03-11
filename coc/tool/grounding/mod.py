@@ -1,21 +1,25 @@
-"""visual grounding.
+"""visual grounding g_dino and owl2.
+
+using two Gradio servers.
 """
 import torch
-from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection,\
-                         Owlv2Processor, Owlv2ForObjectDetection
 from typing import List, TypedDict
 import PIL.Image
 from PIL.Image import Image as Img
+import requests
+import base64
+from io import BytesIO
+from .dino import draw_boxes
 
 class Bbox(TypedDict):
     """'bbox' stands for 'bounding box'"""
-    box: List[float] # [x1, y1, x2, y2]
+    box: List[float]  # [x1, y1, x2, y2]
     score: float
     label: str
 
 def box_trim(detections: List[Bbox]) -> List[Bbox]:
+    """Trim overlapping detections based on occlusion threshold."""
     occlusion_threshold = 0.3
-
     sorted_detections = sorted(detections, key=lambda x: x['score'], reverse=True)
     accepted = []
 
@@ -46,75 +50,17 @@ def box_trim(detections: List[Bbox]) -> List[Bbox]:
             accepted.append(candidate)
     return accepted
 
+def pil_to_base64(image: Img) -> str:
+    """Convert a PIL image to a base64-encoded string for API requests."""
+    buffered = BytesIO()
+    image.save(buffered, format="JPEG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
 class ObjectDetectionFactory:
-    """grounding tool.
-
-    in compliance with LangChain Tool format.
-    interface:
-        def _run(self, image: Img, texts: List[str]) -> List[Bbox]
-    """
-    def __init__(self):
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-        self.gd_processor = AutoProcessor.from_pretrained(
-            'IDEA-Research/grounding-dino-base'
-        )
-        self.gd_model = AutoModelForZeroShotObjectDetection.from_pretrained(
-            'IDEA-Research/grounding-dino-base'
-        )#.to(self.device)
-
-        self.owlv2_processor = Owlv2Processor.from_pretrained(
-            'google/owlv2-base-patch16-ensemble'
-        )
-        self.owlv2_model = Owlv2ForObjectDetection.from_pretrained(
-            'google/owlv2-base-patch16-ensemble'
-        )#.to(self.device)
-
-    def grounding_dino(self, image: Img, texts: List[str], threshold=0.2, text_threshold=0.1) -> List[Bbox]:
-        image = image.convert('RGB')
-
-        # PATCH
-        # we decide to patch multi-object detection like this.
-        if len(texts) > 1:
-            detections = []
-            for text in texts:
-                detections.extend(self.grounding_dino(image, [text]))
-            return detections
-
-        text = '. '.join(texts).strip().lower() + '.'
-
-        inputs = self.gd_processor(
-            images=image, text=text, return_tensors='pt'
-        )
-
-        inputs = {key: value.to(self.device) for key, value in inputs.items()}
-        self.gd_model.to(self.device)
-        with torch.no_grad():
-            outputs = self.gd_model(**inputs)
-        # self.gd_model.to('cpu')
-            # torch.cuda.empty_cache()
-
-        results = self.gd_processor.post_process_grounded_object_detection(
-            outputs,
-            inputs['input_ids'],
-            threshold=0.2,
-            text_threshold=0.1,
-            target_sizes=[image.size[::-1]]
-        )
-
-        result = results[0]
-
-        # Convert results to list of Bbox
-        detections = [
-            Bbox(box=box.tolist(), score=score.item(), label=label)
-            for box, score, label in \
-                zip(result['boxes'], result['scores'], result['text_labels'])
-        ]
-        return detections
-
+    """Grounding tool interfacing with Gradio servers for object detection."""
     @classmethod
     def trim_result(cls, detections: List[Bbox]) -> List[Bbox]:
-        # Group by label and trim each group
+        """Group detections by label and trim each group."""
         unique_labels = {bbox['label'] for bbox in detections}
         trimmed_results = []
         for label in unique_labels:
@@ -123,50 +69,21 @@ class ObjectDetectionFactory:
             trimmed_results.extend(trimmed)
         return trimmed_results
 
-    def owl2(self, image: Img, texts: List[str]) -> List[Bbox]:
-        image = image.convert('RGB')
-
-        inputs = self.owlv2_processor(
-            text=texts, images=image, return_tensors='pt'
-        ).to(self.device)
-        self.owlv2_model.to(self.device)
-        with torch.no_grad():
-            outputs = self.owlv2_model(**inputs)
-        # self.owlv2_model.to('cpu')
-            # torch.cuda.empty_cache()
-
-        target_sizes = torch.Tensor([image.size[::-1]]).to(self.device)
-        processed_results = self.owlv2_processor.post_process_grounded_object_detection(
-            outputs=outputs,
-            target_sizes=target_sizes,
-            threshold=0.1
-        )
-        result = processed_results[0]
-
-        detections = []
-        for score, label_idx, box in \
-            zip(result['scores'], result['labels'], result['boxes']):
-            label = texts[label_idx.item()]
-            detections.append(Bbox(
-                box=box.tolist(),
-                score=score.item(),
-                label=label
-            ))
-        return detections
-
     def _run(self, image: Img, texts: List[str]) -> List[Bbox]:
+        """Run detection using both servers and combine results."""
         if not isinstance(image, Img):
             image = PIL.Image.fromarray(image)
         image = image.convert('RGB')
 
-        owl_result = self.owl2(image, texts)
-        g_dino_result = self.grounding_dino(image, texts)
-        g_dino_result = type(self).trim_result(g_dino_result)
+        owl_result = get_owl()(image, texts, threshold=0.1)
+        g_dino_result = get_grounding_dino()(image, texts, box_threshold=0.2, text_threshold=0.1)
+        g_dino_result = self.trim_result(g_dino_result)
+
         nonempty = {x['label'] for x in owl_result}
         ret = [x for x in g_dino_result if x['label'] in nonempty]
+
         if isinstance(ret, tuple) and len(ret) == 1:
             ret = ret[0]
-        torch.cuda.empty_cache()
         return ret
 
 _object_detection = ObjectDetectionFactory()
@@ -174,26 +91,16 @@ _object_detection = ObjectDetectionFactory()
 def get_grounding():
     return _object_detection._run
 
-def get_grounding_dino():
-    return _object_detection.grounding_dino
-
-def get_owl():
-    return _object_detection.owl2
-
 def demo1():
     obj = ObjectDetectionFactory()
     image_path = '/home/jkp/hack/coc/data/sample/onions.jpg'
     image = PIL.Image.open(image_path)
-    from coc.tool.grounding.draw import draw
-    ret = obj._run(
-            texts=['boy', 'girl', 'an onion'],
-            image=image
-        ),
+    ret = obj._run(texts=['boy', 'girl', 'an onion'], image=image)
     if isinstance(ret, tuple) and len(ret) == 1:
         ret = ret[0]
     print(ret)
-
-    draw(image, ret, 'raw_onions.jpg')
+    res = draw_boxes(image, ret)
+    res.save('raw_onions.jpg')
 
 def demo2():
     import gradio as gr

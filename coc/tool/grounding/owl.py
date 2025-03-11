@@ -4,13 +4,9 @@ from typing import List, TypedDict
 from PIL import Image, ImageDraw, ImageFont
 import gradio as gr
 from coc.config import owl_port
+from .dino import Bbox, draw_boxes, format_detections
 
-class Bbox(TypedDict):
-    box: List[float]  # [x1, y1, x2, y2]
-    score: float
-    label: str
-
-class ObjectDetectionFactory:
+class OwlObjectDetectionFactory:
     """OWLv2 object detection service.
 
     Attributes:
@@ -18,12 +14,23 @@ class ObjectDetectionFactory:
         owlv2_processor: OWLv2 processor
         owlv2_model: OWLv2 model
     """
-
     def __init__(self):
         """Initialize model and move to appropriate device."""
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.owlv2_processor = Owlv2Processor.from_pretrained('google/owlv2-base-patch16-ensemble')
-        self.owlv2_model = Owlv2ForObjectDetection.from_pretrained('google/owlv2-base-patch16-ensemble')
+        self._owlv2_processor = None
+        self._owlv2_model = None
+
+    @property
+    def owlv2_processor(self):
+        if self._owlv2_processor is None:
+            self._owlv2_processor = Owlv2Processor.from_pretrained('google/owlv2-base-patch16-ensemble')
+        return self._owlv2_processor
+
+    @property
+    def owlv2_model(self):
+        if self._owlv2_model is None:
+            self._owlv2_model = Owlv2ForObjectDetection.from_pretrained('google/owlv2-base-patch16-ensemble')
+        return self._owlv2_model
 
     def owl2(self, image: Image.Image, texts: List[str], threshold=0.1) -> List[Bbox]:
         """Detect objects in image using OWLv2.
@@ -61,35 +68,7 @@ class ObjectDetectionFactory:
         return detections
 
 # Initialize the factory
-obj = ObjectDetectionFactory()
-
-def draw_boxes(image: Image.Image, detections: List[Bbox]) -> Image.Image:
-    image = image.convert('RGB')
-    draw = ImageDraw.Draw(image)
-    try:
-        font = ImageFont.truetype("arial.ttf", 15)
-    except IOError:
-        font = ImageFont.load_default()
-    colors = {label: (int(255 * (hash(label) % 10) / 10), int(255 * ((hash(label) // 10) % 10) / 10), int(255 * ((hash(label) // 100) % 10) / 10)) for label in set(det['label'] for det in detections)}
-    for det in detections:
-        box = det['box']
-        label = det['label']
-        score = det['score']
-        draw.rectangle(box, outline=colors[label], width=3)
-        text = f"{label}: {score:.2f}"
-        text_size = draw.textbbox((0, 0), text, font=font)[2:4]
-        draw.rectangle([box[0], box[1] - text_size[1], box[0] + text_size[0], box[1]], fill=colors[label])
-        draw.text((box[0], box[1] - text_size[1]), text, fill="white", font=font)
-    return image
-
-def format_detections(detections: List[Bbox]) -> str:
-    if not detections:
-        return "No objects detected."
-    text = f"Found {len(detections)} objects:\n"
-    for det in detections:
-        box = [int(b) for b in det['box']]
-        text += f"- {det['label']}: score {det['score']:.2f}, box {box}\n"
-    return text
+obj = OwlObjectDetectionFactory()
 
 def process_owl(image, object_list_text, threshold):
     if image is None:
@@ -126,7 +105,6 @@ with gr.Blocks(title="OWLv2 Object Detection") as demo:
     )
 
 def launch():
-    import os
     demo.launch(server_port=owl_port)  # Adjust port if needed
 
 if __name__ == "__main__":

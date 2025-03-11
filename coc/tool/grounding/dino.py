@@ -10,11 +10,23 @@ class Bbox(TypedDict):
     score: float
     label: str
 
-class ObjectDetectionFactory:
+class DinoObjectDetectionFactory:
     def __init__(self):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.gd_processor = AutoProcessor.from_pretrained('IDEA-Research/grounding-dino-base')
-        self.gd_model = AutoModelForZeroShotObjectDetection.from_pretrained('IDEA-Research/grounding-dino-base')
+        self._gd_processor = None
+        self._gd_model = None
+
+    @property
+    def gd_processor(self):
+        if self._gd_processor is None:
+            self._gd_processor = AutoProcessor.from_pretrained('IDEA-Research/grounding-dino-base')
+        return self._gd_processor
+
+    @property
+    def gd_model(self):
+        if self._gd_model is None:
+            self._gd_model = AutoModelForZeroShotObjectDetection.from_pretrained('IDEA-Research/grounding-dino-base')
+        return self._gd_model
 
     def grounding_dino(self, image: Image.Image, texts: List[str], box_threshold=0.2, text_threshold=0.1) -> List[Bbox]:
         if not texts or not image:
@@ -30,7 +42,7 @@ class ObjectDetectionFactory:
         )[0]
         return [Bbox(box=box.tolist(), score=score.item(), label=label) for box, score, label in zip(results['boxes'], results['scores'], results['labels'])]
 
-obj = ObjectDetectionFactory()
+obj = DinoObjectDetectionFactory()
 
 def draw_boxes(image: Image.Image, detections: List[Bbox]) -> Image.Image:
     image = image.convert('RGB')
