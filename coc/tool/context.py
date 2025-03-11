@@ -1,6 +1,6 @@
 from typing import List, TypedDict, Union
 from PIL.Image import Image as Img
-from coc.tool.factory import *
+from .mod import *
 
 
 class Bbox(TypedDict):
@@ -28,12 +28,12 @@ def grounding_dino(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
 
     boxes may duplicated (same object, multiple boxes) or hallucinate
     """
-    return get_grounding_dino()(image, objects_of_interest)
+    return get_dino()(image, objects_of_interest)
 
 def owl(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
     """owl v2.
 
-    better text-box align, worse box IoU.
+    better text-image align, worse box IoU.
     boxes generally do not duplicate.
     """
     return get_owl()(image, objects_of_interest)

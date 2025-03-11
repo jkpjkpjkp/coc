@@ -2,19 +2,21 @@ import torch
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 from typing import List, TypedDict
 from PIL import Image, ImageDraw, ImageFont
-import gradio as gr
-from coc.config import dino_port
 
 class Bbox(TypedDict):
     box: List[float]
     score: float
     label: str
 
+import threading
+
+
 class DinoObjectDetectionFactory:
-    def __init__(self):
+    def __init__(self, max_parallel=1):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self._gd_processor = None
         self._gd_model = None
+        self.semaphore = threading.Semaphore(max_parallel)
 
     @property
     def gd_processor(self):
@@ -28,21 +30,26 @@ class DinoObjectDetectionFactory:
             self._gd_model = AutoModelForZeroShotObjectDetection.from_pretrained('IDEA-Research/grounding-dino-base')
         return self._gd_model
 
-    def grounding_dino(self, image: Image.Image, texts: List[str], box_threshold=0.2, text_threshold=0.1) -> List[Bbox]:
+    def _run(self, image: Image.Image, texts: List[str], box_threshold=0.2, text_threshold=0.1) -> List[Bbox]:
         if not texts or not image:
             raise ValueError('Valid image and at least one text description required')
-        image = image.convert('RGB')
-        text = '. '.join(text.strip().lower() for text in texts) + '.'
-        inputs = self.gd_processor(images=image, text=text, return_tensors='pt').to(self.device)
-        self.gd_model.to(self.device)
-        with torch.no_grad():
-            outputs = self.gd_model(**inputs)
-        results = self.gd_processor.post_process_grounded_object_detection(
-            outputs, inputs['input_ids'], box_threshold=box_threshold, text_threshold=text_threshold, target_sizes=[image.size[::-1]]
-        )[0]
-        return [Bbox(box=box.tolist(), score=score.item(), label=label) for box, score, label in zip(results['boxes'], results['scores'], results['labels'])]
+        
+        with self.semaphore:  # This controls parallelism
+            image = image.convert('RGB')
+            text = '. '.join(text.strip().lower() for text in texts) + '.'
+            inputs = self.gd_processor(images=image, text=text, return_tensors='pt').to(self.device)
+            self.gd_model.to(self.device)
+            with torch.no_grad():
+                outputs = self.gd_model(**inputs)
+            results = self.gd_processor.post_process_grounded_object_detection(
+                outputs, inputs['input_ids'], box_threshold=box_threshold, 
+                text_threshold=text_threshold, target_sizes=[image.size[::-1]]
+            )[0]
+            return [Bbox(box=box.tolist(), score=score.item(), label=label) 
+                    for box, score, label in zip(results['boxes'], results['scores'], results['labels'])]
 
-obj = DinoObjectDetectionFactory()
+_g_dino = DinoObjectDetectionFactory()
+
 
 def draw_boxes(image: Image.Image, detections: List[Bbox]) -> Image.Image:
     image = image.convert('RGB')
@@ -68,32 +75,11 @@ def process_dino(image, object_list_text, box_threshold, text_threshold):
     if not objects:
         return image, "Please specify at least one object.", []
     try:
-        detections = obj.grounding_dino(image, objects, box_threshold, text_threshold)
+        detections = _g_dino._run(image, objects, box_threshold, text_threshold)
         return draw_boxes(image.copy(), detections), format_detections(detections), detections
     except Exception as e:
         return image, f"Error: {str(e)}", []
 
-def launch():
-    with gr.Blocks(title="Grounding DINO Object Detection") as demo:
-        gr.Markdown("# Grounding DINO Object Detection")
-        with gr.Row():
-            with gr.Column():
-                image_input = gr.Image(type="pil", label="Input Image")
-                objects_input = gr.Textbox(label="Objects to Detect (comma-separated)")
-                box_threshold = gr.Slider(0.1, 1.0, value=0.2, step=0.05, label="Box Threshold")
-                text_threshold = gr.Slider(0.1, 1.0, value=0.1, step=0.05, label="Text Threshold")
-                detect_button = gr.Button("Detect Objects")
-            with gr.Column():
-                output_image = gr.Image(label="Detection Results")
-                output_text = gr.Textbox(label="Detection Details", lines=10)
-                output_detections = gr.JSON(label="Detections (for API)", visible=False)  # Added hidden JSON component
-        detect_button.click(
-            process_dino,
-            [image_input, objects_input, box_threshold, text_threshold],
-            [output_image, output_text, output_detections],  # Updated outputs
-            api_name="predict"
-        )
-    demo.launch(server_port=dino_port)
-
-if __name__ == "__main__":
-    launch()
+def get_dino():
+    """return a grounding_dino callable. """
+    return process_dino

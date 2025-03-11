@@ -2,9 +2,8 @@ import torch
 from transformers import Owlv2Processor, Owlv2ForObjectDetection
 from typing import List, TypedDict
 from PIL import Image, ImageDraw, ImageFont
-import gradio as gr
-from coc.config import owl_port
 from .dino import Bbox, draw_boxes, format_detections
+import threading
 
 class OwlObjectDetectionFactory:
     """OWLv2 object detection service.
@@ -14,11 +13,12 @@ class OwlObjectDetectionFactory:
         owlv2_processor: OWLv2 processor
         owlv2_model: OWLv2 model
     """
-    def __init__(self):
+    def __init__(self, max_parallel=1):
         """Initialize model and move to appropriate device."""
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self._owlv2_processor = None
         self._owlv2_model = None
+        self.semaphore = threading.Semaphore(max_parallel)
 
     @property
     def owlv2_processor(self):
@@ -32,7 +32,7 @@ class OwlObjectDetectionFactory:
             self._owlv2_model = Owlv2ForObjectDetection.from_pretrained('google/owlv2-base-patch16-ensemble')
         return self._owlv2_model
 
-    def owl2(self, image: Image.Image, texts: List[str], threshold=0.1) -> List[Bbox]:
+    def _run(self, image: Image.Image, texts: List[str], threshold=0.1) -> List[Bbox]:
         """Detect objects in image using OWLv2.
 
         Args:
@@ -68,7 +68,7 @@ class OwlObjectDetectionFactory:
         return detections
 
 # Initialize the factory
-obj = OwlObjectDetectionFactory()
+_owl = OwlObjectDetectionFactory()
 
 def process_owl(image, object_list_text, threshold):
     if image is None:
@@ -77,35 +77,12 @@ def process_owl(image, object_list_text, threshold):
     if not objects:
         return image, "Please specify at least one object.", []
     try:
-        detections = obj.owl2(image, objects, threshold=threshold)
+        detections = _owl._run(image, objects, threshold=threshold)
         drawn_image = draw_boxes(image.copy(), detections)
         details = format_detections(detections)
         return drawn_image, details, detections
     except Exception as e:
         return image, f"Error: {str(e)}", []
 
-# Gradio interface (updated)
-with gr.Blocks(title="OWLv2 Object Detection") as demo:
-    gr.Markdown("# OWLv2 Object Detection")
-    with gr.Row():
-        with gr.Column():
-            image_input = gr.Image(type="pil", label="Input Image")
-            objects_input = gr.Textbox(label="Objects to Detect (comma-separated)")
-            threshold = gr.Slider(0.1, 1.0, value=0.1, step=0.05, label="Detection Threshold")
-            detect_button = gr.Button("Detect Objects")
-        with gr.Column():
-            output_image = gr.Image(label="Detection Results")
-            output_text = gr.Textbox(label="Detection Details", lines=10)
-            output_detections = gr.JSON(label="Detections (for API)", visible=False)  # Hidden JSON component
-    detect_button.click(
-        fn=process_owl,
-        inputs=[image_input, objects_input, threshold],
-        outputs=[output_image, output_text, output_detections],  # Updated outputs
-        api_name="predict"  # Expose as API endpoint
-    )
-
-def launch():
-    demo.launch(server_port=owl_port)  # Adjust port if needed
-
-if __name__ == "__main__":
-    launch()
+def get_owl():
+    return process_owl

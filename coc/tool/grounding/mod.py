@@ -10,6 +10,8 @@ import requests
 import base64
 from io import BytesIO
 from .dino import draw_boxes
+from .dino import get_dino
+from .owl import get_owl
 
 class Bbox(TypedDict):
     """'bbox' stands for 'bounding box'"""
@@ -57,7 +59,7 @@ def pil_to_base64(image: Img) -> str:
     return base64.b64encode(buffered.getvalue()).decode()
 
 class ObjectDetectionFactory:
-    """Grounding tool interfacing with Gradio servers for object detection."""
+    """Grounding tool interfacing for object detection."""
     @classmethod
     def trim_result(cls, detections: List[Bbox]) -> List[Bbox]:
         """Group detections by label and trim each group."""
@@ -76,7 +78,7 @@ class ObjectDetectionFactory:
         image = image.convert('RGB')
 
         owl_result = get_owl()(image, texts, threshold=0.1)
-        g_dino_result = get_grounding_dino()(image, texts, box_threshold=0.2, text_threshold=0.1)
+        g_dino_result = get_dino()(image, texts, box_threshold=0.2, text_threshold=0.1)
         g_dino_result = self.trim_result(g_dino_result)
 
         nonempty = {x['label'] for x in owl_result}

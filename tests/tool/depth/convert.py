@@ -1,5 +1,7 @@
 """visual to depth.
 
+iamge input is by using official run.py with default setting
+
 currently cutting is right but to-depth alg is wrong.
 my depth result is in this particular format: a single image, left side original, rightside depth, red is closer blue further. the middle is separated wish purely white (exact center, unknown width). so i need you to 0. read in this png 1. determine how much pure white is in the exact center (maximal width of exact which on exact center is the padd) 3. cut out the depth heatmap on the right 4. re-calculate depth based on color. you start coding and i go see if i have exact mapping of color->depth.
 """
