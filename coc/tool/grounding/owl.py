@@ -3,6 +3,8 @@ from transformers import Owlv2Processor, Owlv2ForObjectDetection
 from typing import List
 from PIL import Image
 import threading
+from .dino import draw_boxes, format_detections
+from coc.tool.task import Bbox
 
 class OwlObjectDetectionFactory:
     """OWLv2 object detection service."""
@@ -33,13 +35,6 @@ class OwlObjectDetectionFactory:
         ]
         return detections
 
-# Placeholder for Bbox class (assumed to be defined elsewhere)
-class Bbox:
-    def __init__(self, box, score, label):
-        self.box = box
-        self.score = score
-        self.label = label
-
 # Module-level variables for singleton and semaphore
 _owl = None
 _semaphore = None
@@ -60,10 +55,10 @@ def get_owl(max_parallel=1):
     def process_owl(image, object_list_text, threshold):
         """Process an image for object detection with concurrency control."""
         if image is None:
-            return None, "Please upload an image.", []
-        objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
+            return None, 'Please upload an image.', []
+        objects = [obj.strip() for obj in object_list_text.split(',') if obj.strip()]
         if not objects:
-            return image, "Please specify at least one object.", []
+            return image, 'Please specify at least one object.', []
         try:
             with _semaphore:  # Use the shared semaphore
                 detections = _owl._run(image, objects, threshold=threshold)
@@ -72,6 +67,6 @@ def get_owl(max_parallel=1):
             details = format_detections(detections)
             return drawn_image, details, detections
         except Exception as e:
-            return image, f"Error: {str(e)}", []
+            return image, f'Error: {str(e)}', []
 
     return process_owl

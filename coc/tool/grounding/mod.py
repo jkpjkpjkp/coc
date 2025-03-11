@@ -12,12 +12,7 @@ from io import BytesIO
 from .dino import draw_boxes
 from .dino import get_dino
 from .owl import get_owl
-
-class Bbox(TypedDict):
-    """'bbox' stands for 'bounding box'"""
-    box: List[float]  # [x1, y1, x2, y2]
-    score: float
-    label: str
+from coc.tool.task import Bbox
 
 def box_trim(detections: List[Bbox]) -> List[Bbox]:
     """Trim overlapping detections based on occlusion threshold."""
@@ -92,33 +87,3 @@ _object_detection = ObjectDetectionFactory()
 
 def get_grounding():
     return _object_detection._run
-
-def demo1():
-    obj = ObjectDetectionFactory()
-    image_path = '/home/jkp/hack/coc/data/sample/onions.jpg'
-    image = PIL.Image.open(image_path)
-    ret = obj._run(texts=['boy', 'girl', 'an onion'], image=image)
-    if isinstance(ret, tuple) and len(ret) == 1:
-        ret = ret[0]
-    print(ret)
-    res = draw_boxes(image, ret)
-    res.save('raw_onions.jpg')
-
-def demo2():
-    import gradio as gr
-    demo = gr.Interface(
-        fn=get_grounding(),
-        inputs=[
-            gr.Image(type="pil"),
-            gr.Textbox(label="Objects of Interest (comma-separated)")
-        ],
-        outputs=[
-            gr.JSON(label="Raw Detection Data"),
-        ],
-        title="Object Grounding Demo",
-        description="Upload an image and specify objects to detect, separated by commas."
-    )
-    app = demo.launch(share=False)
-
-if __name__ == '__main__':
-    demo2()

@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 from PIL import Image
 import numpy as np
 from coc.tool.vqa.gemini import Gemini
-from coc.tool.context import Bbox
+from coc.tool.task import Bbox
 
 @pytest.fixture
 def gemini_tool():

@@ -3,12 +3,7 @@ from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
 from typing import List, TypedDict
 from PIL import Image, ImageDraw, ImageFont
 import threading
-
-# Define the Bbox type for detections
-class Bbox(TypedDict):
-    box: List[float]
-    score: float
-    label: str
+from coc.tool.task import Bbox
 
 # Factory class for Grounding DINO object detection
 class DinoObjectDetectionFactory:
@@ -55,18 +50,18 @@ def draw_boxes(image: Image.Image, detections: List[Bbox]) -> Image.Image:
     for det in detections:
         box, label, score = det['box'], det['label'], det['score']
         draw.rectangle(box, outline=colors[label], width=3)
-        text = f"{label}: {score:.2f}"
+        text = f'{label}: {score:.2f}'
         text_size = draw.textbbox((0, 0), text, font=font)[2:4]
         draw.rectangle([box[0], box[1] - text_size[1], box[0] + text_size[0], box[1]], fill=colors[label])
-        draw.text((box[0], box[1] - text_size[1]), text, fill="white", font=font)
+        draw.text((box[0], box[1] - text_size[1]), text, fill='white', font=font)
     return image
 
 def format_detections(detections: List[Bbox]) -> str:
     """Format the detection results into a readable string."""
     if not detections:
-        return "No objects detected."
-    return f"Found {len(detections)} objects:\n" + "\n".join(
-        f"- {det['label']}: score {det['score']:.2f}, box {[int(b) for b in det['box']]}"
+        return 'No objects detected.'
+    return f'Found {len(detections)} objects:\n' + '\n'.join(
+        f'- {det['label']}: score {det['score']:.2f}, box {[int(b) for b in det['box']]}'
         for det in detections
     )
 
@@ -89,21 +84,21 @@ def get_dino(max_parallel=1):
     def process_dino(image, object_list_text, box_threshold, text_threshold):
         """Process an image for object detection using Grounding DINO."""
         if not image:
-            return None, "Please upload an image.", []
-        objects = [obj.strip() for obj in object_list_text.split(",") if obj.strip()]
+            return None, 'Please upload an image.', []
+        objects = [obj.strip() for obj in object_list_text.split(',') if obj.strip()]
         if not objects:
-            return image, "Please specify at least one object.", []
+            return image, 'Please specify at least one object.', []
         try:
             detections = _dino_factory._run(image, objects, box_threshold, text_threshold)
             drawn_image = draw_boxes(image.copy(), detections)
             details = format_detections(detections)
             return drawn_image, details, detections
         except Exception as e:
-            return image, f"Error: {str(e)}", []
+            return image, f'Error: {str(e)}', []
 
     return process_dino
 
 # Example usage
-if __name__ == "__main__":
+if __name__ == '__main__':
     detector = get_dino(max_parallel=1)
-    # Use detector(image, "cat, dog", 0.2, 0.1) with an actual image
+    # Use detector(image, 'cat, dog', 0.2, 0.1) with an actual image

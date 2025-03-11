@@ -5,6 +5,8 @@ from typing import Union
 import numpy as np
 from depth_anything_v2.dpt import DepthAnythingV2
 import threading
+from coc.config import depth_anything_path
+import os.path
 
 class DepthFactory:
     """Depth estimation using the DepthAnythingV2 model.
@@ -16,8 +18,7 @@ class DepthFactory:
         semaphore (threading.Semaphore): Controls the number of concurrent depth estimations.
     """
     def __init__(self, encoder: str = 'vitl', device: str = None, max_parallel: int = 1):
-        """
-        Initialize the DepthFactory with a specified encoder, device, and concurrency limit.
+        """Initialize.
 
         Args:
             encoder (str): Depth model encoder type ('vits', 'vitb', 'vitl', 'vitg').
@@ -36,13 +37,13 @@ class DepthFactory:
             'vitg': {'encoder': 'vitg', 'features': 384, 'out_channels': [1536, 1536, 1536, 1536]}
         }
         if encoder not in model_configs:
-            raise ValueError(f"Encoder must be one of {list(model_configs.keys())}")
+            raise ValueError(f'Encoder must be one of {list(model_configs.keys())}')
 
         self.config = model_configs[encoder]
 
         # Load the model
         self.model = DepthAnythingV2(**self.config)
-        self.model.load_state_dict(torch.load(f'checkpoints/depth_anything_v2_{self.config["encoder"]}.pth', map_location='cpu'))
+        self.model.load_state_dict(torch.load(os.path.join(depth_anything_path, f'checkpoints/depth_anything_v2_{self.config['encoder']}.pth') , map_location='cpu'))
         self.model = self.model.to(self.device).eval()
 
     def _run(self, image: Union[str, Image.Image]) -> np.ndarray:
@@ -61,11 +62,11 @@ class DepthFactory:
         if isinstance(image, str):
             raw_img = cv2.imread(image)
             if raw_img is None:
-                raise ValueError(f"Could not read image from {image}")
+                raise ValueError(f'Could not read image from {image}')
         elif isinstance(image, Image.Image):
             raw_img = cv2.cvtColor(np.array(image.convert('RGB')), cv2.COLOR_RGB2BGR)
         else:
-            raise ValueError("Image must be a file path (str) or a PIL Image")
+            raise ValueError('Image must be a file path (str) or a PIL Image')
 
         with self.semaphore:  # Limits concurrent executions to max_parallel
             # Compute depth map
@@ -79,8 +80,7 @@ _depth_factory = None
 _depth_lock = threading.Lock()
 
 def get_depth(encoder: str = 'vitl', device: str = None, max_parallel: int = 1):
-    """
-    Return a depth estimation callable with thread-safe lazy initialization and concurrency control.
+    """Return a thread-safe depth estimation callable.
 
     Args:
         encoder (str): Depth model encoder type ('vits', 'vitb', 'vitl', 'vitg').
@@ -97,19 +97,19 @@ def get_depth(encoder: str = 'vitl', device: str = None, max_parallel: int = 1):
                 _depth_factory = DepthFactory(encoder=encoder, device=device, max_parallel=max_parallel)
 
     def process_depth(image: Union[str, Image.Image]) -> np.ndarray:
-        """Compute the depth map for the given image with concurrency control."""
+        """Compute the depth map for the given image with concurrency control. """
         try:
             depth_map = _depth_factory._run(image)
             return depth_map
         except Exception as e:
-            raise RuntimeError(f"Depth estimation failed: {str(e)}")
+            raise RuntimeError(f'Depth estimation failed: {str(e)}')
 
     return process_depth
 
 # Example usage
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Create a depth estimator with a maximum of 2 concurrent estimations
     depth_estimator = get_depth(encoder='vitl', max_parallel=2)
     # Example calls:
-    # depth_map = depth_estimator("path/to/image.jpg")
-    # depth_map = depth_estimator(Image.open("path/to/image.jpg"))
+    # depth_map = depth_estimator('path/to/image.jpg')
+    # depth_map = depth_estimator(Image.open('path/to/image.jpg'))
