@@ -3,10 +3,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from coc.config import MAX_DEPTH, BRANCH_WIDTH
 from coc.tree.une import CodeList, TreeNode, root_factory
 from coc.tool.task import Task
-from typing import Optional
+from typing import Optional, List, Iterable
 from coc.util.text import extract_code, extract_boxed
 from coc.prompts.prompt_troi import prompts_2nd_person
 from coc.prompts.prompt_une import build_trunk
+from coc.tool.vqa import gemini_as_llm
+from coc.util.misc import fulltask_to_task, set_seed
+from coc.data.fulltask import FullTask
+import textwrap
 
 def generate_one_child(parent: TreeNode, suggestive_hint: str, llm) -> tuple[TreeNode, Optional[str]]:
     """
@@ -22,13 +26,17 @@ def generate_one_child(parent: TreeNode, suggestive_hint: str, llm) -> tuple[Tre
     """
     message = build_trunk(
         task=parent.codelist.env.get_var('task'),
-        codes=parent.codelist._,
+        codes=parent.codelist.to_list_of_pair_of_str(),
         suggestive_hint=suggestive_hint,
-        variant='force code',
+        variant='neutral',
     )
     response = llm(message)
     codes = extract_code(response)
     answer = extract_boxed(response)
+
+    # Ensure response contains either code or answer, but not both
+    assert not (codes and answer), f"Both code and answer extracted: {response}"
+    assert codes or answer, f"Neither code nor answer extracted: {response}"
 
     # Create a new child node
     child_codelist = parent.codelist.deepcopy()
@@ -95,35 +103,75 @@ def evaluate(task: Task, llm) -> list[tuple[TreeNode, str]]:
     Returns:
         List of (node, answer) pairs found during tree construction.
     """
-    # Initialize the tree with the root node
     root = root_factory(task)
     current_depth_nodes = [root]
     all_answers = []
 
-    # Build the tree depth by depth
     for depth in range(1, MAX_DEPTH + 1):
-        # Select nodes that have code (no answer in their last output)
         nodes_with_code = [
             node for node in current_depth_nodes
             if not node.outputs or not extract_boxed(node.outputs[-1])
         ]
         if not nodes_with_code:
-            # Stop if no nodes can be expanded further
             break
-
-        # Generate BRANCH_WIDTH children in parallel
         children, answers = generate_children(nodes_with_code, BRANCH_WIDTH, llm)
         all_answers.extend(answers)
-
-        # Update the current depth nodes for the next iteration
         current_depth_nodes = children
 
     return all_answers
 
-# Example usage (assuming llm is defined elsewhere)
+def judge_multichoice(output: str, choices: List[str], answer: str) -> bool:
+    """
+    Judge if the output indicates the correct choice.
+
+    Args:
+        output: The extracted answer from the LLM.
+        choices: List of possible choices.
+        answer: The correct choice.
+
+    Returns:
+        True if the output can arrive at the correct choice, False otherwise.
+    """
+    ret = gemini_as_llm(textwrap.dedent(f'''
+        judge the following output and return True if, given the choices available, the party offering this output has the capability of arriving at the correct choice,
+            otherwise return False.
+        output (cannot see the choices): {output}
+        choices: {choices}
+        answer (correct choice is): {answer}'''
+    ))
+    return 'False' not in ret and 'True' in ret
+
+def eval_a_batch(batch: Iterable[FullTask], llm) -> tuple[int, int]:
+    """
+    Evaluate a batch of tasks using the tree search approach.
+
+    For each task, builds a tree, collects answers, selects the most common answer,
+    and checks its correctness.
+
+    Args:
+        batch: Iterable of FullTask objects.
+        llm: Language model function.
+
+    Returns:
+        Tuple of (number of correct answers, total tasks).
+    """
+    correct = 0
+    total = 0
+    for fulltask in batch:
+        task = fulltask_to_task(fulltask)
+        answers_nodes = evaluate(task, llm)
+        if answers_nodes:
+            answers = [answer for _, answer in answers_nodes]
+            most_common_answer = max(set(answers), key=answers.count)
+            if judge_multichoice(most_common_answer, fulltask['choices'], fulltask['answer']):
+                correct += 1
+        total += 1
+    return correct, total
+
 if __name__ == '__main__':
-    from coc.tree.llm import llm  # Placeholder for the language model
-    sample_task = Task(...)  # Placeholder for a sample task
-    answers = evaluate(sample_task, llm)
-    for node, answer in answers:
-        print(f'Found answer at depth {node.depth}: {answer}')
+    set_seed()
+    from coc.data.zero import zero
+    from coc.tree.llm import llm
+    batch = zero(offer='sub')
+    correct, total = eval_a_batch(batch, llm)
+    print(f"Correct: {correct}, Total: {total}")

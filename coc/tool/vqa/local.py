@@ -45,7 +45,7 @@ processor = AutoProcessor.from_pretrained("Microsoft/Florence-2-base", trust_rem
 
 def run_example(task_prompt, text_input=None, image=None):
     if image is None:
-        image = Image.open(requests.get("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/transformers/tasks/car.jpg?download=true", stream=True).raw);
+        image = Image.open(requests.get("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/transformers/tasks/car.jpg?download=true", stream=True).raw)
     inputs = processor(text=task_prompt, images=image, return_tensors="pt").to(device, torch_dtype); generated_ids = model.generate(input_ids=inputs["input_ids"], pixel_values=inputs["pixel_values"], max_new_tokens=1024, do_sample=False, num_beams=3); generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0]; if task_prompt == "<OD>": result = processor.post_process_generation(generated_text, task="<OD>", image_size=(image.width, image.height)); else: result = generated_text; return result
 
 def vlm(*args):

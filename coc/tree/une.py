@@ -59,6 +59,7 @@ class CodeList:
         self._.append(code)
 
     def to_list_of_pair_of_str(self):
+        """main purpose is to filter out code with error. """
         return [code.to_pair_of_str() for code in self._ if not code.error]
 
     def deepcopy(self):
