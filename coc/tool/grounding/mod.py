@@ -1,6 +1,6 @@
-"""visual grounding g_dino and owl2.
+"""visual grounding g_dino and owl2. 
 
-using two Gradio servers.
+this is a combination of 2 models to yield high-IoU, low hallucination/duplication results. 
 """
 import torch
 from typing import List, TypedDict
