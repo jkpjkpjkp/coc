@@ -1,12 +1,56 @@
+"""
+
+UNTESTED. UNFINISHED.
+refer to demo() below.
+"""
+
+def demo():
+    import requests
+    import torch
+    from PIL import Image
+    from transformers import AutoProcessor, AutoModelForCausalLM
+
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+
+    model = AutoModelForCausalLM.from_pretrained("microsoft/Florence-2-base", torch_dtype=torch_dtype, trust_remote_code=True).to(device)
+    processor = AutoProcessor.from_pretrained("microsoft/Florence-2-base", trust_remote_code=True)
+
+    prompt = "<OD>"
+
+    image = Image.open('data/sample/4girls.jpg')
+
+    inputs = processor(text=prompt, images=image, return_tensors="pt").to(device, torch_dtype)
+
+    generated_ids = model.generate(
+        input_ids=inputs["input_ids"],
+        pixel_values=inputs["pixel_values"],
+        max_new_tokens=1024,
+        do_sample=False,
+        num_beams=3,
+    )
+    generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0]
+
+    parsed_answer = processor.post_process_generation(generated_text, task="<OD>", image_size=(image.width, image.height))
+
+    print(parsed_answer)
+
 import gradio as gr
 from PIL import Image
-from transformers import pipeline
-from coc.config import local_vlm_port
+import requests
+# Load model directly
+from transformers import AutoModelForCausalLM, AutoProcessor
+model = AutoModelForCausalLM.from_pretrained("microsoft/Florence-2-base", trust_remote_code=True)
+processor = AutoProcessor.from_pretrained("Microsoft/Florence-2-base", trust_remote_code=True)
 
-pipe = pipeline("image-text-to-text", model="microsoft/Florence-2-base", trust_remote_code=True)
+def run_example(task_prompt, text_input=None, image=None):
+    if image is None:
+        image = Image.open(requests.get("https://huggingface.co/datasets/huggingface/documentation-images/resolve/main/transformers/tasks/car.jpg?download=true", stream=True).raw);
+    inputs = processor(text=task_prompt, images=image, return_tensors="pt").to(device, torch_dtype); generated_ids = model.generate(input_ids=inputs["input_ids"], pixel_values=inputs["pixel_values"], max_new_tokens=1024, do_sample=False, num_beams=3); generated_text = processor.batch_decode(generated_ids, skip_special_tokens=False)[0]; if task_prompt == "<OD>": result = processor.post_process_generation(generated_text, task="<OD>", image_size=(image.width, image.height)); else: result = generated_text; return result
 
 def vlm(*args):
-    """
+    """arbitrary string and image input.
+
     Process a variable number of string and PIL image arguments into a prompt and image list,
     maintaining their relative positions, and generate a response using the pipeline.
 
@@ -27,49 +71,13 @@ def vlm(*args):
             prompt += " <image>"
             images.append(arg)
         else:
-            raise ValueError("Arguments must be str or PIL.Image")
+            raise ValueError("Arguments must be str or PIL.Image.Image")
 
-    # Handle cases based on presence of images
-    if not images:
-        # Pure text input
-        result = pipe(prompt)
-    else:
-        # Text with images
-        result = pipe(prompt, images=images)
+    result = model.generate(prompt) if not images else model.generate(prompt, images=images)
 
     # Extract and return the generated text
     # Note: The exact output structure might depend on the pipeline's return format
     return result[0]['generated_text'] if isinstance(result, list) else result
 
-# Wrapper function for Gradio with fixed inputs
-def gradio_func(text1, image1, text2, image2):
-    """
-    Wrapper function for Gradio interface, accepting two text-image pairs.
-
-    Args:
-        text1 (str): First text input.
-        image1 (PIL.Image): First image input.
-        text2 (str): Second text input.
-        image2 (PIL.Image): Second image input.
-
-    Returns:
-        str: Generated text from vlm.
-    """
-    return vlm(text1, image1, text2, image2)
-
-# Set up the Gradio interface
-iface = gr.Interface(
-    fn=gradio_func,
-    inputs=[
-        gr.Textbox(label="Text 1", placeholder="Enter first text segment"),
-        gr.Image(type="pil", label="Image 1"),
-        gr.Textbox(label="Text 2", placeholder="Enter second text segment"),
-        gr.Image(type="pil", label="Image 2")
-    ],
-    outputs=gr.Textbox(label="Generated Output"),
-    title="Vision-Language Model Demo",
-    description="Enter text segments and upload images in sequence. The model will process them into a single prompt."
-)
-
-# Launch the server
-iface.launch(server_port=local_vlm_port)
+if __name__ == '__main__':
+    print(vlm('hi! what is your name? '))

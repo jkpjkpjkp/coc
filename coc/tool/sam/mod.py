@@ -4,24 +4,35 @@ import numpy as np
 import torch
 from PIL import Image
 from typing import Literal, Dict, List
+import matplotlib.pyplot as plt
 
 # SAM2 imports (assuming these are available in the sam2 package)
 from sam2.build_sam import build_sam2
 from sam2.automatic_mask_generator import SAM2AutomaticMaskGenerator
 # For visualization, assuming utils has show_anns or similar functionality
-try:
-    from sam2.utils import show_anns  # Hypothetical import; adjust based on actual SAM2 API
-except ImportError:
-    # Fallback implementation if show_anns is not available
-    def show_anns(annotations, image):
-        if not annotations:
-            return image
-        output = image.copy()
-        for ann in sorted(annotations, key=lambda x: x.get('area', 0), reverse=True):
-            mask = ann['segmentation']
-            color = np.random.randint(0, 255, (3,), dtype=np.uint8)
-            output[mask] = output[mask] * 0.65 + color * 0.35  # Alpha blending
-        return output
+
+
+def show_anns(anns, borders=True):
+    if len(anns) == 0:
+        return
+    sorted_anns = sorted(anns, key=(lambda x: x['area']), reverse=True)
+    ax = plt.gca()
+    ax.set_autoscale_on(False)
+
+    img = np.ones((sorted_anns[0]['segmentation'].shape[0], sorted_anns[0]['segmentation'].shape[1], 4))
+    img[:, :, 3] = 0
+    for ann in sorted_anns:
+        m = ann['segmentation']
+        color_mask = np.concatenate([np.random.random(3), [0.5]])
+        img[m] = color_mask
+        if borders:
+            import cv2
+            contours, _ = cv2.findContours(m.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+            # Try to smooth contours
+            contours = [cv2.approxPolyDP(contour, epsilon=0.01, closed=True) for contour in contours]
+            cv2.drawContours(img, contours, -1, (0, 0, 1, 0.4), thickness=1)
+
+    ax.imshow(img)
 
 class SAMWrapper:
     """SAM2 model wrapper with parallel processing control and parameter management"""

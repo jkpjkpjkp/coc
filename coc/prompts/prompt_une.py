@@ -39,6 +39,7 @@ trunk = """
     ```
 
     {}
+    {}
 
     (however, if you are absolutely sure of a final answer, write no mode code and present your final answer in \\boxed{{}}.)
 
@@ -74,6 +75,7 @@ Use task['images'][0] to reference images. Write self-contained Python snippets 
 Continue analyzing and write NEW CODE to progress toward solving the task.
 
 {}
+{}
 
 Let's think step by step.
 """
@@ -84,10 +86,12 @@ task: {}
 The following code was executed to gather information:
 
 {}{}{}
+{}
+
 Based on these outputs, provide the FINAL ANSWER to the task. Do NOT write more code. Present your final answer in \\boxed{{}}. Let's think step by step.
 """
 
-def build_trunk(task: Task, init_code_path: str, codes: List[Pair[str]], tool: Optional[str] = None, variant: Literal['neutral', 'force code', 'force answer'] = 'neutral'):
+def build_trunk(task: Task, init_code_path: str = 'coc/tool/context.py', codes: List[Pair[str]] = [], tool: Optional[str] = None, variant: Literal['neutral', 'force code', 'force answer'] = 'neutral', suggestive_hint: str = ''):
     with open(init_code_path, 'r') as f:
         init_code = f.read()
     if variant == 'neutral':
@@ -100,4 +104,4 @@ def build_trunk(task: Task, init_code_path: str, codes: List[Pair[str]], tool: O
         init_code=''
     else:
         raise ValueError(f"Unknown variant: {variant}")
-    return t.format(task, init_code, codes_to_str(codes), tool_hint[0].format(tool) if tool else tool_hint[1])
+    return t.format(task, init_code, codes_to_str(codes), tool_hint[0].format(tool) if tool else tool_hint[1], suggestive_hint)

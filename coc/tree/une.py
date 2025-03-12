@@ -3,7 +3,7 @@
 since only code returns visual information, whis version (still a chain) retains only code and its output.
 """
 
-MAX_DEPTH = 5
+from coc.config import MAX_DEPTH
 
 from coc.data.fulltask import FullTask
 from typing import List, Union, Optional, Literal, Iterable
@@ -19,9 +19,14 @@ import copy
 from tqdm import tqdm
 from coc.util.misc import fulltask_to_task
 import textwrap
+import copy
+from typing import List, Union
 
 @dataclass
 class Code:
+    """a code cell.
+
+    paired with its output. """
     code: str
     output: str
     error: str
@@ -33,14 +38,12 @@ class Code:
     def to_pair_of_str(self):
         return Pair(self.code, self.output)
 
-import copy
-from typing import List, Union
 
 @dataclass
 class CodeList:
     """a ipynb notebook.
 
-    env is a env after executing sequentially all codeblocks in _
+    env is after executing sequentially all codeblocks.
     """
     _: List[Code]
     env: Exec
@@ -67,12 +70,20 @@ class CodeList:
         result.env = copy.deepcopy(self.env)
 
         return result
+
+
 class Node:
+    """a ipynb and raw llm outputs in each iteration. """
     def __init__(self, codelist: CodeList, outputs: List[AIMessage]):
         self.codelist = codelist
         self.outputs = outputs
 
+
 class TreeNode(Node):
+    """a Node, but in a tree.
+
+    aka have children and parent, and other tree statistics (e.g. depth).
+    """
     def __init__(self, codelist: CodeList, outputs: List[AIMessage], parent: Optional['TreeNode'], children: List['TreeNode'], depth: int):
         super().__init__(codelist, outputs)
         self.parent = parent
@@ -86,7 +97,13 @@ class TreeNode(Node):
         else:
             return self.parent.to_list() + [self]
 
+
 def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant: Literal['neutral', 'force code', 'force answer'] = 'neutral'):
+    """rollout a chain.
+
+    Args:
+        variant: prompt variant. e.g. 'force code' will encourage outputing code and not final answer.
+    """
     while node.depth <= max_depth:
         message = build_trunk(
             task=node.codelist.env.get_var('task'),
@@ -117,7 +134,9 @@ def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant
             node = child
     return None, node
 
+
 def root_factory(task: Task) -> TreeNode:
+    """returns a new root. """
     return TreeNode(
         codelist=CodeList(context=CONTEXT_FILE, task=task),
         outputs=[],
@@ -125,6 +144,7 @@ def root_factory(task: Task) -> TreeNode:
         children=[],
         depth=0,
     )
+
 
 def force_code_then_answer_at_each_step(task: Task, max_depth: int = MAX_DEPTH):
     from coc.tree.llm import llm
@@ -134,6 +154,7 @@ def force_code_then_answer_at_each_step(task: Task, max_depth: int = MAX_DEPTH):
     ret, node = rollout(task, node, llm, max_depth=max_depth+1, variant='force answer')
     assert ret, "Answer not found (force answer failed)"
     return ret, node
+
 
 def compare(output: str, answer: str):
     from coc.tool.vqa import gemini_as_llm as llm
@@ -155,6 +176,7 @@ def judge_multichoice(output: str, choices: List[str], answer: str):
                 answer (correct choice is): {answer}'''
             ))
     return 'False' not in ret and 'True' in ret
+
 
 def eval_a_batch(batch: Iterable[FullTask]):
     correct = 0
