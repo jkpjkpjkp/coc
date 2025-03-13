@@ -1,5 +1,6 @@
-from typing import List, TypedDict, Union
+from typing import *
 from PIL.Image import Image as Img
+import numpy as np
 from .mod import *
 
 
@@ -10,8 +11,12 @@ class Bbox(TypedDict):
     label: str
 
 ### grounding tools (add bbox to objects)
+#   Returns:
+#      image: Img, a rendering of boxes on the input image
+#      details: str, a string representation of the boxes
+#      boxes: List[Bbox], a list of boxes, each box is a dict with keys 'box', 'score', 'label'
 
-def grounding(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
+def grounding(image: Img, objects_of_interest: List[str]) -> Tuple[Img, str, List[Bbox]]:
     """a combination of grounding dino and owl v2.
 
     grounding dino pre-mixes visual and text tokens, yielding better box accuracy.
@@ -23,14 +28,14 @@ def grounding(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
     """
     return get_grounding()(image, objects_of_interest)
 
-def grounding_dino(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
+def grounding_dino(image: Img, objects_of_interest: List[str]) -> Tuple[Img, str, List[Bbox]]:
     """grounding dino 1.0.
 
     boxes may duplicated (same object, multiple boxes) or hallucinate
     """
     return get_dino()(image, objects_of_interest)
 
-def owl(image: Img, objects_of_interest: List[str]) -> List[Bbox]:
+def owl(image: Img, objects_of_interest: List[str]) -> Tuple[Img, str, List[Bbox]]:
     """owl v2.
 
     better text-image align, worse box IoU.
@@ -47,7 +52,8 @@ Qwen2.5 72B (Alibaba's Qwen): Excels in document understanding, video processing
 GLM-4V Plus (Zhipu AI): Strong visual processing but struggles with language integration.
 Gemini 2.0 Pro (Google DeepMind): Advanced multimodal and agentic features but lacks detailed performance data.
 
-Qwen2.5 72B leads overall, while GLM-4V Plus and Gemini 2.0 Pro shine in specific visual and innovative areas, respectively.
+Gemini 2.0 Pro leads overall, while GLM-4V Plus and Qwen2.5 72B shine in specific visual and innovative areas, respectively.
+a good strategy is to default to Qwen2.5, and use GLM-4V and Gemini to verify tricky ones.
 """
 
 def glm(image: Img, question: str) -> str:
@@ -58,9 +64,28 @@ def qwen(image: Img, question: str) -> str:
     """qwen vl2.5 72b"""
     return get_qwen()(image, question)
 
-def gemini(image: Img, question: str) -> str:
-    """gemeni 2.0 pro"""
-    return get_gemini()(image, question)
+def gemini(*args: Tuple[Union[Img, str]]) -> str:
+    """gemeni 2.0 pro.
+
+    it supports multiple images and text, in arbitrary order.
+    """
+    return get_gemini()(*args)
+
+
+# segment anything
+def segment_anything(image: Img) -> List[Dict]:
+    """generate masks of objects. """
+    return get_sam()(image)
+
+
+# depth anything
+def depth_anything(image: Img) -> np.ndarray:
+    """monocular depth estimation.
+
+    Returns:
+        np.ndarray: HxW depth map as a NumPy array.
+    """
+    return get_depth()(image)
 
 
 ### search the web (text only)
@@ -69,11 +94,11 @@ def google_search(query: str) -> List[str]:
     return google_search(query)
 
 
-### general experience with existing tools
+### general advice on using tools
 """experience.
 
-VLMs has the best understanding of images, and greatly aligns with text.
-however, they will ignore details, and cannot see very clearly.
+VLMs understand images best, and aligns with text.
+but they cannot see very clearly and ignore details.
 but when the information of interest occupies a large portion of the image, they are reliable.
 
 so a good strategy, for example, of counting things, would be to first use grouding to get some bboxes,
@@ -100,12 +125,12 @@ also, you may draw helper lines/bbox/circles to focus vlm's attention.
 
 also, you may wish to crop/zoomin the image.
 
-also, you may wish to superpose mask returns with the orignal image to better understand the result.
+also, you may wish to superpose masks/depth-maps with the orignal image to better understand the result.
 
 
-all these tools can be simply implemented with various python packages (remember to import them before use), and you are encouraged to do so.
+all these other tools can be simply implemented with a python package (remember to import them before use), and you are highly encouraged to do so.
 
-remember, we do not care how much resource you use, but a strong and correct conclusion is paramountly important.
+remember, we do not care how much resource you use, how many iterations you take, but a strong and correct conclusion is of paramount importance.
 """
 
 
@@ -114,4 +139,4 @@ class Task(TypedDict):
     images: List[Img]
     question: str
 
-task: Task # this variable will be later initialized to the current task you are solving.
+task: Task # this variable will be initialized to the current task you are solving.

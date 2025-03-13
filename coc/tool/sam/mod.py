@@ -3,8 +3,10 @@ import threading
 import numpy as np
 import torch
 from PIL import Image
+from PIL.Image import Image as Img
 from typing import Literal, Dict, List
 import matplotlib.pyplot as plt
+from coc.config import sam_variant
 
 # SAM2 imports (assuming these are available in the sam2 package)
 from sam2.build_sam import build_sam2
@@ -129,8 +131,7 @@ class SAMWrapper:
             return annotations
 
     def visualize_masks(self, image: np.ndarray, mask_data: Dict) -> np.ndarray:
-        """
-        Create mask visualization from raw mask data.
+        """Create mask visualization from raw mask data.
 
         Args:
             image: Original image as a NumPy array
@@ -145,8 +146,7 @@ class SAMWrapper:
         return self.visualize_annotations(image, annotations)
 
     def visualize_annotations(self, image: np.ndarray, annotations: List[Dict]) -> np.ndarray:
-        """
-        Create annotation visualization from processed data.
+        """Create annotation visualization from processed data.
 
         Args:
             image: Original image as a NumPy array
@@ -161,7 +161,7 @@ class SAMWrapper:
 _sam_engine = None
 _sam_lock = threading.Lock()
 
-def get_sam(variant: Literal['t', 'l'] = 't', max_parallel: int = 1, checkpoint_dir: str = "/home/jkp/Pictures/sam2/checkpoints"):
+def get_sam(variant: Literal['t', 'l'] = sam_variant, max_parallel: int = 1, checkpoint_dir: str = "/home/jkp/Pictures/sam2/checkpoints"):
     """
     Return a callable for SAM2 mask generation with lazy loading and concurrency control.
 
@@ -179,9 +179,8 @@ def get_sam(variant: Literal['t', 'l'] = 't', max_parallel: int = 1, checkpoint_
             if _sam_engine is None:
                 _sam_engine = SAMWrapper(variant=variant, max_parallel=max_parallel, checkpoint_dir=checkpoint_dir)
 
-    def process_sam(image: np.ndarray, **kwargs) -> List[Dict]:
-        """
-        Process an image to generate masks using SAM2.
+    def process_sam(image: Img, **kwargs) -> List[Dict]:
+        """Process an image to generate masks using SAM2.
 
         Args:
             image: Input image as a NumPy array
@@ -190,6 +189,8 @@ def get_sam(variant: Literal['t', 'l'] = 't', max_parallel: int = 1, checkpoint_
         Returns:
             List of dictionaries containing annotation data
         """
+        if isinstance(image, Img): # convert to nparray
+            image = np.array(image)
         return _sam_engine._run(image, **kwargs)
 
     return process_sam

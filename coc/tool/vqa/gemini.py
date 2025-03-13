@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 from langchain.tools import BaseTool
-from typing import List, Literal, Dict
+from typing import List, Tuple, Union
 
 from langchain_core.messages import HumanMessage
 
@@ -127,15 +127,21 @@ class Gemini(BaseTool):
         logger.info(f"Multi-image VQA response: {response.content}")
         return response.content
 
-    def run_freestyle(self, prompt: List[str]):
+    def run_freestyle(self, *args: Tuple[Union[str, Img]]):
         # Log the input (original prompt)
-        input_log = prompt
+        input_log = ' '.join(x if isinstance(x, str) else ' <image>' for x in args)
 
         text_parts = []
         images = []
 
-        for s in prompt:
-            if os.path.isfile(s):
+        for s in args:
+            if isinstance(s, Img):
+                img_base64 = self._encode_image(s)
+                images.append({
+                    'type': 'image_url',
+                    'image_url': {'url': img_base64}
+                })
+            elif os.path.isfile(s):
                 try:
                     # Verify and process image
                     with Image.open(s) as img:

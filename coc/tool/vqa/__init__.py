@@ -13,6 +13,6 @@ def get_qwen():
     return qwen._run
 
 def get_gemini():
-    return gemini._run
+    return gemini.run_freestyle
 
 gemini_as_llm = gemini.invoke

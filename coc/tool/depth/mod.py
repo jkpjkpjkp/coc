@@ -1,6 +1,7 @@
 import cv2
 import torch
 from PIL import Image
+from PIL.Image import Image as Img
 from typing import Union
 import numpy as np
 from depth_anything_v2.dpt import DepthAnythingV2
@@ -96,8 +97,12 @@ def get_depth(encoder: str = 'vitl', device: str = None, max_parallel: int = 1):
             if _depth_factory is None:
                 _depth_factory = DepthFactory(encoder=encoder, device=device, max_parallel=max_parallel)
 
-    def process_depth(image: Union[str, Image.Image]) -> np.ndarray:
-        """Compute the depth map for the given image with concurrency control. """
+    def process_depth(image: Img) -> np.ndarray:
+        """Compute the depth map for the given image with concurrency control.
+
+        Returns:
+            np.ndarray: HxW depth map as a NumPy array.
+        """
         try:
             depth_map = _depth_factory._run(image)
             return depth_map
