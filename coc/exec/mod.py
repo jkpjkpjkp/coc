@@ -146,6 +146,14 @@ class Exec(BaseTool):
                     f.write(errors)
                     f.write('\n')
 
+        remove_exact = '''FutureWarnings:
+`box_threshold` is deprecated and will be removed in version 4.51.0 for `GroundingDinoProcessor.post_process_grounded_object_detection`. Use `threshold` instead.
+The key `labels` is will return integer ids in `GroundingDinoProcessor.post_process_grounded_object_detection` output since v4.51.0. Use `text_labels` instead to retrieve string object names.
+'''
+        # remove from errors remove_exact, then strip all whitespace and empty lines
+        errors = errors.replace(remove_exact, '').strip()
+        errors = '\n'.join([line for line in errors.split('\n') if line.strip()])
+
         return (output, errors)
 
     def get_var(self, name: str):
