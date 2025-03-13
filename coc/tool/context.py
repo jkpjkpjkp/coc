@@ -109,7 +109,7 @@ def sam_predict(image: Img, **kwargs) -> Tuple[np.ndarray, np.ndarray, np.ndarra
             of masks and H=W=256. These low resolution logits can be passed to
             a subsequent iteration as mask input.
     """
-    get_sam_predict()(image, **kwargs)
+    return get_sam_predict()(image, **kwargs)
 
 def sam_auto(image: Img, **kwargs) -> List[Dict[str, Any]]:
     """
@@ -163,7 +163,7 @@ def sam_auto(image: Img, **kwargs) -> List[Dict[str, Any]]:
             crop_box (list(float)): The crop of the image used to generate
                 the mask, given in XYWH format.
     """
-    get_sam_auto()(image, **kwargs)
+    return get_sam_auto()(image, **kwargs)
 
 
 

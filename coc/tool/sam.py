@@ -38,17 +38,15 @@ class SamPredictor:
 
         predictor = SAM2ImagePredictor(sam_model=self._model, **init_params)
         predictor.set_image(np.array(image))
-        print(kwargs)
-        print(init_params)
         ret = predictor.predict(**kwargs)
-        print(ret)
         return ret
 
 
     def _run_auto(self, image, **kwargs):
         self._load_model()
         generator = SAM2AutomaticMaskGenerator(model=self._model, **kwargs)
-        return generator.generate(np.array(image))
+        ret = generator.generate(np.array(image))
+        return ret
 
 _prdct = SamPredictor()
 _auto_sema = threading.Semaphore(1)
@@ -57,11 +55,13 @@ _pred_sema = threading.Semaphore(4)
 def get_sam_auto():
     def process_sam_auto(image, **kwargs):
         with _auto_sema:
-            _prdct._run_auto(image, **kwargs)
+            ret = _prdct._run_auto(image, **kwargs)
+        return ret
     return process_sam_auto
 
 def get_sam_predict():
     def process_sam(image, **kwargs):
         with _pred_sema:
-            _prdct._run(image, **kwargs)
+            ret = _prdct._run(image, **kwargs)
+        return ret
     return process_sam

@@ -34,7 +34,7 @@ def test_sam_predict_point(image):
     assert scores.shape == (1,), f"Expected scores shape (1,), got {scores.shape}"
     assert low_res_logits.shape == (1, 256, 256), f"Expected low_res_logits shape (1, 256, 256), got {low_res_logits.shape}"
     # Check mask is binary (since return_logits=False by default)
-    assert masks.dtype == bool or (masks.dtype == np.uint8 and np.all(np.isin(masks, [0, 1]))), "Masks should be binary"
+    assert masks.dtype == bool or (masks.dtype == np.float32 and np.all(np.isin(masks, [0, 1]))), "Masks should be binary"
 
 @pytest.mark.parametrize("image", ["onions", "4girls"], indirect=True)
 def test_sam_predict_box(image):
@@ -55,7 +55,7 @@ def test_sam_predict_box(image):
     assert scores.shape == (1,), f"Expected scores shape (1,), got {scores.shape}"
     assert low_res_logits.shape == (1, 256, 256), f"Expected low_res_logits shape (1, 256, 256), got {low_res_logits.shape}"
     # Check mask is binary
-    assert masks.dtype == bool or (masks.dtype == np.uint8 and np.all(np.isin(masks, [0, 1]))), "Masks should be binary"
+    assert masks.dtype == bool or (masks.dtype == np.float32 and np.all(np.isin(masks, [0, 1]))), "Masks should be binary"
 
 @pytest.mark.parametrize("image", ["onions", "4girls"], indirect=True)
 def test_sam_predict_multimask(image):
@@ -79,7 +79,7 @@ def test_sam_predict_multimask(image):
     assert scores.shape == (3,), f"Expected scores shape (3,), got {scores.shape}"
     assert low_res_logits.shape == (3, 256, 256), f"Expected low_res_logits shape (3, 256, 256), got {low_res_logits.shape}"
     # Check mask is binary
-    assert masks.dtype == bool or (masks.dtype == np.uint8 and np.all(np.isin(masks, [0, 1]))), "Masks should be binary"
+    assert masks.dtype == bool or (masks.dtype == np.float32 and np.all(np.isin(masks, [0, 1]))), "Masks should be binary"
 
 # Tests for sam_auto
 @pytest.mark.parametrize("image", ["onions", "4girls"], indirect=True)
@@ -95,7 +95,7 @@ def test_sam_auto_default(image):
         assert 'segmentation' in result, "'segmentation' key missing"
         assert isinstance(result['segmentation'], np.ndarray), "Segmentation should be a NumPy array"
         assert result['segmentation'].shape == (image.height, image.width), f"Expected segmentation shape ({image.height}, {image.width}), got {result['segmentation'].shape}"
-        assert result['segmentation'].dtype == bool or (result['segmentation'].dtype == np.uint8 and np.all(np.isin(result['segmentation'], [0, 1]))), "Segmentation should be binary"
+        assert result['segmentation'].dtype == bool or (result['segmentation'].dtype == np.float32 and np.all(np.isin(result['segmentation'], [0, 1]))), "Segmentation should be binary"
 
         assert 'bbox' in result, "'bbox' key missing"
         assert isinstance(result['bbox'], list), "Bbox should be a list"
