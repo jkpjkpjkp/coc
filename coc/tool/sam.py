@@ -30,19 +30,19 @@ class SamPredictor:
 
     def _run(self, image, **kwargs):
         self._load_model()
-        print('A')
 
         init_params = {}
         for param in ['mask_threshold', 'max_hole_area', 'max_sprinkle_area']:
             if param in kwargs:
                 init_params[param] = kwargs.pop(param)
 
-        print('B')
         predictor = SAM2ImagePredictor(sam_model=self._model, **init_params)
-        print('C')
         predictor.set_image(np.array(image))
-        print('D')
-        return predictor.predict(**kwargs)
+        print(kwargs)
+        print(init_params)
+        ret = predictor.predict(**kwargs)
+        print(ret)
+        return ret
 
 
     def _run_auto(self, image, **kwargs):
