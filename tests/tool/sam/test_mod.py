@@ -2,7 +2,7 @@ import pytest
 import numpy as np
 from PIL import Image
 import threading
-from sam_wrapper import SAMWrapper, get_sam
+from coc.tool.sam.automagen import SAMWrapper, get_sam
 
 # Session-scoped fixture to initialize SAMWrapper once
 @pytest.fixture(scope="session")
@@ -11,15 +11,14 @@ def sam_processor():
     processor = get_sam(
         variant='t',
         max_parallel=1,
-        checkpoint_dir="/home/jkp/Pictures/sam2/checkpoints"
     )
     return processor
 
 # Fixture to load a sample image
 @pytest.fixture
 def sample_image():
-    """Fixture to load onion.jpg as a NumPy array."""
-    image_path = "data/sample/onion.jpg"
+    """Fixture to load onions.jpg as a NumPy array."""
+    image_path = "data/sample/onions.jpg"
     image = Image.open(image_path)
     return np.array(image)
 
@@ -66,7 +65,7 @@ def test_concurrency():
     )
 
     # Load sample images
-    image_paths = ["data/sample/onion.jpg", "data/sample/4girls.jpg"]
+    image_paths = ["data/sample/onions.jpg", "data/sample/4girls.jpg"]
     images = [np.array(Image.open(path)) for path in image_paths] * 2  # Duplicate to get 4 images
 
     # Thread-safe counter for concurrent processes

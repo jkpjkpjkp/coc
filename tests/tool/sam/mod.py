@@ -1,4 +1,4 @@
-from coc.tool.sam.mod import SAMWrapper
+from coc.tool.sam.automagen import SAMWrapper
 import gradio as gr
 class ExtendSamWrapper(SAMWrapper):
     def create_gradio_interface(self) -> gr.TabbedInterface:

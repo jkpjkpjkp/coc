@@ -5,3 +5,4 @@ data/
 coc/secret.py
 *.log
 output.md
+res.md
