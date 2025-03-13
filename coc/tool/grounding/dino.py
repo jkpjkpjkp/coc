@@ -1,6 +1,7 @@
 import torch
 from transformers import AutoProcessor, AutoModelForZeroShotObjectDetection
-from typing import List, TypedDict
+from typing import List, TypedDict, Tuple
+from PIL.Image import Image as Img
 from PIL import Image, ImageDraw, ImageFont
 import threading
 from coc.tool.task import Bbox
@@ -81,11 +82,10 @@ def get_dino(max_parallel=1):
             if _dino_factory is None:
                 _dino_factory = DinoObjectDetectionFactory(max_parallel=max_parallel)
 
-    def process_dino(image, object_list_text, box_threshold, text_threshold):
+    def process_dino(image: Img, objects: List[str], box_threshold=0.2, text_threshold=0.15) -> Tuple[Img, str, List[Bbox]]:
         """Process an image for object detection using Grounding DINO."""
         if not image:
             return None, 'Please upload an image.', []
-        objects = [obj.strip() for obj in object_list_text.split(',') if obj.strip()]
         if not objects:
             return image, 'Please specify at least one object.', []
         try:

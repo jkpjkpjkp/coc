@@ -1,7 +1,8 @@
 import torch
 from transformers import Owlv2Processor, Owlv2ForObjectDetection
-from typing import List
+from typing import List, Tuple
 from PIL import Image
+from PIL.Image import Image as Img
 import threading
 from .dino import draw_boxes, format_detections
 from coc.tool.task import Bbox
@@ -52,11 +53,10 @@ def get_owl(max_parallel=1):
             if _semaphore is None:
                 _semaphore = threading.Semaphore(max_parallel)
 
-    def process_owl(image, object_list_text, threshold):
+    def process_owl(image: Img, objects: List[str], threshold: float = 0.15) -> Tuple[Img, str, List[Bbox]]:
         """Process an image for object detection with concurrency control."""
         if image is None:
             return None, 'Please upload an image.', []
-        objects = [obj.strip() for obj in object_list_text.split(',') if obj.strip()]
         if not objects:
             return image, 'Please specify at least one object.', []
         try:

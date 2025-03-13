@@ -1,6 +1,6 @@
 import pytest
 from coc.tool.grounding.mod import ObjectDetectionFactory, Bbox, box_trim
-from coc.tool.context import create_dummy_image
+from tests.tool.test_context import create_dummy_image
 
 class TestObjectDetectionFactory:
     def setup_method(self):
@@ -14,7 +14,7 @@ class TestObjectDetectionFactory:
             Bbox(box=[1, 1, 9, 9], score=0.8, label="object"),
             Bbox(box=[50, 50, 60, 60], score=0.7, label="object")
         ]
-        
+
         trimmed = self.factory.trim_result(mock_detections)
         assert len(trimmed) == 2  # Should remove overlapping box
 
@@ -36,7 +36,7 @@ class TestBoxTrim:
             Bbox(box=[0.1, 0.1, 0.9, 0.9], score=0.8, label='cat'),
             Bbox(box=[1.1, 1.1, 2.0, 2.0], score=0.7, label='dog')
         ]
-        
+
         trimmed = box_trim(boxes)
         assert len(trimmed) == 2
         assert trimmed[0]['score'] == 0.9

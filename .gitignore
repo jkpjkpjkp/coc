@@ -4,3 +4,4 @@ data/
 .aider*
 coc/secret.py
 *.log
+output.md

@@ -1,7 +1,7 @@
 import pytest
 import torch
 from coc.tool.grounding.owl import get_owl
-from coc.tool.context import create_dummy_image, check_bbox_list
+from tests.tool.test_context import create_dummy_image, check_bbox_list
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires CUDA")
 class TestOwlObjectDetection:
@@ -12,11 +12,13 @@ class TestOwlObjectDetection:
     def test_basic_detection(self):
         detections = get_owl()(
             image=self.test_image,
-            texts=self.test_texts,
+            objects=self.test_texts,
             threshold=0.1
         )
-        check_bbox_list(detections)
+        check_bbox_list(detections[2])
 
     def test_invalid_input(self):
-        with pytest.raises(ValueError):
-            get_owl()(None, ["object"])
+        ret = get_owl()(None, ["object"])
+        assert ret[0] is None
+        assert ret[1] == 'Please upload an image.'
+        assert ret[2] == []

@@ -1,7 +1,7 @@
 import pytest
 import torch
 from coc.tool.grounding.dino import get_dino
-from coc.tool.context import create_dummy_image, check_bbox_list
+from tests.tool.test_context import create_dummy_image, check_bbox_list
 
 @pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires CUDA")
 class TestDinoObjectDetection:
@@ -12,10 +12,12 @@ class TestDinoObjectDetection:
     def test_basic_detection(self):
         detections = get_dino()(
             image=self.test_image,
-            texts=self.test_texts
+            objects=self.test_texts
         )
-        check_bbox_list(detections)
+        check_bbox_list(detections[2])
 
     def test_invalid_input(self):
-        with pytest.raises(ValueError):
-            get_dino()(None, ["object"])
+        ret = get_dino()(None, ["object"])
+        assert ret[0] is None
+        assert ret[1] == 'Please upload an image.'
+        assert ret[2] == []
