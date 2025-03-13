@@ -1,7 +1,8 @@
 from typing import *
+from PIL import Image
 from PIL.Image import Image as Img
 import numpy as np
-from .mod import *
+from coc.tool.mod import *
 
 
 class Bbox(TypedDict):
@@ -228,4 +229,4 @@ class Task(TypedDict):
     images: List[Img]
     question: str
 
-task: Task # this variable will be later initialized to the current task you are solving.
+task: Task # this variable is already initialized to the current task you are solving.

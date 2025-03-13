@@ -12,30 +12,34 @@ import logging
 from datetime import datetime
 import pickle
 
-class Exec(BaseTool):
-    """Python code interpreter.
+from pydantic import Field
 
-    Execute python code snippets in a Jupyter notebook style,
-    with historical contexts, and
-    as in Jupyter, will print the last line of each cell.
-    """
+class Exec(BaseTool):
+    """Python code interpreter with proper initialization."""
     name: str = 'exec'
     description: str = (
-        'Execute python code snippets '
-        'with history contexts, supporting Jupyter-style last-line expression evaluation'
+        'Execute python code snippets with history contexts, '
+        'supporting Jupyter-style last-line expression evaluation'
     )
-    globals: dict
+    globals: dict = Field(default_factory=dict)
 
-    def __init__(self, *args, task=None):
-        """Initialize a code environment.
+    def __init__(self, *args, task=None, **kwargs):
+        """Initialize with essential globals and parent fields."""
+        # Initialize parent with required fields using class defaults
+        super().__init__(**kwargs)
 
-        args: list of code files to execute in order.
-        """
-        super().__init__(globals={})
+        # Set up execution environment
+        self.globals.update({
+            '__name__': '__main__',
+            '__builtins__': __builtins__,
+        })
+
+        # Execute initialization code
         for code_path in args:
             with open(code_path, 'r') as f:
-                init_code = f.read()
-            self._run(init_code)
+                self._run(f.read())
+
+        # Add task to environment if provided
         if task:
             self.globals['task'] = copy.deepcopy(task)
 
@@ -141,8 +145,7 @@ class Exec(BaseTool):
         """Add a new variable into the execution environment."""
         self.globals[name] = value
     def __deepcopy__(self, memo):
-        """
-        Custom deep copy method that handles globals carefully.
+        """Custom deep copy method that handles globals carefully.
 
         This method creates a new Exec instance and copies only
         serializable global variables, logging skipped items.
@@ -195,5 +198,8 @@ class Exec(BaseTool):
             logger.info("Skipped items details:")
             for key, details in skipped_items.items():
                 logger.info(f"{key}: {details}")
+
+        # Ensure '__name__' is set in the new globals
+        new_exec.globals['__name__'] = '__main__'
 
         return new_exec

@@ -120,23 +120,13 @@ def evaluate(task: Task, llm) -> list[tuple[TreeNode, str]]:
 
     return all_answers
 
-def judge_multichoice(output: str, choices: List[str], answer: str) -> bool:
+def judge_if_any(outputs: List[str], answer: str) -> bool:
     """
-    Judge if the output indicates the correct choice.
-
-    Args:
-        output: The extracted answer from the LLM.
-        choices: List of possible choices.
-        answer: The correct choice.
-
-    Returns:
-        True if the output can arrive at the correct choice, False otherwise.
-    """
+    Judge if the any output is correct. """
     ret = gemini_as_llm(textwrap.dedent(f'''
-        judge the following output and return True if, given the choices available, the party offering this output has the capability of arriving at the correct choice,
-            otherwise return False.
-        output (cannot see the choices): {output}
-        choices: {choices}
+        judge the following outputs and end your return with True if ANY one of them is correct,
+            otherwise end with False.
+        outputs: {outputs}
         answer (correct choice is): {answer}'''
     ))
     return 'False' not in ret and 'True' in ret
@@ -163,7 +153,7 @@ def eval_a_batch(batch: Iterable[FullTask], llm) -> tuple[int, int]:
         if answers_nodes:
             answers = [answer for _, answer in answers_nodes]
             most_common_answer = max(set(answers), key=answers.count)
-            if judge_multichoice(most_common_answer, fulltask['choices'], fulltask['answer']):
+            if judge_if_any(answers, fulltask['answer']):
                 correct += 1
         total += 1
     return correct, total
@@ -171,7 +161,7 @@ def eval_a_batch(batch: Iterable[FullTask], llm) -> tuple[int, int]:
 if __name__ == '__main__':
     set_seed()
     from coc.data.zero import zero
-    from coc.tree.llm import llm
+    from coc.tree.llm import llm, gemini
     batch = zero(offer='sub')
-    correct, total = eval_a_batch(batch, llm)
+    correct, total = eval_a_batch(batch, gemini)
     print(f"Correct: {correct}, Total: {total}")

@@ -7,7 +7,7 @@ import sys
 sys.modules['cv2'] = cv2  # Handle module import issues if any
 
 # Import the module containing DepthFactory and get_depth
-from coc.tool.depth.depth import DepthFactory, get_depth, _depth_factory, _depth_lock
+from coc.tool.depth import DepthFactory, get_depth, _depth_factory, _depth_lock
 ENCODER = 'vitl'
 # Fixtures for test images
 @pytest.fixture
