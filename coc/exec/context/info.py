@@ -1,212 +1,158 @@
-info = {
-    'grounding':\
-'''
-class Bbox(TypedDict):
-    """'bbox' stands for 'bounding box'"""
-    box: List[float] # [x1, y1, x2, y2]
-    score: float
-    label: str
+_info = {
+    'grounding': """
+### Grounding Tools
 
-### grounding tools (add bbox to objects)
-#   Returns:
-#       rendered image (with bounding boxes drawn),
-#       string form of bounding boxes,
-#       list form of bounding boxes
+These tools detect objects in an image based on text descriptions, returning bounding boxes around matching objects. A bounding box (`Bbox`) is a dictionary with:
+- `box`: List of floats `[x1, y1, x2, y2]` (top-left and bottom-right coordinates).
+- `score`: Float indicating confidence.
+- `label`: String naming the detected object.
 
-def grounding(image: Img, objects_of_interest: List[str], owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
-    """a combination of grounding dino and owl v2.
+All functions return:
+- Rendered image with bounding boxes drawn.
+- String representation of the boxes.
+- List of `Bbox` dictionaries.
 
-    grounding dino pre-mixes visual and text tokens, yielding better box accuracy.
-        the downside of grounding dino, also because of pre-mixing, is it often hallucinates.
-    so we use owl v2 to filter out hallucinated boxes.
+#### `grounding(image: Img, objects_of_interest: List[str], owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1)`
 
-    this implementation is generally duplication- and hallucination- free,
-       but is limited by the capabilitie of pre-trained grounding dino 1.0.
-    """
-    return get_grounding()(image, objects_of_interest, owl_threshold, dino_box_threshold, dino_text_threshold)
+- **Purpose**: Detects objects accurately by combining Grounding DINO and OWL v2.
+- **How it Works**: Grounding DINO detects objects, and OWL v2 filters out false positives (hallucinations).
+- **Parameters**:
+  - `image`: Input image.
+  - `objects_of_interest`: List of strings (e.g., ["cat", "dog"]) to detect.
+  - `owl_threshold`: OWL v2 filtering threshold (default: 0.1).
+  - `dino_box_threshold`: Grounding DINO box confidence (default: 0.2).
+  - `dino_text_threshold`: Grounding DINO text confidence (default: 0.1).
+- **Notes**: Reliable, with minimal duplicates or hallucinations, but limited by Grounding DINO 1.0’s capabilities.
 
-def grounding_dino(image: Img, objects_of_interest: List[str], box_threshold=0.2, text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
-    """grounding dino 1.0.
+#### `grounding_dino(image: Img, objects_of_interest: List[str], box_threshold=0.2, text_threshold=0.1)`
 
-    boxes may duplicated (same object, multiple boxes) or hallucinate.
-    """
-    return get_dino()(image, objects_of_interest, box_threshold, text_threshold)
+- **Purpose**: Detects objects using Grounding DINO 1.0 alone.
+- **Parameters**: Similar to `grounding`, without OWL filtering.
+- **Notes**: May detect duplicates (multiple boxes for one object) or hallucinate (detect non-existent objects).
 
-def owl(image: Img, objects_of_interest: List[str], threashold=0.15) -> Tuple[Img, str, List[Bbox]]:
-    """owl v2.
+#### `owl(image: Img, objects_of_interest: List[str], threshold=0.15)`
 
-    better text-image align, worse box IoU.
-    boxes generally do not duplicate.
-    """
-    return get_owl()(image, objects_of_interest, threashold)
+- **Purpose**: Detects objects using OWL v2 alone.
+- **Parameters**:
+  - `threshold`: Confidence threshold (default: 0.15).
+- **Notes**: Better at matching text to objects, less accurate box placement, avoids duplicates.
 
+**Choosing a Tool**:
+- Use `grounding` for balanced accuracy and reliability.
+- Use `grounding_dino` for higher detection rates, accepting possible duplicates or errors.
+- Use `owl` for better text alignment and fewer duplicates.
+""",
 
-''',
+    'sam': """
+### SAM (Segment Anything Model) Tools
 
-    'sam':\
-'''
+These tools segment images into regions or objects, returning masks that highlight those areas.
 
-def sam_predict(image: Img, **kwargs) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """
-    Args (*all args are optional*):
-        mask_threshold (float): The threshold to use when converting mask logits
-            to binary masks. Masks are thresholded at 0 by default.
-        max_hole_area (int): If max_hole_area > 0, we fill small holes in up to
-            the maximum area of max_hole_area in low_res_masks.
-        max_sprinkle_area (int): If max_sprinkle_area > 0, we remove small sprinkles up to
-            the maximum area of max_sprinkle_area in low_res_masks.
+#### `sam_predict(image: Img, **kwargs)`
 
-        point_coords (np.ndarray or None): A Nx2 array of point prompts to the
-            model. Each point is in (X,Y) in pixels.
-        point_labels (np.ndarray or None): A length N array of labels for the
-            point prompts. 1 indicates a foreground point and 0 indicates a
-            background point.
-        box (np.ndarray or None): A length 4 array given a box prompt to the
-            model, in XYXY format.
-        mask_input (np.ndarray): A low resolution mask input to the model, typically
-            coming from a previous prediction iteration. Has form 1xHxW, where
-            for SAM, H=W=256.
-        multimask_output (bool): If true, the model will return three masks.
-            For ambiguous input prompts (such as a single click), this will often
-            produce better masks than a single prediction. If only a single
-            mask is needed, the model's predicted quality score can be used
-            to select the best mask. For non-ambiguous prompts, such as multiple
-            input prompts, multimask_output=False can give better results.
-        return_logits (bool): If true, returns un-thresholded masks logits
-            instead of a binary mask.
-        normalize_coords (bool): If true, the point coordinates will be normalized to the range [0,1] and point_coords is expected to be wrt. image dimensions.
+- **Purpose**: Segments specific parts of an image based on prompts like points or boxes.
+- **Key Parameters** (all optional):
+  - `point_coords`: Array of points (Nx2, in pixels) to mark areas (e.g., [[100, 150]]).
+  - `point_labels`: Array of labels (1 for foreground, 0 for background).
+  - `box`: Array `[x1, y1, x2, y2]` to focus segmentation.
+  - `mask_input`: Previous mask (1x256x256) for refinement.
+  - `multimask_output`: If `True`, returns multiple masks; if `False`, returns one (default: `True`).
+- **Returns**:
+  - Masks: Array (CxHxW) of binary or logit masks (C = number of masks).
+  - Quality scores: Array of mask quality predictions.
+  - Low-res logits: Array (Cx256x256) for further refinement.
+- **Example**: Click a point on an object to segment it or provide a box to isolate an area.
 
-    Returns:
-        (np.ndarray): The output masks in CxHxW format, where C is the
-            number of masks, and (H, W) is the original image size.
-        (np.ndarray): An array of length C containing the model's
-            predictions for the quality of each mask.
-        (np.ndarray): An array of shape CxHxW, where C is the number
-            of masks and H=W=256. These low resolution logits can be passed to
-            a subsequent iteration as mask input.
-    """
-    return get_sam_predict()(image, **kwargs)
+#### `sam_auto(image: Img, **kwargs)`
 
-def sam_auto(image: Img, **kwargs) -> List[Dict[str, Any]]:
-    """
-    Args (*all args are optional*):
-        points_per_side (int or None): The number of points to be sampled
-            along one side of the image. The total number of points is
-            points_per_side**2. If None, 'point_grids' must provide explicit
-            point sampling.
-        pred_iou_thresh (float): A filtering threshold in [0,1], using the
-            model's predicted mask quality.
-        stability_score_thresh (float): A filtering threshold in [0,1], using
-            the stability of the mask under changes to the cutoff used to binarize
-            the model's mask predictions.
-        stability_score_offset (float): The amount to shift the cutoff when
-            calculated the stability score.
-        mask_threshold (float): Threshold for binarizing the mask logits
-        box_nms_thresh (float): The box IoU cutoff used by non-maximal
-            suppression to filter duplicate masks.
-        crop_n_layers (int): If >0, mask prediction will be run again on
-            crops of the image. Sets the number of layers to run, where each
-            layer has 2**i_layer number of image crops.
-        crop_nms_thresh (float): The box IoU cutoff used by non-maximal
-            suppression to filter duplicate masks between different crops.
-        crop_overlap_ratio (float): Sets the degree to which crops overlap.
-            In the first crop layer, crops will overlap by this fraction of
-            the image length. Later layers with more crops scale down this overlap.
-        crop_n_points_downscale_factor (int): The number of points-per-side
-            sampled in layer n is scaled down by crop_n_points_downscale_factor**n.
-        point_grids (list(np.ndarray) or None): A list over explicit grids
-            of points used for sampling, normalized to [0,1]. The nth grid in the
-            list is used in the nth crop layer. Exclusive with points_per_side.
-        min_mask_region_area (int): If >0, postprocessing will be applied
-            to remove disconnected regions and holes in masks with area smaller
-            than min_mask_region_area. Requires opencv.
-        use_m2m (bool): Whether to add a one step refinement using previous mask predictions.
-        multimask_output (bool): Whether to output multimask at each point of the grid.
+- **Purpose**: Automatically segments the entire image without prompts.
+- **Key Parameters** (all optional):
+  - `points_per_side`: Number of grid points per side (e.g., 32).
+  - `pred_iou_thresh`: Mask quality threshold (default: 0.88).
+  - `stability_score_thresh`: Mask stability threshold (default: 0.95).
+  - `min_mask_region_area`: Minimum mask area to keep (default: 0).
+- **Returns**: List of dictionaries, each with:
+  - `segmentation`: Mask (HxW array).
+  - `bbox`: Box `[x, y, width, height]`.
+  - `area`: Pixel count of the mask.
+  - `predicted_iou`: Quality score.
+  - `stability_score`: Stability measure.
+  - `crop_box`: Crop area used.
+- **Example**: Segments all objects in an image automatically.
 
-    Returns:
-        list(dict(str, any)): A list over records for masks. Each record is
-            a dict containing the following keys:
+**Choosing a Tool**:
+- Use `sam_predict` for targeted segmentation with prompts.
+- Use `sam_auto` for automatic, full-image segmentation.
+""",
 
-            segmentation (np.ndarray): The mask. an array of shape HW.
-            bbox (list(float)): The box around the mask, in XYWH format.
-            area (int): The area in pixels of the mask.
-            predicted_iou (float): The model's own prediction of the mask's
-                quality. This is filtered by the pred_iou_thresh parameter.
-            point_coords (list(list(float))): The point coordinates input
-                to the model to generate this mask.
-            stability_score (float): A measure of the mask's quality. This
-                is filtered on using the stability_score_thresh parameter.
-            crop_box (list(float)): The crop of the image used to generate
-                the mask, given in XYWH format.
-    """
-    return get_sam_auto()(image, **kwargs)
+    'other': """
+### Other Tools and Strategies
 
-''',
+This section offers tips and helper strategies for using the tools effectively.
 
-    'other':\
-'''
-### general experience with existing tools
-"""experience.
+#### Tips for Using Tools
+- **VLMs**: Great at understanding images with text but may miss small details. Best when the target is prominent.
+- **Counting Objects**:
+  1. Use `grounding` to find bounding boxes.
+  2. Zoom into each box and use a VLM (e.g., `qwen`) to count or verify.
+  - This reduces errors from grounding hallucinations.
+- **If Grounding Misses Objects**: Use a sliding window with VLMs to scan the whole image.
 
-VLMs has the best understanding of images, and greatly aligns with text.
-however, they will ignore details, and cannot see very clearly.
-but when the information of interest occupies a large portion of the image, they are reliable.
+#### Helper Strategies
+- **Sliding Windows**: Split the image into smaller parts to detect small objects.
+- **Draw Attention**: Add lines, boxes, or circles to guide VLM focus.
+- **Cropping/Zooming**: Focus on specific areas for better results.
+- **Mask Overlay**: Combine masks with the original image to visualize segments.
+- **Resource Use**: Prioritize accuracy over efficiency—use as many resources as needed.
 
-so a good strategy, for example, of counting things, would be to first use grouding to get some bboxes,
-then zoom in on each one, querying a vlm for each bbox.
-the benefit of this strategy is that it uses vlm's strength to compensate for that grounding tool may sometimes hallucinate, or think multiple objects are one.
+**Implementation**: Use Python packages (e.g., NumPy, OpenCV) to create these helpers. Import them as needed.
+""",
 
-this stragegy, of course, will fail if some object of interest is completely unnoticed by the grounding tool.
+    'vlm': """
+### VLM (Visual Language Model) Tools
 
-in which case and other potential pitfalls, it is up to your ingenuity to think of compensating strategies or further validations.
-(for this particular pitfall, one may, e.g., use a sliding window focus that covers the whole image, and use vlm to count objects in each.)
+These models answer questions about images or generate text from images. Each takes an `image` and a `question`, returning a string answer.
+
+#### `glm(image: Img, question: str)`
+
+- **Model**: GLM-4V Plus.
+- **Strength**: Excellent visual processing.
+- **Weakness**: Weaker language integration.
+
+#### `qwen(image: Img, question: str)`
+
+- **Model**: Qwen2.5 72B.
+- **Strength**: Best for documents, videos, and general tasks.
+
+#### `gemini(image: Img, question: str)`
+
+- **Model**: Gemini 2.0 Pro.
+- **Strength**: Strong language skills, innovative in specific areas.
+
+**Choosing a Model**:
+- Use `qwen` for most tasks, especially documents or videos.
+- Use `glm` for strong visual analysis.
+- Use `gemini` for advanced language needs.
 """
-
-
-
-### other tools
-"""other tools.
-
-the above are tools whose implementation is somehow tricky.
-feel free to implement other helper function/code.
-
-for example, all tools cannot detect objects that is too small; in which case it will be helpful to apply sliding window, passing each window to the tool.
-
-also, you may draw helper lines/bbox/circles to focus vlm's attention.
-
-also, you may wish to crop/zoomin the image.
-
-also, you may wish to superpose mask returns with the orignal image to better understand the result.
-
-
-all these tools can be simply implemented with various python packages (remember to import them before use), and you are encouraged to do so.
-
-remember, we do not care how much resource you use, but a strong and correct conclusion is paramountly important.
-"""
-
-''',
-    'vlm':\
-'''
-### vqa tools (visual language models)
-"""comparison of options.
-
-Qwen2.5 72B (Alibaba's Qwen): Excels in document understanding, video processing, and agentic capabilities.
-GLM-4V Plus (Zhipu AI): Strong visual processing but struggles with language integration.
-Gemini 2.0 Pro (Google DeepMind): Strongest backbone llm. 
-
-Qwen2.5 72B leads overall, while GLM-4V Plus and Gemini 2.0 Pro shine in specific visual and innovative areas, respectively.
-"""
-
-def glm(image: Img, question: str) -> str:
-    """glm 4v plus"""
-    return get_glm()(image, question)
-
-def qwen(image: Img, question: str) -> str:
-    """qwen vl2.5 72b"""
-    return get_qwen()(image, question)
-
-def gemini(image: Img, question: str) -> str:
-    """gemeni 2.0 pro"""
-    return get_gemini()(image, question)
-''',
 }
+
+class Info:
+    def __init__(self):
+        self._data = _info
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __getattr__(self, key):
+        try:
+            return self._data[key]
+        except KeyError:
+            raise AttributeError(f"'Info' object has no attribute '{key}'")
+
+    def __call__(self, key):
+        try:
+            return self._data[key]
+        except KeyError:
+            raise KeyError(f"info for key '{key}' not found")
+
+info = Info()

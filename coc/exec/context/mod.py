@@ -17,7 +17,7 @@ class Bbox(TypedDict):
 #       string form of bounding boxes.
 #       list form of bounding boxes.
 
-def grounding(image: Img, objects_of_interest: List[str], owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
+def grounding(image: Img, objects_of_interest: List[str], text: Optional[str]=None, owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
     """a combination of grounding dino and owl v2.
 
     grounding dino pre-mixes visual and text tokens, yielding better box accuracy.
@@ -27,6 +27,8 @@ def grounding(image: Img, objects_of_interest: List[str], owl_threshold=0.1, din
     this implementation is generally duplication- and hallucination- free,
        but is limited by the capabilitie of pre-trained grounding dino 1.0.
     """
+    if text:
+        objects_of_interest.append(text)
     return get_grounding()(image, objects_of_interest, owl_threshold, dino_box_threshold, dino_text_threshold)
 
 def grounding_dino(image: Img, objects_of_interest: List[str], box_threshold=0.2, text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
@@ -223,7 +225,11 @@ all these tools can be simply implemented with various python packages (remember
 remember, we do not care how much resource you use, but a strong and correct conclusion is paramountly important.
 """
 
+from .info import info
 
+def display(image: Img) -> str:
+    """a pseudo-display function, that instead returns a dense caption. """
+    return qwen(image, 'describe the image in detail.')
 
 class Task(TypedDict):
     images: List[Img]
