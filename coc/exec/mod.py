@@ -12,6 +12,7 @@ import logging
 from datetime import datetime
 import pickle
 import warnings
+import contextlib
 
 from pydantic import Field
 
@@ -27,7 +28,7 @@ class Exec(BaseTool):
     def __init__(self, *args, task=None, **kwargs):
         """Initialize with essential globals and parent fields."""
         # Initialize parent with required fields using class defaults
-        super().__init__(**kwargs)
+        super().__init__(*args, **kwargs)
 
         # Set up execution environment
         self.globals.update({
@@ -45,6 +46,58 @@ class Exec(BaseTool):
             self.globals['task'] = copy.deepcopy(task)
 
     def _run(self, code):
+        """Execute code Jupyter-style: exec all but last statement; eval/print last expression.
+        Returns (stdout, stderr), ignoring FutureWarnings in stderr."""
+        # Define a custom showwarning function to suppress FutureWarnings
+        def custom_showwarning(message, category, filename, lineno, file=None, line=None):
+            # Only print warnings to stderr if they are not FutureWarnings
+            if not issubclass(category, FutureWarning):
+                print(f"{filename}:{lineno}: {category.__name__}: {message}", file=file or sys.stderr)
+
+        # Prepare the code string by dedenting and removing trailing whitespace
+        code_str = '\n'.join(line.rstrip() for line in textwrap.dedent(code).splitlines())
+
+        # Set up redirection for stdout and stderr
+        stdout = io.StringIO()
+        stderr = io.StringIO()
+
+        # Redirect stdout and stderr, and catch warnings
+        with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr), warnings.catch_warnings(record=True):
+            # Set the custom showwarning function
+            warnings.showwarning = custom_showwarning
+            try:
+                # Parse the code into an AST
+                body = ast.parse(code_str, mode='exec').body
+                if body:
+                    # Separate initial statements from the last one
+                    *initial, last = body
+                    # Execute all statements except the last
+                    if initial:
+                        exec(compile(ast.Module(body=initial, type_ignores=[]), '<ast>', 'exec'), self.globals)
+                    # Handle the last statement: evaluate if expression, execute otherwise
+                    if isinstance(last, ast.Expr):
+                        val = eval(compile(ast.Expression(last.value), '<ast>', 'eval'), self.globals)
+                        if isinstance(last.value, ast.Tuple):
+                            # Print each element of a tuple on a new line
+                            for v in val:
+                                if v is not None:
+                                    print(v)
+                        elif val is not None:
+                            print(val)
+                        self.globals['_'] = val
+                    else:
+                        exec(compile(ast.Module(body=[last], type_ignores=[]), '<ast>', 'exec'), self.globals)
+            except Exception:
+                # Capture any exceptions in stderr
+                traceback.print_exc(file=stderr)
+
+        # Clean up the errors string
+        errors = stderr.getvalue().strip()
+        errors = '\n'.join(line for line in errors.split('\n') if line.strip())
+
+        return (stdout.getvalue(), errors)
+
+    def _old_run(self, code):
         """Execute code in a Jupyter-style way.
 
         - All statements but the last are executed normally (exec).

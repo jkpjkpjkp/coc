@@ -1,6 +1,6 @@
 from PIL import Image as Img
 from typing import List, Optional, Dict
-from coc.tool.context import grounding, grounding_dino, owl, glm, qwen, gemini  # Assuming the interface is in interface.py
+from coc.exec.context.mod import grounding, grounding_dino, owl, glm, qwen, gemini  # Assuming the interface is in interface.py
 
 def create_dummy_image(width: int = 100, height: int = 100) -> Img:
     """Create a dummy white image for testing."""

@@ -59,8 +59,12 @@ class CodeList:
         self._.append(code)
 
     def to_list_of_pair_of_str(self):
-        """main purpose is to filter out code with error. """
-        return [code.to_pair_of_str() for code in self._ if not code.error]
+        """main purpose is to filter out code with error.
+
+        current strat is to ignore all code with empty output.
+        future may need to improve, when added display().
+        """
+        return [code.to_pair_of_str() for code in self._ if code.output]
 
     def deepcopy(self):
         # Create a new instance

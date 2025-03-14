@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from PIL import Image
-from coc.tool.context import sam_predict, sam_auto  # Replace 'your_module' with the actual module name
+from coc.exec.context.mod import sam_predict, sam_auto  # Replace 'your_module' with the actual module name
 
 # Fixture to load sample images
 @pytest.fixture

@@ -13,9 +13,9 @@ class Bbox(TypedDict):
 
 ### grounding tools (add bbox to objects)
 #   Returns:
-#       rendered image (with bounding boxes drawn),
-#       string form of bounding boxes,
-#       list form of bounding boxes
+#       rendered image (with bounding boxes drawn). Note: you cannot directly see this, but may use vlm (vqa tool below) to help you.
+#       string form of bounding boxes.
+#       list form of bounding boxes.
 
 def grounding(image: Img, objects_of_interest: List[str], owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
     """a combination of grounding dino and owl v2.

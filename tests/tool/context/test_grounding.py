@@ -1,6 +1,6 @@
 import pytest
 from PIL import Image
-from coc.tool.context import grounding, grounding_dino, owl
+from coc.exec.context.mod import grounding, grounding_dino, owl
 
 def check_bbox_list(bbox_list, objects_of_interest):
     """
