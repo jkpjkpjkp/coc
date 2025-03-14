@@ -8,6 +8,7 @@ import coc.secret # sets environment variables
 class SimpleWrapper(ChatOpenAI):
     def __init__(self, *args, **kwargs):
         super().__init__(stop=['```\n'], *args, **kwargs)
+        self.sys_message = 'You are a paranoid. You believe all vision tools you use and your own vision are actively acting against your purpose and will seek all possible confirmation, re-confirmation. '
 
     def invoke(self, *args, **kwargs):
         try:
