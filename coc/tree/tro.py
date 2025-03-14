@@ -6,7 +6,7 @@ from coc.tool.task import Task
 from typing import Optional, List, Iterable
 from coc.util.text import extract_code, extract_boxed
 from coc.prompts.prompt_troi import prompts_2nd_person
-from coc.prompts.prompt_une import build_trunk
+from coc.exec.context.prompt_brev import build_trunk
 from coc.tool.vqa import gemini_as_llm
 from coc.util.misc import fulltask_to_task, set_seed
 from coc.data.fulltask import FullTask
@@ -27,8 +27,7 @@ def generate_one_child(parent: TreeNode, suggestive_hint: str, llm) -> tuple[Tre
     message = build_trunk(
         task=parent.codelist.env.get_var('task'),
         codes=parent.codelist.to_list_of_pair_of_str(),
-        suggestive_hint=suggestive_hint,
-        variant='neutral',
+        hint=suggestive_hint,
     )
     response = llm(message)
     codes = extract_code(response)
@@ -161,7 +160,7 @@ def eval_a_batch(batch: Iterable[FullTask], llm) -> tuple[int, int]:
 if __name__ == '__main__':
     set_seed()
     from coc.data.zero import zero
-    from coc.tree.llm import llm, gemini
+    from coc.tree.llm import llm
     batch = zero(offer='sub')
-    correct, total = eval_a_batch(batch, gemini)
+    correct, total = eval_a_batch(batch, llm)
     print(f"Correct: {correct}, Total: {total}")

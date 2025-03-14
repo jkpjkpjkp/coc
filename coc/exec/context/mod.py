@@ -70,6 +70,7 @@ def gemini(image: Img, question: str) -> str:
     """gemeni 2.0 pro"""
     return get_gemini()(image, question)
 
+vlm = qwen
 
 ### segment anything
 

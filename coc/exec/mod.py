@@ -16,21 +16,20 @@ import contextlib
 
 from pydantic import Field
 
-class Exec(BaseTool):
+class Exec():
     """Python code interpreter with proper initialization."""
     name: str = 'exec'
     description: str = (
         'Execute python code snippets with history contexts, '
         'supporting Jupyter-style last-line expression evaluation'
     )
-    globals: dict = Field(default_factory=dict)
+    globals: dict
 
     def __init__(self, *args, task=None, **kwargs):
         """Initialize with essential globals and parent fields."""
-        # Initialize parent with required fields using class defaults
-        super().__init__(*args, **kwargs)
 
         # Set up execution environment
+        self.globals = {}
         self.globals.update({
             '__name__': '__main__',
             '__builtins__': __builtins__,
