@@ -1,12 +1,12 @@
 """only code.
 
-since only code returns visual information, whis version (still a chain) retains only code and its output.
+since only code returns visual information, this version (still a chain) retains only code and its output.
 """
 
 from coc.config import MAX_DEPTH
 
 from coc.data.fulltask import FullTask
-from typing import List, Union, Optional, Literal, Iterable
+from typing import *
 from coc.prompts.prompt_une import build_trunk
 from dataclasses import dataclass
 from coc.exec import Exec, CONTEXT_FILE
@@ -21,6 +21,7 @@ from coc.util.misc import fulltask_to_task
 import textwrap
 import copy
 from typing import List, Union
+from PIL import Image
 
 @dataclass
 class Code:
@@ -75,6 +76,13 @@ class CodeList:
         result.env = copy.deepcopy(self.env)
 
         return result
+
+    def visualize_all_images(self) -> List[Tuple[str, Image.Image]]:
+        ret = []
+        for k, v in self.env.globals.items():
+            if isinstance(v, Image.Image):
+                ret.append((k, v))
+        return ret
 
 
 class Node:
