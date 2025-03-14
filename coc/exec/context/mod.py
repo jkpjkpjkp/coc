@@ -70,7 +70,10 @@ def gemini(image: Img, question: str) -> str:
     """gemeni 2.0 pro"""
     return get_gemini()(image, question)
 
-vlm = qwen
+def vlm(image: Img, question: str = '') -> str:
+    if isinstance(image, list):
+        image, question = image[0], image[1]
+    return qwen(image, question)
 
 ### segment anything
 
@@ -226,7 +229,7 @@ all these tools can be simply implemented with various python packages (remember
 remember, we do not care how much resource you use, but a strong and correct conclusion is paramountly important.
 """
 
-from .info import info
+from coc.exec.context.info import info
 
 def display(image: Img) -> str:
     """a pseudo-display function, that instead returns a dense caption. """

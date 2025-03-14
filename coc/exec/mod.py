@@ -94,7 +94,19 @@ class Exec():
         errors = stderr.getvalue().strip()
         errors = '\n'.join(line for line in errors.split('\n') if line.strip())
 
-        return (stdout.getvalue(), errors)
+        output = stdout.getvalue()
+        if not output and errors:
+            with open(LOG_FILE, 'a') as f:
+                from datetime import datetime
+                f.write(f'{datetime.now().strftime("%m/%d %H:%M:%S")}\n')
+                f.write(code)
+                f.write('\n')
+
+                f.write('Errors:\n')
+                f.write(errors)
+                f.write('\n')
+
+        return (output, errors)
 
     def _old_run(self, code):
         """Execute code in a Jupyter-style way.

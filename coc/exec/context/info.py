@@ -143,12 +143,6 @@ class Info:
     def __getitem__(self, key):
         return self._data[key]
 
-    def __getattr__(self, key):
-        try:
-            return self._data[key]
-        except KeyError:
-            raise AttributeError(f"'Info' object has no attribute '{key}'")
-
     def __call__(self, key):
         try:
             return self._data[key]
