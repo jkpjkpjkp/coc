@@ -11,13 +11,16 @@ class Bbox(TypedDict):
     score: float
     label: str
 
+def bbox2listoftupleofint(bbox: Bbox) -> List[Tuple[int, int, int, int]]:
+    return [tuple(map(int, bbox['box']))]
+
 ### grounding tools (add bbox to objects)
 #   Returns:
 #       rendered image (with bounding boxes drawn). Note: you cannot directly see this, but may use vlm (vqa tool below) to help you.
 #       string form of bounding boxes.
 #       list form of bounding boxes.
 
-def grounding(image: Img, objects_of_interest: List[str], text: Optional[str]=None, owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
+def grounding(image: Img, objects_of_interest: List[str]=[], text: Optional[str]=None, owl_threshold=0.1, dino_box_threshold=0.2, dino_text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
     """a combination of grounding dino and owl v2.
 
     grounding dino pre-mixes visual and text tokens, yielding better box accuracy.
@@ -27,9 +30,12 @@ def grounding(image: Img, objects_of_interest: List[str], text: Optional[str]=No
     this implementation is generally duplication- and hallucination- free,
        but is limited by the capabilitie of pre-trained grounding dino 1.0.
     """
+    if isinstance(objects_of_interest, str):
+        objects_of_interest = [objects_of_interest]
     if text:
         objects_of_interest.append(text)
-    return get_grounding()(image, objects_of_interest, owl_threshold, dino_box_threshold, dino_text_threshold)
+    ret = get_grounding()(image, objects_of_interest, owl_threshold, dino_box_threshold, dino_text_threshold)
+    return bbox2listoftupleofint(ret)
 
 def grounding_dino(image: Img, objects_of_interest: List[str], box_threshold=0.2, text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
     """grounding dino 1.0.
