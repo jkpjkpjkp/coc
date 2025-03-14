@@ -10,7 +10,7 @@ import numpy as np
 def grounding(image: Image.Image, text: str) -> List[Tuple[int, int, int, int]]: # returns x1, y1, x2, y2
     ...
 
-def vlm(input: List[Union[Image.Image, str]]) -> str: # input can be interleaved image and text
+def vlm(image: Image.Image, question: str) -> str: # visual question answering
     ...
 
 def sam(image: Image.Image) -> List[np.ndarray]: # returns H*W bool arrays (masks)
