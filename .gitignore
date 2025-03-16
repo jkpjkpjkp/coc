@@ -1,10 +1,15 @@
-# Python-generated files
 __pycache__/
 *.py[oc]
 build/
 dist/
 wheels/
 *.egg-info
-
-# Virtual environments
 .venv
+data/
+!coc/data
+.aider*
+coc/secret.py
+*.log
+output.md
+res.md
+coc/config.py
