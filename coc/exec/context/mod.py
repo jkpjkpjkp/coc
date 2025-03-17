@@ -11,9 +11,16 @@ class Bbox(TypedDict):
     score: float
     label: str
 
-def bbox2listoftupleofint(bbox: Bbox) -> List[Tuple[int, int, int, int]]:
-    return [tuple(map(int, bbox['box']))]
+def bbox2listoftupleofint(bboxes: List[Bbox]) -> List[Tuple[int, int, int, int]]:
+    """Convert a list of bounding box dictionaries to list of integer coordinate tuples.
 
+    Args:
+        bboxes: List of bounding box dictionaries containing float coordinates
+
+    Returns:
+        List of tuples with integer coordinates in (x1, y1, x2, y2) format
+    """
+    return [tuple(map(int, bbox['box'])) for bbox in bboxes]
 ### grounding tools (add bbox to objects)
 #   Returns:
 #       rendered image (with bounding boxes drawn). Note: you cannot directly see this, but may use vlm (vqa tool below) to help you.
@@ -35,7 +42,7 @@ def grounding(image: Img, objects_of_interest: List[str]=[], text: Optional[str]
     if text:
         objects_of_interest.append(text)
     ret = get_grounding()(image, objects_of_interest, owl_threshold, dino_box_threshold, dino_text_threshold)
-    return bbox2listoftupleofint(ret)
+    return bbox2listoftupleofint(ret[2])
 
 def grounding_dino(image: Img, objects_of_interest: List[str], box_threshold=0.2, text_threshold=0.1) -> Tuple[Img, str, List[Bbox]]:
     """grounding dino 1.0.

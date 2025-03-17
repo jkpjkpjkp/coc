@@ -27,8 +27,8 @@ def test_grounding():
     image = create_dummy_image()
     objects_of_interest = ['cat', 'dog']
     result = grounding(image, objects_of_interest)
-    check_bbox_list(result[2])
-
+    assert result == []
+    
 def test_grounding_dino():
     """Test the grounding_dino function with and without objects_of_interest."""
     image = create_dummy_image()

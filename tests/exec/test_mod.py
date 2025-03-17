@@ -25,7 +25,7 @@ class TestTask(unittest.TestCase):
         self.assertIn('counting', result.lower())
         self.assertEqual(error, '')
 
-        vqa, error = self.exec._run('print(glm(tsk["images"][0], "What is in the picture?"))')
+        vqa, error, _ = self.exec._run('print(glm(tsk["images"][0], "What is in the picture?"))')
         self.assertTrue('mitten' in vqa or 'glove' in vqa)
         self.assertEqual(error, '')
 
