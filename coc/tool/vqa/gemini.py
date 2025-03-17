@@ -137,7 +137,7 @@ class Gemini(BaseTool):
         for s in prompt:
             if isinstance(s, Img):
                 images.append(s)
-            if os.path.isfile(s):
+            elif os.path.isfile(s):
                 try:
                     # Verify and process image
                     with Image.open(s) as img:
@@ -179,14 +179,12 @@ class Gemini(BaseTool):
             response_content = None
             error_message = str(e)
 
-        # Log to LOGFILE if set
-        if Gemini.LOGFILE is not None:
-            with open(Gemini.LOGFILE, 'a', encoding='utf-8') as f:
-                f.write(f"Input: {input_log}\n")
-                if error_message is not None:
-                    f.write(f"Error: {error_message}\n")
-                else:
-                    f.write(f"Response: {response_content}\n")
+        with open('data/log/big_gemini.log', 'a', encoding='utf-8') as f:
+            f.write(f"Input: {input_log}\n")
+            if error_message is not None:
+                f.write(f"Error: {error_message}\n")
+            else:
+                f.write(f"Response: {response_content}\n")
 
         # Return or raise error
         if error_message is not None:

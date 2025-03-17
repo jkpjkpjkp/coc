@@ -1048,6 +1048,7 @@ dependencies = [
     { name = "pre-commit" },
     { name = "pyglet" },
     { name = "pytest" },
+    { name = "pytorch3d" },
     { name = "rich" },
     { name = "roma" },
     { name = "rootutils" },
@@ -1055,6 +1056,7 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "seaborn" },
+    { name = "torch" },
     { name = "torchinfo" },
     { name = "torchmetrics" },
     { name = "tqdm" },
@@ -1085,6 +1087,7 @@ requires-dist = [
     { name = "pre-commit", specifier = ">=4.1.0" },
     { name = "pyglet", specifier = "<2" },
     { name = "pytest", specifier = ">=8.3.5" },
+    { name = "pytorch3d", git = "ssh://git@github.com/facebookresearch/pytorch3d.git?rev=stable" },
     { name = "rich", specifier = ">=13.9.4" },
     { name = "roma", specifier = ">=1.5.2.1" },
     { name = "rootutils", specifier = ">=1.0.7" },
@@ -1092,6 +1095,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.6.1" },
     { name = "scipy", specifier = ">=1.15.2" },
     { name = "seaborn", specifier = ">=0.13.2" },
+    { name = "torch", specifier = ">=2.5.1", index = "https://download.pytorch.org/whl/cu121" },
     { name = "torchinfo", specifier = ">=1.8.0" },
     { name = "torchmetrics", specifier = ">=1.6.3" },
     { name = "tqdm", specifier = ">=4.67.1" },
@@ -3228,7 +3232,7 @@ name = "nvidia-cudnn-cu12"
 version = "9.1.0.70"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "nvidia-cublas-cu12" },
+    { name = "nvidia-cublas-cu12", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
 ]
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/9f/fd/713452cd72343f682b1c7b9321e23829f00b842ceaedcda96e742ea0b0b3/nvidia_cudnn_cu12-9.1.0.70-py3-none-manylinux2014_x86_64.whl", hash = "sha256:165764f44ef8c61fcdfdfdbe769d687e06374059fbb388b6c89ecb0e28793a6f", size = 664752741 },
@@ -3255,9 +3259,9 @@ name = "nvidia-cusolver-cu12"
 version = "11.4.5.107"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "nvidia-cublas-cu12" },
-    { name = "nvidia-cusparse-cu12" },
-    { name = "nvidia-nvjitlink-cu12" },
+    { name = "nvidia-cublas-cu12", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
+    { name = "nvidia-cusparse-cu12", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
+    { name = "nvidia-nvjitlink-cu12", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
 ]
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/bc/1d/8de1e5c67099015c834315e333911273a8c6aaba78923dd1d1e25fc5f217/nvidia_cusolver_cu12-11.4.5.107-py3-none-manylinux1_x86_64.whl", hash = "sha256:8a7ec542f0412294b15072fa7dab71d31334014a69f953004ea7a118206fe0dd", size = 124161928 },
@@ -3268,7 +3272,7 @@ name = "nvidia-cusparse-cu12"
 version = "12.1.0.106"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "nvidia-nvjitlink-cu12" },
+    { name = "nvidia-nvjitlink-cu12", marker = "platform_machine != 'aarch64' and sys_platform == 'linux'" },
 ]
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/65/5b/cfaeebf25cd9fdec14338ccb16f6b2c4c7fa9163aefcf057d86b9cc248bb/nvidia_cusparse_cu12-12.1.0.106-py3-none-manylinux1_x86_64.whl", hash = "sha256:f3b50f42cf363f86ab21f720998517a659a48131e8d538dc02f8768237bd884c", size = 195958278 },
@@ -3781,6 +3785,7 @@ version = "0.1.0"
 source = { virtual = "submodules/PoinTr" }
 dependencies = [
     { name = "argparse" },
+    { name = "datasets" },
     { name = "easydict" },
     { name = "einops" },
     { name = "h5py" },
@@ -3799,6 +3804,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "argparse", specifier = ">=1.4.0" },
+    { name = "datasets", specifier = ">=3.4.0" },
     { name = "easydict", specifier = ">=1.13" },
     { name = "einops", specifier = ">=0.8.1" },
     { name = "h5py", specifier = ">=3.13.0" },
@@ -4383,6 +4389,14 @@ dependencies = [
 sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/5a/fa/3f661d6bb02baeeb6184786d9d8ced02277ccae270950a93f6ce7429e75e/pytorch-lightning-1.9.5.tar.gz", hash = "sha256:925fe7b80ddf04859fa385aa493b260be4000b11a2f22447afb4a932d1f07d26", size = 605827 }
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/77/ed/7d91e1958f0d48b439fae0de8ece3de3ce8c3d4e03b04bd3c007ba879a49/pytorch_lightning-1.9.5-py3-none-any.whl", hash = "sha256:06821558158623c5d2ecf5d3d0374dc8bd661e0acd3acf54a6d6f71737c156c5", size = 829540 },
+]
+
+[[package]]
+name = "pytorch3d"
+version = "0.7.8"
+source = { git = "ssh://git@github.com/facebookresearch/pytorch3d.git?rev=stable#75ebeeaea0908c5527e7b1e305fbc7681382db47" }
+dependencies = [
+    { name = "iopath" },
 ]
 
 [[package]]
@@ -5787,7 +5801,7 @@ name = "triton"
 version = "3.1.0"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
 dependencies = [
-    { name = "filelock" },
+    { name = "filelock", marker = "python_full_version < '3.13' and platform_machine != 'aarch64' and sys_platform == 'linux'" },
 ]
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/86/17/d9a5cf4fcf46291856d1e90762e36cbabd2a56c7265da0d1d9508c8e3943/triton-3.1.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0f34f6e7885d1bf0eaaf7ba875a5f0ce6f3c13ba98f9503651c1e6dc6757ed5c", size = 209506424 },

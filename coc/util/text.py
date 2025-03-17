@@ -10,6 +10,9 @@ def extract_code(llm_response: str) -> List[str]:
     and it (or None) will be returned.
     """
     matches = re.findall(r"```python\n(.*?)(?:\n```|$)", llm_response, re.DOTALL)
+    # remove empty blocks, that ontains only english, or only comments
+    matches = [match for match in matches if not re.match(r"^\s*#", match) and not re.match(r"^[a-zA-Z]", match)]
+
     # Strip leading/trailing whitespace from each code block while preserving internal indentation
     return [textwrap.dedent(match) for match in matches]
 
