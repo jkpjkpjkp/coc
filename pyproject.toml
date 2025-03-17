@@ -10,6 +10,7 @@ dependencies = [
     "fast3r",
     "google-api-python-client>=2.164.0",
     "langchain>=0.3.20",
+    "langchain-community>=0.3.19",
     "langchain-core>=0.3.45",
     "langchain-openai>=0.3.8",
     "pointr",

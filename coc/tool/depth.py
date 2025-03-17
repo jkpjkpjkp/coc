@@ -43,7 +43,7 @@ class DepthFactory:
 
         # Load the model
         self.model = DepthAnythingV2(**self.config)
-        self.model.load_state_dict(torch.load(os.path.join(depth_anything_path, f'checkpoints/depth_anything_v2_{self.config['encoder']}.pth') , map_location='cpu'))
+        self.model.load_state_dict(torch.load(os.path.join(depth_anything_path, f'checkpoints/depth_anything_v2_{self.config["encoder"]}.pth') , map_location='cpu'))
         self.model = self.model.to(self.device).eval()
 
     def _run(self, image: Union[str, Image.Image]) -> np.ndarray:

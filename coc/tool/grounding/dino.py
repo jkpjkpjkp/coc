@@ -62,7 +62,7 @@ def format_detections(detections: List[Bbox]) -> str:
     if not detections:
         return 'No objects detected.'
     return f'Found {len(detections)} objects:\n' + '\n'.join(
-        f'- {det['label']}: score {det['score']:.2f}, box {[int(b) for b in det['box']]}'
+        f"- {det['label']}: score {det['score']:.2f}, box {[int(b) for b in det['box']]}"
         for det in detections
     )
 
