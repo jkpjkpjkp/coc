@@ -7,7 +7,7 @@ class TestExec(unittest.TestCase):
         self.exec = Exec(CONTEXT_FILE)
 
     def test_exec(self):
-        result, error = self.exec._run('print("hello")')
+        result, error, _ = self.exec._run('print("hello")')
         self.assertEqual(result, 'hello\n')
         self.assertEqual(error, '')
 
@@ -21,7 +21,7 @@ class TestTask(unittest.TestCase):
     def test_task(self):
         task = next(self.data_loader.convert_to_tasks())
         self.exec.set_var('tsk', task)
-        result, error = self.exec._run('print(tsk["task_type"])')
+        result, error, _ = self.exec._run('print(tsk["task_type"])')
         self.assertIn('counting', result.lower())
         self.assertEqual(error, '')
 
@@ -53,7 +53,7 @@ class TestGPTOutput(unittest.TestCase):
 
   print(dense_caption1, dense_caption2)
   '''
-        result, error = self.exec._run(code_str)
+        result, error, _ = self.exec._run(code_str)
         self.assertIn('simpson', result.lower())
         self.assertEqual(error, '')
 
@@ -84,17 +84,17 @@ class TestError(unittest.TestCase):
 
     def test_error(self):
         # Test syntax error
-        result, error = self.exec._run('print("hello"')
+        result, error, _ = self.exec._run('print("hello"')
         self.assertEqual(result, '')
         self.assertIn('SyntaxError', error)
 
         # Test runtime error
-        result, error = self.exec._run('print(undefined_variable)')
+        result, error, _ = self.exec._run('print(undefined_variable)')
         self.assertEqual(result, '')
         self.assertIn('NameError', error)
 
         # Test division by zero error
-        result, error = self.exec._run('print(1/0)')
+        result, error, _ = self.exec._run('print(1/0)')
         self.assertEqual(result, '')
         self.assertIn('ZeroDivisionError', error)
 
@@ -103,7 +103,7 @@ class TestBbox(unittest.TestCase):
         self.exec = Exec(CONTEXT_FILE)
 
     def test_bbox_sub(self):
-        result, error = self.exec._run(
+        result, error, _ = self.exec._run(
 '''
 box = Bbox(
     box=[0,0,1,1],
@@ -116,7 +116,7 @@ print(box['box'])
         self.assertEqual(error, '')
 
     def test_bbox_dot(self):
-        result, error = self.exec._run(
+        result, error, _ = self.exec._run(
 '''
 box = Bbox(
     box=[0,0,1,1],

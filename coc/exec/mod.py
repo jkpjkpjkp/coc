@@ -16,7 +16,7 @@ import contextlib
 
 from pydantic import Field
 
-class Exec():
+class Exec:
     """Python code interpreter with proper initialization."""
     name: str = 'exec'
     description: str = (
@@ -44,9 +44,12 @@ class Exec():
         if task:
             self.globals['task'] = copy.deepcopy(task)
 
+
+
     def _run(self, code):
-        """Execute code Jupyter-style: exec all but last statement; eval/print last expression.
-        Returns (stdout, stderr), ignoring FutureWarnings in stderr."""
+        """Execute code Jupyter-style: exec all but last statement; eval/display last expression.
+        Returns (stdout, stderr, images), ignoring FutureWarnings in stderr."""
+
         # Define a custom showwarning function to suppress FutureWarnings
         def custom_showwarning(message, category, filename, lineno, file=None, line=None):
             # Only print warnings to stderr if they are not FutureWarnings
@@ -60,9 +63,24 @@ class Exec():
         stdout = io.StringIO()
         stderr = io.StringIO()
 
+        # List to store image data (PNG bytes)
+        displayed_images = []
+
+        # Custom display function to handle display() calls
+        def display(*args):
+            for arg in args:
+                if hasattr(arg, '_repr_png_'):
+                    png_data = arg._repr_png_()
+                    if png_data is not None:
+                        displayed_images.append(png_data)
+                else:
+                    print(repr(arg))
+
+        # Set the custom display function in globals
+        self.globals['display'] = display
+
         # Redirect stdout and stderr, and catch warnings
         with contextlib.redirect_stdout(stdout), contextlib.redirect_stderr(stderr), warnings.catch_warnings(record=True):
-            # Set the custom showwarning function
             warnings.showwarning = custom_showwarning
             try:
                 # Parse the code into an AST
@@ -76,18 +94,17 @@ class Exec():
                     # Handle the last statement: evaluate if expression, execute otherwise
                     if isinstance(last, ast.Expr):
                         val = eval(compile(ast.Expression(last.value), '<ast>', 'eval'), self.globals)
-                        if isinstance(last.value, ast.Tuple):
-                            # Print each element of a tuple on a new line
-                            for v in val:
-                                if v is not None:
-                                    print(v)
-                        elif val is not None:
-                            print(val)
+                        if val is not None:
+                            if hasattr(val, '_repr_png_'):
+                                png_data = val._repr_png_()
+                                if png_data is not None:
+                                    displayed_images.append(png_data)
+                            else:
+                                print(repr(val))
                         self.globals['_'] = val
                     else:
                         exec(compile(ast.Module(body=[last], type_ignores=[]), '<ast>', 'exec'), self.globals)
             except Exception:
-                # Capture any exceptions in stderr
                 traceback.print_exc(file=stderr)
 
         # Clean up the errors string
@@ -97,16 +114,14 @@ class Exec():
         output = stdout.getvalue()
         if not output and errors:
             with open(LOG_FILE, 'a') as f:
-                from datetime import datetime
                 f.write(f'{datetime.now().strftime("%m/%d %H:%M:%S")}\n')
                 f.write(code)
                 f.write('\n')
-
                 f.write('Errors:\n')
                 f.write(errors)
                 f.write('\n')
 
-        return (output, errors)
+        return (output, errors, displayed_images)
 
     def get_var(self, name: str):
         return self.globals[name]

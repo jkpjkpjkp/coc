@@ -31,13 +31,17 @@ class Code:
     code: str
     output: str
     error: str
+    output_images: List[Image.Image]
 
     def __init__(self, code: str, env: Exec):
         self.code = code
-        self.output, self.error = env._run(code)
+        self.output, self.error, self.output_images = env._run(code)
 
     def to_pair_of_str(self):
         return Pair(self.code, self.output)
+
+    def to_human_message(self):
+        raise NotImplementedError
 
 
 @dataclass

@@ -8,7 +8,6 @@ wheels/
 data/
 !coc/data
 .aider*
-coc/secret.py
 *.log
 output.md
 res.md

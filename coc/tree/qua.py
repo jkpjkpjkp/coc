@@ -34,9 +34,10 @@ def generate_one_child(parent: TreeNode, suggestive_hint: str, vlm) -> tuple[Tre
     message = build_trunk(
         task=parent.codelist.env.get_var('task'),
         codes=parent.codelist.to_list_of_pair_of_str(),
+        # images=parent.codelist.env.get_var('images'),
         hint=suggestive_hint,
     )
-    response = llm(message)
+    response = vlm(trunk=c)
     codes = extract_code(response)
     answer = extract_boxed(response)
 
