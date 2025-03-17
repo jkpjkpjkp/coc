@@ -7,13 +7,16 @@ requires-python = ">=3.11"
 dependencies = [
     "datasets>=3.4.0",
     "depth-anything-v2",
+    "fast3r",
     "google-api-python-client>=2.164.0",
     "langchain>=0.3.20",
     "langchain-core>=0.3.45",
     "langchain-openai>=0.3.8",
+    "pointr",
     "sam-2",
     "torch>=2.5.1",
     "trellis",
+    "watchdog>=6.0.0",
 ]
 
 
@@ -24,8 +27,10 @@ torch = [
 torchvision = [
     { index = "pytorch-cu" },
 ]
-sam-2 = { path = "submodules/sam2" }
 depth-anything-v2 = { workspace = true }
+fast3r = { workspace = true }
+pointr = { workspace = true }
+sam-2 = { path = "submodules/sam2" }
 trellis = { workspace = true }
 
 [[tool.uv.index]]
@@ -39,7 +44,7 @@ url = "https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html"
 explicit = true
 
 [tool.uv.workspace]
-members = ["submodules/TRELLIS", "submodules/Depth-Anything-V2"]
+members = ["submodules/TRELLIS", "submodules/Depth-Anything-V2", "submodules/fast3r", "submodules/PoinTr"]
 
 [tool.uv]
 index-url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
