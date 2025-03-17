@@ -5,7 +5,7 @@ from datetime import datetime
 from pathlib import Path
 
 from langchain.tools import BaseTool
-from typing import List, Literal, Dict
+from typing import List, Union
 
 from langchain_core.messages import HumanMessage
 
@@ -127,7 +127,7 @@ class Gemini(BaseTool):
         logger.info(f"Multi-image VQA response: {response.content}")
         return response.content
 
-    def run_freestyle(self, prompt: List[str]):
+    def run_freestyle(self, prompt: List[Union[str, Img]]):
         # Log the input (original prompt)
         input_log = prompt
 
@@ -135,23 +135,27 @@ class Gemini(BaseTool):
         images = []
 
         for s in prompt:
+            if isinstance(s, Img):
+                images.append(s)
             if os.path.isfile(s):
                 try:
                     # Verify and process image
                     with Image.open(s) as img:
                         img.verify()
-                    with Image.open(s) as img:
-                        img_base64 = self._encode_image(img)
-                        images.append({
-                            'type': 'image_url',
-                            'image_url': {'url': img_base64}
-                        })
+                        images.append(img)
                 except Exception as e:
                     # Add as text if any error occurs
                     text_parts.append(s)
             else:
                 text_parts.append(s)
 
+        images = [
+            {
+                'type': 'image_url',
+                'image_url': {'url': self._encode_image(img)}
+            }
+            for img in images
+        ]
         concatenated_text = ' '.join(text_parts)
         content = []
         # Add all images first in their original order
@@ -189,8 +193,6 @@ class Gemini(BaseTool):
             raise RuntimeError(error_message)
         else:
             return response_content
-
-
 
     def invoke(self, question: str) -> str:
         return self.mllm.invoke(question).content

@@ -23,7 +23,7 @@ os.environ['OPENAI_API_BASE'] = 'https://chatapi.littlewheat.com/v1'
 os.environ['OPEN_ROUTER_API_KEY'] = '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'
 os.environ['OPEN_ROUTER_API_BASE'] = 'https://openrouter.ai/api/v1'
 
-os.environ['GEMINI_API_KEY'] = 'sk-ouw2SBfZp65CRS5gsclW356KYxcMeYPaUD1v8H0AeKsb8VqW'
+os.environ['GEMINI_API_KEY'] = 'sk-5NSZg1YG59VMxq6VUxvL6nrqFSk9RbSyoDo9RmOAE8QkumFU'
 os.environ['GEMINI_BASE_URL'] = 'https://api.aigogo.top/v1'
 
 os.environ['DASHSCOPE_API_KEY'] = 'sk-3a88a7f6a9264d54b62eeb4181192248'
