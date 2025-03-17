@@ -11,4 +11,3 @@ data/
 *.log
 output.md
 res.md
-coc/config.py

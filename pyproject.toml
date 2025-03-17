@@ -5,9 +5,12 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "datasets>=3.4.0",
     "depth-anything-v2",
     "google-api-python-client>=2.164.0",
     "langchain>=0.3.20",
+    "langchain-core>=0.3.45",
+    "langchain-openai>=0.3.8",
     "sam-2",
     "torch>=2.5.1",
     "trellis",
@@ -30,8 +33,14 @@ name = "pytorch-cu"
 url = "https://download.pytorch.org/whl/cu121"
 explicit = true
 
+[[tool.uv.index]]
+name = "kaolin"
+url = "https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html"
+explicit = true
+
 [tool.uv.workspace]
 members = ["submodules/TRELLIS", "submodules/Depth-Anything-V2"]
 
 [tool.uv]
 index-url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
+find-links = ["https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html"]

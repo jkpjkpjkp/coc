@@ -76,7 +76,7 @@ import functools
 
 # Configure logging to file
 logging.basicConfig(
-    filename='vqa_mod.log',
+    filename='data/log/vqa_mod.log',
     level=logging.INFO,
     format='%(asctime)s - %(message)s'
 )
