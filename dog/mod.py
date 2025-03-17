@@ -5,24 +5,32 @@ from watchdog.events import FileSystemEventHandler
 
 class Handler(FileSystemEventHandler):
     def on_created(self, event):
+        # Get the project root directory (where the script is run)
+        project_root = os.path.abspath('.')
+        # Compute the relative path of the created file/directory from the project root
+        rel_path = os.path.relpath(event.src_path, project_root)
+        
         # Handle new directories
         if event.is_directory:
             init_file = os.path.join(event.src_path, '__init__.py')
             if not os.path.exists(init_file):
                 with open(init_file, 'w') as f:
                     f.write('')
+        
         # Handle new Python files in coc/
-        elif (event.src_path.startswith('coc/') and 
-              event.src_path.endswith('.py') and 
-              not event.src_path.endswith('__init__.py')):
-            rel_path = os.path.relpath(event.src_path, 'coc/')
-            test_dir = os.path.join('tests', os.path.dirname(rel_path))
+        elif (rel_path.startswith('coc/') and 
+              rel_path.endswith('.py') and 
+              not rel_path.endswith('__init__.py')):
+            # Construct the test file path
+            test_rel_dir = os.path.dirname(rel_path).replace('coc/', 'tests/', 1)
             test_filename = 'test_' + os.path.basename(rel_path)
-            test_path = os.path.join(test_dir, test_filename)
+            test_path = os.path.join(project_root, test_rel_dir, test_filename)
+            
+            # Create the test file if it doesn’t exist
             if not os.path.exists(test_path):
-                os.makedirs(test_dir, exist_ok=True)
-                module_path = '.'.join(os.path.dirname(rel_path).split(os.sep) + 
-                                     [os.path.splitext(os.path.basename(rel_path))[0]])
+                os.makedirs(os.path.dirname(test_path), exist_ok=True)
+                # Compute the module path for the import statement
+                module_path = rel_path[4:-3].replace('/', '.')  # Remove 'coc/' and '.py'
                 with open(test_path, 'w') as f:
                     f.write(f'import pytest\n')
                     f.write(f'import coc.{module_path}\n\n')

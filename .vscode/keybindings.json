@@ -1,0 +1,7 @@
+[
+    {
+        "key": "ctrl+q",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Jump to Test"
+    }
+]

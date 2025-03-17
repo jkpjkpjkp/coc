@@ -1,0 +1,15 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Jump to Test",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "${workspaceFolder}/dog/jump.py",
+                "${file}"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}
