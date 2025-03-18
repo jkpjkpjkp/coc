@@ -13,6 +13,7 @@ dependencies = [
     "langchain-community>=0.3.19",
     "langchain-core>=0.3.45",
     "langchain-openai>=0.3.8",
+    "open-webui",
     "pointr",
     "pyjwt>=2.10.1",
     "sam-2",
@@ -31,6 +32,7 @@ torchvision = [
 ]
 depth-anything-v2 = { workspace = true }
 fast3r = { workspace = true }
+open-webui = { path = "submodules/open-webui" }
 pointr = { workspace = true }
 sam-2 = { path = "submodules/sam2" }
 trellis = { workspace = true }

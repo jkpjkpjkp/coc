@@ -7,7 +7,5 @@ wheels/
 .venv
 data/
 !coc/data
-.aider*
 *.log
-output.md
-res.md
+.pytest_cache
