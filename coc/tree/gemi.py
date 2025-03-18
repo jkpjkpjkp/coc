@@ -29,7 +29,7 @@ try:
 except ImportError:
     try:
         # Try importing from submodules if not in coc.tool
-        from submodules.Depth_Anything_V2.depth_anything_v2.dpt import DepthAnything
+        from depth_anything_v2.dpt import DepthAnything
     except ImportError:
         logging.warning("DepthAnything module could not be imported")
         DepthAnything = None
@@ -38,7 +38,7 @@ try:
     from coc.tool._3d import Fast3R
 except ImportError:
     try:
-        from submodules.fast3r.fast3r.fast3r import Fast3R
+        from fast3r.fast3r import Fast3R
     except ImportError:
         logging.warning("Fast3R module could not be imported")
         Fast3R = None
@@ -47,7 +47,7 @@ try:
     from coc.tool._3d import PoinTr
 except ImportError:
     try:
-        from submodules.PoinTr.models.pointr import PoinTr
+        from pointr.models.pointr import PoinTr
     except ImportError:
         logging.warning("PoinTr module could not be imported")
         PoinTr = None
@@ -56,7 +56,7 @@ try:
     from coc.tool.sam import sam_model_registry
 except ImportError:
     try:
-        from submodules.sam2.sam2.build_sam import sam_model_registry
+        from sam2.build_sam import sam_model_registry
     except ImportError:
         logging.warning("SAM2 module could not be imported")
         sam_model_registry = None
