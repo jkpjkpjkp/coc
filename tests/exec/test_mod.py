@@ -128,7 +128,80 @@ print(box.box)
         self.assertEqual(result, '')
         self.assertNotEqual(error, '')
 
+class TestRunWithList(unittest.TestCase):
+    def setUp(self):
+        self.exec = Exec(CONTEXT_FILE)
 
+    def test_run_with_list_input(self):
+        """Test that _run accepts a list of code strings"""
+        # Test with a list of code strings
+        code_list = [
+            "x = 5",
+            "y = 10",
+            "print(f'Sum: {x + y}')"
+        ]
+        
+        stdout, stderr, _ = self.exec._run(code_list)
+        
+        # Check that all code blocks were executed
+        self.assertEqual(stdout.strip(), "Sum: 15")
+        self.assertEqual(stderr, "")
+        self.assertEqual(self.exec.globals['x'], 5)
+        self.assertEqual(self.exec.globals['y'], 10)
+
+    def test_run_with_mixed_list(self):
+        """Test that _run handles a list with both string and non-string elements"""
+        # Create a test image
+        test_image = None
+        try:
+            from PIL import Image
+            test_image = Image.new('RGB', (10, 10), color='red')
+        except ImportError:
+            # Skip if PIL is not available
+            self.skipTest("PIL not available")
+        
+        # Test with a mixed list (code strings and an image)
+        code_list = [
+            "a = 100",
+            test_image,  # Non-string element
+            "b = 200",
+            "print(f'Product: {a * b}')"
+        ]
+        
+        stdout, stderr, _ = self.exec._run(code_list)
+        
+        # Check that string elements were executed and non-string elements were ignored
+        self.assertEqual(stdout.strip(), "Product: 20000")
+        self.assertEqual(stderr, "")
+        self.assertEqual(self.exec.globals['a'], 100)
+        self.assertEqual(self.exec.globals['b'], 200)
+
+    def test_run_empty_list(self):
+        """Test that _run handles an empty list gracefully"""
+        # Test with an empty list
+        stdout, stderr, _ = self.exec._run([])
+        
+        # Check that execution was handled gracefully
+        self.assertEqual(stdout, "")
+        self.assertEqual(stderr, "")
+
+    def test_run_list_with_syntax_error(self):
+        """Test that _run handles syntax errors in list items properly"""
+        # Test with a list containing syntax errors
+        code_list = [
+            "valid_code = 42",
+            "this is not valid Python",
+            "print('This should not execute')"
+        ]
+        
+        stdout, stderr, _ = self.exec._run(code_list)
+        
+        # Check that the error was captured
+        self.assertEqual(stdout, "")
+        self.assertIn("SyntaxError", stderr)
+        
+        # Check that the valid code before the error was executed
+        self.assertEqual(self.exec.globals.get('valid_code'), 42)
 
 if __name__ == '__main__':
     unittest.main()
