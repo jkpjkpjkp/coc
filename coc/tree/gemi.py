@@ -178,13 +178,15 @@ class PointCloudProcessor:
 class GeminiAgent:
     """
     A multimodal agent that uses Gemini with enhanced 3D vision capabilities
+    and sophisticated vision tooling
     """
     
     def __init__(self, 
                  use_depth: bool = True,
                  use_segmentation: bool = True,
                  use_novel_view: bool = True,
-                 use_point_cloud: bool = True):
+                 use_point_cloud: bool = True,
+                 verbose: bool = False):
         """
         Initialize the Gemini agent with 3D vision capabilities
         
@@ -193,9 +195,11 @@ class GeminiAgent:
             use_segmentation: Whether to use segmentation
             use_novel_view: Whether to use novel view synthesis
             use_point_cloud: Whether to use point cloud processing
+            verbose: Whether to print detailed logs
         """
         # Initialize Gemini VQA tool
         self.gemini = Gemini()
+        self.verbose = verbose
         
         # Check which modules are available
         self.modules_available = {
@@ -249,7 +253,18 @@ class GeminiAgent:
             logging.info(f"GeminiAgent initialized with capabilities: {', '.join(capabilities)}")
         else:
             logging.warning("GeminiAgent initialized without any 3D vision capabilities")
-    
+        
+        # Initialize counters for tool calls
+        self.tool_call_counts = {
+            "segmentation": 0,
+            "depth": 0,
+            "novel_view": 0,
+            "point_cloud": 0,
+            "zoomed": 0,
+            "cropped": 0,
+            "counting": 0
+        }
+
     def _get_prompt_capabilities(self):
         """Get description of active capabilities for system prompt"""
         capabilities = []
@@ -271,91 +286,187 @@ class GeminiAgent:
             "Use this information to better understand spatial relationships "
             "and 3D structure in images."
         )
-    
-    def _get_headers(self):
-        """Get headers for the API request"""
-        headers = {"Content-Type": "application/json"}
-        if self.api_key:
-            headers["Authorization"] = f"Bearer {self.api_key}"
-        return headers
-    
-    def _encode_image(self, image):
-        """Convert PIL Image to base64 string"""
-        if isinstance(image, str):
-            return image
         
-        buffered = io.BytesIO()
-        image.save(buffered, format="PNG")
-        return base64.b64encode(buffered.getvalue()).decode('utf-8')
-    
-    def _prepare_messages(self, prompt, images=None, enhanced_data=None):
+    # Method to crop and zoom into a region of interest
+    def crop_and_zoom(self, image: Image.Image, bbox: Tuple[float, float, float, float]) -> Image.Image:
         """
-        Prepare messages with text, images, and enhanced vision data
+        Crop and zoom into a region of interest in the image
         
         Args:
-            prompt: Text prompt
-            images: List of PIL Images
-            enhanced_data: Dictionary of enhanced vision data
+            image: Original image
+            bbox: Bounding box in format (left, top, right, bottom) - normalized 0-1 coordinates
             
         Returns:
-            Formatted messages for API request
+            Cropped and zoomed image
         """
-        # System message with enhanced capabilities description
-        system_message = self._get_prompt_capabilities()
+        self.tool_call_counts["cropped"] += 1
         
-        messages = [{"role": "system", "content": system_message}]
+        # Convert normalized coordinates to pixel values
+        width, height = image.size
+        left = int(bbox[0] * width)
+        top = int(bbox[1] * height)
+        right = int(bbox[2] * width)
+        bottom = int(bbox[3] * height)
         
-        # Create user message content
-        if images or enhanced_data:
-            content = [{"type": "text", "text": prompt}]
-            
-            # Add original images
-            if images:
-                for img in images:
-                    encoded_img = self._encode_image(img)
-                    content.append({
-                        "type": "image_url",
-                        "image_url": {"url": f"data:image/png;base64,{encoded_img}"}
-                    })
-            
-            # Add enhanced vision data (depth maps, novel views, etc.)
-            if enhanced_data:
-                if "depth_maps" in enhanced_data:
-                    for depth_map in enhanced_data["depth_maps"]:
-                        encoded_img = self._encode_image(depth_map)
-                        content.append({
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{encoded_img}"}
-                        })
-                
-                if "novel_views" in enhanced_data:
-                    for novel_view in enhanced_data["novel_views"]:
-                        encoded_img = self._encode_image(novel_view)
-                        content.append({
-                            "type": "image_url",
-                            "image_url": {"url": f"data:image/png;base64,{encoded_img}"}
-                        })
-                
-                # Add textual descriptions of 3D data
-                if "point_cloud_summary" in enhanced_data:
-                    content.append({
-                        "type": "text",
-                        "text": f"3D Point Cloud Analysis: {enhanced_data['point_cloud_summary']}"
-                    })
-                
-                if "segmentation_summary" in enhanced_data:
-                    content.append({
-                        "type": "text",
-                        "text": f"Segmentation Analysis: {enhanced_data['segmentation_summary']}"
-                    })
-            
-            messages.append({"role": "user", "content": content})
-        else:
-            # Text-only message
-            messages.append({"role": "user", "content": prompt})
+        # Ensure coordinates are valid
+        left = max(0, left)
+        top = max(0, top)
+        right = min(width, right)
+        bottom = min(height, bottom)
         
-        return messages
+        # Crop the image
+        cropped = image.crop((left, top, right, bottom))
+        
+        if self.verbose:
+            logging.info(f"Cropped image to region {bbox}, new size: {cropped.size}")
+            
+        return cropped
     
+    # Method to segment and count objects of a specific type
+    def segment_and_count_objects(self, image: Image.Image, object_prompt: str) -> Tuple[int, Image.Image]:
+        """
+        Segment and count objects of a specific type in the image
+        
+        Args:
+            image: Image to analyze
+            object_prompt: Description of the objects to count
+            
+        Returns:
+            Tuple of (count, segmentation visualization)
+        """
+        self.tool_call_counts["counting"] += 1
+        self.tool_call_counts["segmentation"] += 1
+        
+        if not self.use_segmentation:
+            # If segmentation not available, use Gemini as fallback
+            text_response = self.gemini.run_freestyle([
+                f"Count the number of {object_prompt} in this image. Return ONLY the number:",
+                image
+            ])
+            
+            try:
+                count = int(text_response.strip())
+            except:
+                # If not a clean number, use a conservative estimate
+                count = 0
+            
+            if self.verbose:
+                logging.info(f"Counted {count} {object_prompt} using Gemini fallback")
+                
+            return count, image
+        
+        try:
+            # Use segmentation to identify objects
+            masks = self.segmentation_model.segment(image)
+            
+            # Get Gemini to identify which segments match the object type
+            # Convert masks to visualizations
+            mask_vis = np.zeros((image.height, image.width, 3), dtype=np.uint8)
+            
+            for i, mask in enumerate(masks):
+                # Apply a unique color to each segment
+                color = [(i*50) % 255, ((i+1)*50) % 255, ((i+2)*50) % 255]
+                for c in range(3):
+                    mask_vis[:,:,c] = np.where(mask, color[c], mask_vis[:,:,c])
+            
+            # Convert to PIL Image
+            mask_image = Image.fromarray(mask_vis)
+            
+            # Ask Gemini to identify which segments match the object type
+            response = self.gemini.run_freestyle([
+                f"This is a segmentation map of an image. Identify which segments (colored regions) correspond to {object_prompt}. Count them and return ONLY the number of distinct {object_prompt}:",
+                mask_image,
+                image
+            ])
+            
+            try:
+                count = int(response.strip())
+            except:
+                # Use a heuristic estimation if Gemini's response isn't a clean number
+                count = len(masks) // 2  # Conservative estimate
+            
+            if self.verbose:
+                logging.info(f"Counted {count} {object_prompt} using segmentation")
+                
+            return count, mask_image
+            
+        except Exception as e:
+            logging.error(f"Error in segment_and_count_objects: {e}")
+            # Fallback to direct Gemini counting
+            text_response = self.gemini.run_freestyle([
+                f"Count the number of {object_prompt} in this image. Return ONLY the number:",
+                image
+            ])
+            
+            try:
+                count = int(text_response.strip())
+            except:
+                count = 0
+                
+            return count, image
+    
+    # Method to analyze shelf layers in retail images
+    def analyze_shelf_layers(self, image: Image.Image, num_layers: int = None) -> Dict[str, Any]:
+        """
+        Analyze retail shelf layers to understand product arrangement
+        
+        Args:
+            image: Image of retail shelf
+            num_layers: Number of layers to analyze (automatic detection if None)
+            
+        Returns:
+            Dictionary with layer information
+        """
+        results = {
+            "num_layers": 0,
+            "layers": [],
+            "total_count": 0
+        }
+        
+        # First, try to detect shelf layers using depth information or segmentation
+        if num_layers is None:
+            # Ask Gemini to identify the number of layers
+            response = self.gemini.run_freestyle([
+                "How many distinct shelf layers/rows are visible in this retail display? Return ONLY the number:",
+                image
+            ])
+            
+            try:
+                num_layers = int(response.strip())
+            except:
+                num_layers = 3  # Default assumption
+        
+        results["num_layers"] = num_layers
+        
+        # Analyze each layer
+        layer_height = 1.0 / num_layers
+        for i in range(num_layers):
+            layer_top = i * layer_height
+            layer_bottom = (i + 1) * layer_height
+            
+            # Crop to this layer
+            layer_image = self.crop_and_zoom(image, (0, layer_top, 1.0, layer_bottom))
+            
+            # Count products in this layer
+            count, seg_vis = self.segment_and_count_objects(layer_image, "products/bottles/items")
+            
+            # Get details about products in this layer
+            layer_details = self.gemini.run_freestyle([
+                "Describe the products in this shelf layer. What are they? What's their arrangement (e.g., rows x columns)? Include any visible pricing information:",
+                layer_image
+            ])
+            
+            results["layers"].append({
+                "layer_index": i,
+                "product_count": count,
+                "details": layer_details,
+                "visualization": seg_vis
+            })
+            
+            results["total_count"] += count
+        
+        return results
+
     def _generate_enhanced_vision_data(self, images: List[Image.Image]) -> Dict[str, Any]:
         """
         Generate enhanced vision data from images
@@ -386,6 +497,7 @@ class GeminiAgent:
                         depth_map = self.depth_estimator.predict(image)
                         depth_maps.append(depth_map)
                     enhanced_data["depth_maps"] = depth_maps
+                    self.tool_call_counts["depth"] += 1
                 except Exception as e:
                     logger.error(f"Failed to generate depth maps: {e}")
             
@@ -405,6 +517,7 @@ class GeminiAgent:
                     
                     enhanced_data["segmentation_results"] = segmentation_results
                     enhanced_data["segmentation_summary"] = "; ".join(segmentation_summary)
+                    self.tool_call_counts["segmentation"] += 1
                 except Exception as e:
                     logger.error(f"Failed to generate segmentation: {e}")
             
@@ -419,6 +532,7 @@ class GeminiAgent:
                             novel_views.extend(views)
                     
                     enhanced_data["novel_views"] = novel_views
+                    self.tool_call_counts["novel_view"] += 1
                 except Exception as e:
                     logger.error(f"Failed to generate novel views: {e}")
             
@@ -440,6 +554,7 @@ class GeminiAgent:
                     
                     enhanced_data["point_cloud_data"] = point_cloud_data
                     enhanced_data["point_cloud_summary"] = "; ".join(point_cloud_summary)
+                    self.tool_call_counts["point_cloud"] += 1
                 except Exception as e:
                     logger.error(f"Failed to generate point cloud data: {e}")
         
@@ -447,7 +562,7 @@ class GeminiAgent:
             logger.error(f"Error generating enhanced vision data: {e}")
         
         return enhanced_data
-    
+
     def generate(self, prompt: str, images: List[Image.Image] = None) -> str:
         """
         Generate a response using Gemini with enhanced 3D vision capabilities
@@ -513,7 +628,7 @@ class GeminiAgent:
         except Exception as e:
             logging.error(f"Error generating response: {e}")
             return f"Error: {str(e)}"
-    
+
     def run_freestyle(self, inputs: List[Union[str, Image.Image]]) -> str:
         """
         Run the model with a mix of text and images
@@ -533,7 +648,7 @@ class GeminiAgent:
         except Exception as e:
             logging.error(f"Error in run_freestyle: {e}")
             return f"Error: {str(e)}"
-    
+
     def generate_branches(self, prompts: List[str], images: List[Image.Image] = None) -> List[str]:
         """
         Generate multiple responses for different prompts
@@ -552,6 +667,176 @@ class GeminiAgent:
             responses.append(response)
         
         return responses
+
+    def generate_orchestrated(self, prompt: str, images: List[Image.Image] = None) -> str:
+        """
+        Generate a response using a multi-step orchestrated approach with tool calls
+        
+        Args:
+            prompt: Text prompt
+            images: List of PIL Images
+            
+        Returns:
+            Text response from the model
+        """
+        if not images:
+            # Text-only query, use standard generate
+            return self.generate(prompt, images)
+        
+        # Reset tool call counters
+        for key in self.tool_call_counts:
+            self.tool_call_counts[key] = 0
+        
+        # Extract image for analysis (use first image if multiple)
+        image = images[0]
+        
+        # Check if this is a counting task
+        counting_indicators = [
+            "count", "how many", "number of", 
+            "total of", "tally", "enumerate"
+        ]
+        
+        # Check if this is a retail/pricing task
+        retail_indicators = [
+            "price", "cost", "dollar", "$", "save", "discount", 
+            "buy", "purchase", "shelf", "store", "sale"
+        ]
+        
+        is_counting_task = any(indicator in prompt.lower() for indicator in counting_indicators)
+        is_retail_task = any(indicator in prompt.lower() for indicator in retail_indicators)
+        
+        enhanced_data = {}
+        enhanced_results = []
+        
+        if is_retail_task and is_counting_task:
+            # This is a retail counting task - use specialized tools
+            
+            # Determine if we need to focus on specific layers
+            layer_indicators = ["layer", "row", "shelf", "top", "bottom", "middle"]
+            
+            if any(indicator in prompt.lower() for indicator in layer_indicators):
+                # Extract layer information from prompt
+                layer_info = self.gemini.run_freestyle([
+                    f"Extract the shelf layer information from this query: '{prompt}'. How many layers should I analyze and which ones (top, middle, bottom, etc.)? Answer in this format: 'Analyze [number] layers: [which ones]'",
+                ])
+                
+                # Parse how many layers to analyze
+                try:
+                    num_layers_to_analyze = int(''.join(filter(str.isdigit, layer_info.split("layers")[0])))
+                except:
+                    num_layers_to_analyze = 2  # Default to 2 layers
+                
+                # Analyze the shelf
+                shelf_analysis = self.analyze_shelf_layers(image, num_layers_to_analyze)
+                
+                # Create visualization combining all layers
+                enhanced_results.append("SHELF ANALYSIS RESULTS:")
+                enhanced_results.append(f"Detected {shelf_analysis['num_layers']} shelf layers")
+                enhanced_results.append(f"Total product count across analyzed layers: {shelf_analysis['total_count']}")
+                
+                for i, layer in enumerate(shelf_analysis['layers']):
+                    enhanced_results.append(f"\nLAYER {i+1} DETAILS:")
+                    enhanced_results.append(f"Product count: {layer['product_count']}")
+                    enhanced_results.append(f"Description: {layer['details']}")
+                
+                # Add price calculation if needed
+                if "price" in prompt.lower() or "cost" in prompt.lower() or "$" in prompt:
+                    # Extract pricing information
+                    pricing_info = self.gemini.run_freestyle([
+                        "Extract all pricing information from this image. What are the regular prices and sale prices? Format as JSON with regular_price and sale_price keys:",
+                        image
+                    ])
+                    
+                    enhanced_results.append("\nPRICING ANALYSIS:")
+                    enhanced_results.append(pricing_info)
+                    
+                    # Calculate total costs
+                    calculation = self.gemini.run_freestyle([
+                        f"Based on this product count: {shelf_analysis['total_count']} items and this pricing information: {pricing_info}, calculate the total cost at regular price and at sale price. Show your calculation steps."
+                    ])
+                    
+                    enhanced_results.append("\nCOST CALCULATION:")
+                    enhanced_results.append(calculation)
+            else:
+                # General retail analysis
+                # Count all products
+                total_count, seg_vis = self.segment_and_count_objects(image, "products/items/bottles")
+                
+                # Get pricing information
+                pricing_info = self.gemini.run_freestyle([
+                    "Extract all pricing information from this image. What are the regular prices and sale prices?",
+                    image
+                ])
+                
+                enhanced_results.append("PRODUCT ANALYSIS:")
+                enhanced_results.append(f"Total product count: {total_count}")
+                enhanced_results.append("\nPRICING INFORMATION:")
+                enhanced_results.append(pricing_info)
+
+        elif is_counting_task:
+            # Generic counting task - figure out what to count
+            object_to_count = self.gemini.run_freestyle([
+                f"Based on this query: '{prompt}', what specific objects should I count in the image? Answer with just the object type/category:",
+                image
+            ])
+            
+            # Count the objects
+            count, seg_vis = self.segment_and_count_objects(image, object_to_count)
+            
+            enhanced_results.append(f"COUNTING ANALYSIS:")
+            enhanced_results.append(f"Object type: {object_to_count}")
+            enhanced_results.append(f"Count: {count}")
+        
+        elif self.use_depth or self.use_segmentation:
+            # For other tasks that might benefit from vision enhancements
+            try:
+                enhanced_data = self._generate_enhanced_vision_data(images)
+            except Exception as e:
+                logging.warning(f"Enhanced vision data generation failed: {e}")
+
+        # Prepare the enhanced context
+        enhanced_prompt = prompt
+        if enhanced_results:
+            enhanced_context = "\n".join(enhanced_results)
+            enhanced_prompt = f"I've analyzed the image with specialized vision tools. Here are the results:\n\n{enhanced_context}\n\nBased on this analysis, please answer the original question: {prompt}"
+
+        # Call Gemini with all the enhanced data
+        inputs = [enhanced_prompt]
+        
+        # Add the original images
+        if images:
+            inputs.extend(images)
+        
+        # Add segmentation visualizations if available
+        if is_counting_task or is_retail_task:
+            if 'seg_vis' in locals() and seg_vis is not None:
+                inputs.append("Segmentation visualization of counted objects:")
+                inputs.append(seg_vis)
+        
+        # Add enhanced vision data if available
+        if enhanced_data:
+            # Add depth maps
+            if "depth_maps" in enhanced_data:
+                for i, depth_map in enumerate(enhanced_data["depth_maps"]):
+                    inputs.append("Depth map showing distance of objects from the camera:")
+                    inputs.append(depth_map)
+            
+            # Add novel views
+            if "novel_views" in enhanced_data:
+                for i, novel_view in enumerate(enhanced_data["novel_views"]):
+                    inputs.append(f"Alternative viewpoint {i+1} of the scene:")
+                    inputs.append(novel_view)
+        
+        # Generate the final response
+        try:
+            if self.verbose:
+                logging.info(f"Tool call counts: {self.tool_call_counts}")
+            
+            response = self.gemini.run_freestyle(inputs)
+            return response
+        except Exception as e:
+            logging.error(f"Error generating response: {e}")
+            return f"Error: {str(e)}"
 
 def generate_one_child(parent: TreeNode, suggestive_hint: str, agent: GeminiAgent) -> tuple[TreeNode, Optional[str]]:
     """
@@ -667,24 +952,32 @@ def evaluate(task: Task, agent: GeminiAgent) -> List[Tuple[TreeNode, str]]:
         if hasattr(task, 'images') and task.images:
             images = task.images
         
-        evaluation = agent.generate(prompt, images)
+        # Use the orchestrated approach for evaluation
+        evaluation = agent.generate_orchestrated(prompt, images)
         evaluations.append((node, evaluation))
     
     return evaluations
 
-def eval_a_batch(batch: Iterator[FullTask], agent: GeminiAgent = None) -> Tuple[int, int]:
+def eval_a_batch(batch: Iterator[FullTask], agent: GeminiAgent = None, use_orchestration: bool = True) -> Tuple[int, int]:
     """
     Evaluate a batch of tasks
     
     Args:
         batch: Iterator of tasks to evaluate
         agent: GeminiAgent instance (created if None)
+        use_orchestration: Whether to use the orchestrated approach
         
     Returns:
         Tuple of (correct count, total count)
     """
     if agent is None:
-        agent = GeminiAgent()
+        agent = GeminiAgent(
+            use_depth=True,
+            use_segmentation=True,
+            use_novel_view=True,
+            use_point_cloud=True,
+            verbose=False
+        )
     
     correct = 0
     total = 0
@@ -719,8 +1012,13 @@ def judge_if_any(outputs: List[str], answer: str) -> bool:
     from coc.util.misc import judge_if_any
     return judge_if_any(outputs, answer)
 
-def main_eval_muir(partition: str = "Counting"):
-    """Run evaluation on MUIR dataset"""
+def main_eval_muir(partition: str = "Counting", use_orchestration: bool = True):
+    """Run evaluation on MUIR dataset
+    
+    Args:
+        partition: Dataset partition to evaluate (Counting or Ordering)
+        use_orchestration: Whether to use the orchestrated approach
+    """
     from coc.data.muir import muir
     
     # Initialize agent with all 3D vision capabilities
@@ -728,12 +1026,13 @@ def main_eval_muir(partition: str = "Counting"):
         use_depth=True,
         use_segmentation=True,
         use_novel_view=True,
-        use_point_cloud=True
+        use_point_cloud=True,
+        verbose=False
     )
     
     # Load dataset and evaluate
     batch = muir(partition)
-    correct, total = eval_a_batch(batch, agent)
+    correct, total = eval_a_batch(batch, agent, use_orchestration)
     
     success_rate = correct / total if total > 0 else 0
     print(f"Success rate on {partition}: {success_rate:.2%} ({correct}/{total})")

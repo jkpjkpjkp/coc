@@ -3,7 +3,7 @@ from PIL import Image
 import os
 from coc.tree.gemi import GeminiAgent, main_eval_muir
 
-def test_agent_with_image(image_path, prompt=None):
+def test_agent_with_image(image_path, prompt=None, use_orchestration=True, verbose=False):
     """Test the Gemini agent with a single image"""
     if not os.path.exists(image_path):
         print(f"Error: Image file not found at {image_path}")
@@ -14,12 +14,13 @@ def test_agent_with_image(image_path, prompt=None):
         image = Image.open(image_path).convert("RGB")
         print(f"Successfully loaded image: {image_path} ({image.width}x{image.height})")
         
-        # Create agent, disabling 3D capabilities by default as they may not be available
+        # Create agent with appropriate settings
         agent = GeminiAgent(
             use_depth=False,  # Set to True to enable depth estimation if available
-            use_segmentation=False,  # Set to True to enable segmentation if available  
+            use_segmentation=True,  # Enable segmentation for counting
             use_novel_view=False,  # Set to True to enable novel view synthesis if available
-            use_point_cloud=False  # Set to True to enable point cloud processing if available
+            use_point_cloud=False,  # Set to True to enable point cloud processing if available
+            verbose=verbose  # Enable verbose logging if requested
         )
         
         # Default prompt if none provided
@@ -29,10 +30,15 @@ def test_agent_with_image(image_path, prompt=None):
         # Run agent
         print(f"Processing image: {image_path}")
         print(f"Prompt: {prompt}")
+        print(f"Using {'orchestrated' if use_orchestration else 'standard'} approach")
         print("Generating response...")
         
         try:
-            response = agent.generate(prompt, [image])
+            # Use either orchestrated or standard approach
+            if use_orchestration:
+                response = agent.generate_orchestrated(prompt, [image])
+            else:
+                response = agent.generate(prompt, [image])
             
             print("\nResponse:")
             print("="*50)
@@ -41,6 +47,13 @@ def test_agent_with_image(image_path, prompt=None):
             
             if response.startswith("Error:"):
                 print("\nEncountered an error in the response. Check API settings and connectivity.")
+            
+            # Print tool usage statistics if verbose
+            if verbose and use_orchestration:
+                print("\nTool usage statistics:")
+                for tool, count in agent.tool_call_counts.items():
+                    if count > 0:
+                        print(f"- {tool}: {count} calls")
             
             return response
             
@@ -66,11 +79,15 @@ if __name__ == "__main__":
     parser.add_argument("--prompt", type=str, help="Custom prompt for image analysis")
     parser.add_argument("--eval", choices=["Counting", "Ordering"], 
                         help="Run evaluation on MUIR dataset with specified partition")
+    parser.add_argument("--standard", action="store_true", 
+                        help="Use standard approach instead of orchestrated approach")
+    parser.add_argument("--verbose", action="store_true", 
+                        help="Enable verbose logging")
     
     args = parser.parse_args()
     
     if args.image:
-        test_agent_with_image(args.image, args.prompt)
+        test_agent_with_image(args.image, args.prompt, not args.standard, args.verbose)
     elif args.eval:
         run_muir_evaluation(args.eval)
     else:
@@ -78,4 +95,5 @@ if __name__ == "__main__":
         print("Example usage:")
         print("  python test_gemi.py --image path/to/image.jpg")
         print("  python test_gemi.py --image path/to/image.jpg --prompt 'Describe this scene'")
+        print("  python test_gemi.py --image path/to/image.jpg --prompt 'How many bottles?' --verbose")
         print("  python test_gemi.py --eval Counting") 

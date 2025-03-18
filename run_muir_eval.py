@@ -19,16 +19,19 @@ logging.basicConfig(
 )
 logger = logging.getLogger("muir-eval")
 
-def run_muir_evaluation(partition, use_3d_vision=False):
+def run_muir_evaluation(partition, use_3d_vision=False, use_orchestration=True, verbose=False):
     """
     Run evaluation on MUIR dataset
     
     Args:
         partition: Which partition to evaluate ('Counting' or 'Ordering')
         use_3d_vision: Whether to use 3D vision enhancements (if available)
+        use_orchestration: Whether to use the orchestrated approach
+        verbose: Whether to enable verbose logging
     """
     logger.info(f"Running evaluation on MUIR {partition} partition...")
     logger.info(f"3D vision enhancements: {'Enabled' if use_3d_vision else 'Disabled'}")
+    logger.info(f"Orchestration: {'Enabled' if use_orchestration else 'Disabled'}")
     
     try:
         # Initialize the agent with or without 3D vision capabilities
@@ -36,7 +39,8 @@ def run_muir_evaluation(partition, use_3d_vision=False):
             use_depth=use_3d_vision,
             use_segmentation=use_3d_vision,
             use_novel_view=use_3d_vision,
-            use_point_cloud=use_3d_vision
+            use_point_cloud=use_3d_vision,
+            verbose=verbose
         )
         
         # Get available capabilities
@@ -75,7 +79,7 @@ def run_muir_evaluation(partition, use_3d_vision=False):
         
         # Run evaluation
         from coc.tree.gemi import eval_a_batch
-        correct, total = eval_a_batch(tasks, agent)
+        correct, total = eval_a_batch(tasks, agent, use_orchestration)
         
         success_rate = correct / total if total > 0 else 0
         result_text = f"MUIR {partition} evaluation results: {success_rate:.2%} ({correct}/{total})"
@@ -87,6 +91,7 @@ def run_muir_evaluation(partition, use_3d_vision=False):
             f.write(f"MUIR {partition} Evaluation Results\n")
             f.write(f"================================\n\n")
             f.write(f"3D Vision: {'Enabled' if use_3d_vision else 'Disabled'}\n")
+            f.write(f"Orchestration: {'Enabled' if use_orchestration else 'Disabled'}\n")
             if capabilities:
                 f.write(f"Active capabilities: {', '.join(capabilities)}\n")
             f.write(f"\nSuccess rate: {success_rate:.2%} ({correct}/{total})\n")
@@ -106,11 +111,22 @@ def main():
                         help="MUIR partition to evaluate")
     parser.add_argument("--use-3d", action="store_true", 
                         help="Enable 3D vision enhancements if available")
+    parser.add_argument("--no-orchestration", action="store_true",
+                        help="Disable orchestrated approach")
+    parser.add_argument("--verbose", action="store_true",
+                        help="Enable verbose logging")
+    parser.add_argument("--sample", type=int, default=0,
+                        help="Run on a sample of N examples (0 for all)")
     
     args = parser.parse_args()
     
     # Run evaluation
-    run_muir_evaluation(args.partition, args.use_3d)
+    run_muir_evaluation(
+        args.partition, 
+        args.use_3d, 
+        not args.no_orchestration,
+        args.verbose
+    )
 
 if __name__ == "__main__":
     main() 
