@@ -1257,9 +1257,21 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
         # Set up the Exec environment
         exec_env = self.setup_exec_environment()
         
-        # Add the images to the environment
+        # Add the images to the environment - IMPORTANT: save actual image files to disk
+        # to avoid the "Image file not found" error when the generated code attempts to load them
         for i, img in enumerate(images):
+            # Save the image directly as a variable in the environment
             exec_env.set_var(f"image_{i}", img)
+            
+            # Also save an actual file on disk in case the code attempts to reload it
+            try:
+                temp_dir = os.path.join(os.getcwd(), "temp_images")
+                os.makedirs(temp_dir, exist_ok=True)
+                img_path = os.path.join(temp_dir, f"image_{i}.jpg")
+                img.save(img_path)
+                exec_env.set_var(f"image_{i}_path", img_path)
+            except Exception as e:
+                logging.warning(f"Failed to save image_{i} to disk: {e}")
         
         # Create a list of all image variables
         exec_env.set_var("images", [exec_env.get_var(f"image_{i}") for i in range(len(images))])

@@ -33,14 +33,33 @@ def process_image(image_path, prompt=None, save_response=False, save_path=None):
         save_response: Whether to save the response to a file
         save_path: Path to save the response (defaults to image_path + .response.txt)
     """
+    # Verify image exists with absolute path resolution
+    if not os.path.isabs(image_path):
+        # Convert to absolute path
+        abs_path = os.path.abspath(image_path)
+        logger.info(f"Converting relative path '{image_path}' to absolute path '{abs_path}'")
+        image_path = abs_path
+    
     if not os.path.exists(image_path):
         logger.error(f"Image file not found: {image_path}")
+        print("\n" + "="*50)
+        print("RESPONSE:")
+        print(f"Error: Image file not found at {os.path.basename(image_path)}")
+        print("="*50 + "\n")
         return False
     
     try:
         # Load image
-        image = Image.open(image_path).convert("RGB")
-        logger.info(f"Loaded image: {image_path} ({image.width}x{image.height})")
+        try:
+            image = Image.open(image_path).convert("RGB")
+            logger.info(f"Loaded image: {image_path} ({image.width}x{image.height})")
+        except Exception as e:
+            logger.error(f"Failed to load image: {image_path}, error: {str(e)}")
+            print("\n" + "="*50)
+            print("RESPONSE:")
+            print(f"Error loading image: {str(e)}")
+            print("="*50 + "\n")
+            return False
         
         # Create agent with all 3D capabilities
         agent = GeminiAgent(
@@ -81,6 +100,10 @@ def process_image(image_path, prompt=None, save_response=False, save_path=None):
     
     except Exception as e:
         logger.error(f"Error processing image: {e}")
+        print("\n" + "="*50)
+        print("RESPONSE:")
+        print(f"Error in processing: {str(e)}")
+        print("="*50 + "\n")
         return False
 
 def process_batch(directory, prompt=None, save_responses=False):
