@@ -1481,7 +1481,7 @@ def generate_one_child(parent: TreeNode, suggestive_hint: str, agent: GeminiAgen
     """
     # Construct prompt
     prompt = (
-        f"Given the following code:\n```python\n{parent.curr_code}\n```\n"
+        f"Given the following code:\n```python\n{parent.curr_code if hasattr(parent, 'curr_code') else (parent._[0].code if parent._ and len(parent._) > 0 else '')}\n```\n"
         f"Your task: {suggestive_hint}\n"
         "Generate improved code that addresses this task. "
         "The code should be complete, well-structured, and functional. "
@@ -1534,7 +1534,14 @@ def generate_children(nodes_with_code: list[TreeNode], num_children: int, agent:
         
         for node in nodes_with_code:
             # Determine if this is a counting task by checking the code
-            is_counting_task = any(term in node.curr_code.lower() for term in 
+            # Check if node has curr_code attribute, otherwise use the first code from codelist
+            if hasattr(node, 'curr_code'):
+                node_code = node.curr_code.lower()
+            else:
+                # Get the code from the node's codelist if available
+                node_code = node._[0].code.lower() if node._ and len(node._) > 0 else ""
+                
+            is_counting_task = any(term in node_code for term in 
                                   ["count", "bottles", "enumerate", "tally"])
             
             for i in range(num_children):
