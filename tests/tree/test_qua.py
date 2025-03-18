@@ -9,6 +9,8 @@ import io
 import base64
 from coc.tree.qua import (
     WebUIWrapper,
+    GeminiOpenAIWrapper,
+    create_vlm_wrapper,
     generate_one_child,
     generate_children,
     generate_children_webui,
@@ -37,6 +39,10 @@ from coc.tree.webui_config import (
     REQUEST_TIMEOUT,
     MAX_RETRIES,
     RETRY_DELAY,
+    GEMINI_BASE_URL,
+    GEMINI_API_KEY,
+    GEMINI_MODEL,
+    USE_OPENAI_FORMAT,
 )
 
 class MockResponse:
@@ -327,6 +333,180 @@ class TestWebUIIntegration(unittest.TestCase):
         # Verify WebUIWrapper was created with correct parameters
         mock_webui_wrapper.assert_called_once()
         mock_webui_instance.default_model = "test-model"
+
+class TestGeminiOpenAIWrapper(unittest.TestCase):
+    def setUp(self):
+        # Create a test image
+        self.test_image = Image.new('RGB', (100, 100), color='red')
+        
+        # Mock async response
+        self.mock_response = MagicMock()
+        self.mock_response.status = 200
+        self.mock_response.json = AsyncMock(return_value={
+            "choices": [
+                {
+                    "message": {
+                        "content": "Test response from Gemini",
+                        "role": "assistant"
+                    },
+                    "index": 0
+                }
+            ]
+        })
+        
+        # Create patcher for aiohttp.ClientSession
+        self.mock_session = AsyncMock()
+        self.mock_session.__aenter__ = AsyncMock(return_value=self.mock_session)
+        self.mock_session.__aexit__ = AsyncMock(return_value=None)
+        self.mock_session.post = AsyncMock(return_value=self.mock_response)
+        
+        # Patch ClientSession
+        self.session_patcher = patch('aiohttp.ClientSession', return_value=self.mock_session)
+        self.mock_client_session = self.session_patcher.start()
+    
+    def tearDown(self):
+        self.session_patcher.stop()
+    
+    def test_encode_image(self):
+        wrapper = GeminiOpenAIWrapper()
+        # Test with PIL Image
+        encoded = wrapper._encode_image(self.test_image)
+        self.assertTrue(isinstance(encoded, str))
+        self.assertTrue(len(encoded) > 0)
+        
+        # Test with string path
+        path_string = "/path/to/image.jpg"
+        self.assertEqual(wrapper._encode_image(path_string), path_string)
+    
+    def test_prepare_messages(self):
+        wrapper = GeminiOpenAIWrapper()
+        
+        # Test text-only message
+        messages = wrapper._prepare_messages("Hello")
+        self.assertEqual(len(messages), 2)
+        self.assertEqual(messages[0]["role"], "system")
+        self.assertEqual(messages[1]["role"], "user")
+        self.assertEqual(messages[1]["content"], "Hello")
+        
+        # Test with image
+        messages = wrapper._prepare_messages("Describe this image", [self.test_image])
+        self.assertEqual(len(messages), 2)
+        self.assertEqual(messages[1]["role"], "user")
+        self.assertIsInstance(messages[1]["content"], list)
+        self.assertEqual(len(messages[1]["content"]), 2)  # Text + 1 image
+        self.assertEqual(messages[1]["content"][0]["type"], "text")
+        self.assertEqual(messages[1]["content"][1]["type"], "image_url")
+    
+    @patch('asyncio.run')
+    def test_generate(self, mock_run):
+        mock_run.return_value = "Async response"
+        wrapper = GeminiOpenAIWrapper()
+        
+        result = wrapper.generate("Hello", images=None, model="gemini-pro")
+        
+        # Check that asyncio.run was called with generate_async
+        mock_run.assert_called_once()
+        self.assertEqual(result, "Async response")
+    
+    @patch('asyncio.run')
+    def test_generate_branches(self, mock_run):
+        mock_run.return_value = ["Response 1", "Response 2"]
+        wrapper = GeminiOpenAIWrapper()
+        
+        result = wrapper.generate_branches(
+            ["Prompt 1", "Prompt 2"], 
+            images=None, 
+            model="gemini-pro"
+        )
+        
+        # Check that asyncio.run was called with generate_branches_async
+        mock_run.assert_called_once()
+        self.assertEqual(result, ["Response 1", "Response 2"])
+    
+    @patch('asyncio.gather')
+    @patch('coc.tree.qua.GeminiOpenAIWrapper.generate_async')
+    async def test_generate_branches_async(self, mock_generate_async, mock_gather):
+        wrapper = GeminiOpenAIWrapper()
+        
+        mock_generate_async.return_value = "Response"
+        mock_gather.return_value = ["Response 1", "Response 2"]
+        
+        result = await wrapper.generate_branches_async(
+            ["Prompt 1", "Prompt 2"], 
+            images=None, 
+            model="gemini-pro"
+        )
+        
+        self.assertEqual(mock_generate_async.call_count, 2)
+        self.assertEqual(result, ["Response 1", "Response 2"])
+
+class TestWrapperFactory(unittest.TestCase):
+    def test_create_vlm_wrapper(self):
+        # Test creating WebUIWrapper
+        wrapper = create_vlm_wrapper(use_gemini=False, base_url="http://test-url.com")
+        self.assertIsInstance(wrapper, WebUIWrapper)
+        self.assertEqual(wrapper.base_url, "http://test-url.com")
+        
+        # Test creating GeminiOpenAIWrapper
+        wrapper = create_vlm_wrapper(use_gemini=True, base_url="http://gemini-broker.com")
+        self.assertIsInstance(wrapper, GeminiOpenAIWrapper)
+        self.assertEqual(wrapper.base_url, "http://gemini-broker.com")
+
+# Test integrating Gemini wrapper with the evaluation functions
+class TestGeminiIntegration(unittest.TestCase):
+    def setUp(self):
+        # Create mock task with images
+        self.mock_task = {
+            'query': 'Test query',
+            'images': [Image.new('RGB', (100, 100), color='blue')],
+            'choices': ['A', 'B', 'C', 'D'],
+            'answer': 'A'
+        }
+        
+        # Mock wrapper
+        self.mock_wrapper = MagicMock()
+        self.mock_wrapper.run_freestyle.return_value = "```python\nprint('hello')\n```"
+        self.mock_wrapper.generate_branches.return_value = [
+            "```python\nprint('test 1')\n```",
+            "```python\nprint('test 2')\n```"
+        ]
+    
+    @patch('coc.tree.qua.GeminiOpenAIWrapper')
+    @patch('coc.tree.qua.evaluate_with_webui')
+    @patch('coc.tree.qua.judge_if_any')
+    @patch('coc.tree.qua.fulltask_to_task')
+    def test_run_with_webui_using_gemini(self, mock_fulltask_to_task, mock_judge_if_any, 
+                                         mock_evaluate_with_webui, mock_gemini_wrapper):
+        # Configure mocks
+        mock_fulltask_to_task.return_value = self.mock_task
+        mock_judge_if_any.return_value = True
+        mock_evaluate_with_webui.return_value = [(None, "A")]
+        mock_gemini_instance = mock_gemini_wrapper.return_value
+        
+        # Mock full tasks
+        mock_fulltasks = [{'query': 'Test 1', 'answer': 'A'}]
+        
+        # Run the function with Gemini wrapper
+        correct, total = run_with_webui(
+            mock_fulltasks, 
+            model_name="gemini-pro-vision", 
+            base_url="http://gemini-broker.com",
+            api_key="test-key",
+            use_gemini=True
+        )
+        
+        # Verify we used the Gemini wrapper
+        mock_gemini_wrapper.assert_called_once_with(
+            base_url="http://gemini-broker.com", 
+            api_key="test-key"
+        )
+        
+        # Check model was set
+        self.assertEqual(mock_gemini_instance.model, "gemini-pro-vision")
+        
+        # Verify correct results
+        self.assertEqual(correct, 1)
+        self.assertEqual(total, 1)
 
 if __name__ == '__main__':
     unittest.main() 

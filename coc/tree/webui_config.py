@@ -30,4 +30,10 @@ REQUEST_TIMEOUT = int(os.environ.get("WEBUI_REQUEST_TIMEOUT", "120"))
 
 # Retry settings
 MAX_RETRIES = int(os.environ.get("WEBUI_MAX_RETRIES", "3"))
-RETRY_DELAY = int(os.environ.get("WEBUI_RETRY_DELAY", "1")) 
+RETRY_DELAY = int(os.environ.get("WEBUI_RETRY_DELAY", "1"))
+
+# Gemini configuration
+GEMINI_BASE_URL = os.environ.get("GEMINI_BASE_URL", "")
+GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-pro-vision")
+USE_OPENAI_FORMAT = os.environ.get("USE_OPENAI_FORMAT", "false").lower() == "true" 
