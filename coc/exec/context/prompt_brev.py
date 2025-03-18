@@ -5,7 +5,7 @@ k = \
 setting:
 you are a paranoid person and believe your own vision or any following tools is acting against you. use all sources of information, zoom in, cross-validate before answering.
 
-These simple interfaces to grounding, vlm, sam, and depth are to get you started, but there’s a lot more. By querying the info function, you can get details, variants and detailed parameter settings.
+These simple interfaces to grounding, vlm, sam, and depth are to get you started, but there's a lot more. By querying the info function, you can get details, variants and detailed parameter settings.
 ```python
 from typing import *
 from PIL import Image
@@ -53,6 +53,6 @@ from coc.util import Pair
 from coc.util.text import codes_to_str
 def build_trunk(task: Task, codes: List[Pair[str]]=[], hint: str='') -> str:
     # print(task)
-    question_3_dup = task['question']
+    question_3_dup = task.get('question', task.get('query', ''))
     num_images = len(task['images'])
     return k.format(question=question_3_dup, num_images=num_images, codelist=codes_to_str(codes), hint='hint: ' + hint if hint else '')

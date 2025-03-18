@@ -75,7 +75,7 @@ def test_grounding_dino_empty_objects():
     """
     image = Image.open("data/sample/onions.jpg")
     objects_of_interest = []
-    bbox_list = grounding_dino(image, objects_of_interest)
+    _, _, bbox_list = grounding_dino(image, objects_of_interest)
     assert bbox_list == [], "Should return an empty list when no objects are specified"
 
 def test_owl_empty_objects():
@@ -85,7 +85,7 @@ def test_owl_empty_objects():
     """
     image = Image.open("data/sample/onions.jpg")
     objects_of_interest = []
-    bbox_list = owl(image, objects_of_interest)
+    _, _, bbox_list = owl(image, objects_of_interest)
     assert bbox_list == [], "Should return an empty list when no objects are specified"
 
 def test_grounding_empty_objects():
@@ -95,5 +95,5 @@ def test_grounding_empty_objects():
     """
     image = Image.open("data/sample/onions.jpg")
     objects_of_interest = []
-    bbox_list = grounding(image, objects_of_interest)
+    _, _, bbox_list = grounding(image, objects_of_interest)
     assert bbox_list == [], "Should return an empty list when no objects are specified"

@@ -6,7 +6,7 @@
             "type": "shell",
             "command": "python3",
             "args": [
-                "${workspaceFolder}/dog/jump.py",
+                "${workspaceFolder}/tests/watchdog/jump.py",
                 "${file}"
             ],
             "problemMatcher": []

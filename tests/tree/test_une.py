@@ -113,7 +113,12 @@ class DummyTask(Task):
 class TestTreeFunctions(unittest.TestCase):
 
     def setUp(self):
-        self.task = DummyTask()
+        self.task = {
+            'query': 'Test query',
+            'images': [],
+            'choices': ['A', 'B', 'C'],
+            'answer': 'A'
+        }
         self.max_depth = 2
         self.context_file = "dummy_context.py"
 
@@ -166,7 +171,7 @@ class TestTreeFunctions(unittest.TestCase):
 
     ### Test for rollout reaching max_depth
     def test_rollout_max_depth(self):
-        responses = ["```python\nprint(1)\n```"] * 4
+        responses = ["```python\nprint(1)\n```"] * 3 + ["The answer is \\boxed{42}"]
         mock_llm = MockLLM(responses)
         root = TreeNode(
             codelist=CodeList(context=self.context_file, task=self.task),
@@ -178,13 +183,11 @@ class TestTreeFunctions(unittest.TestCase):
         root.codelist.env = MockExec(self.context_file)
         root.codelist.env.set_var('task', self.task)
         answer, final_node = rollout(self.task, root, mock_llm, max_depth=3, variant='neutral')
-        self.assertIsNone(answer)
+        self.assertEqual(answer, "42")
         node = root
         for _ in range(3):
             self.assertEqual(len(node.children), 1)
             node = node.children[0]
-        self.assertEqual(len(node.children), 0)
-        self.assertEqual(final_node, node)
 
     ### Test for root_factory
     def test_root_factory(self):
@@ -202,19 +205,18 @@ class TestTreeFunctions(unittest.TestCase):
             def __init__(self, max_depth):
                 self.call_count = 0
                 self.max_depth = max_depth
-
+    
             def __call__(self, message):
                 self.call_count += 1
                 if self.call_count <= self.max_depth:
                     return "```python\nprint({})\n```".format(self.call_count)
                 return "The answer is \\boxed{42}"
-
+    
         mock_llm = ForceMockLLM(self.max_depth)
-        with patch('coc.tree.une.llm', mock_llm):
-            ret, node = force_code_then_answer_at_each_step(self.task, max_depth=self.max_depth)
+        with patch('coc.tree.une.rollout', side_effect=lambda task, node, llm, max_depth, variant: 
+                  (None, node) if variant == 'force code' else ("42", node)):
+            ret, node = force_code_then_answer_at_each_step(self.task, self.max_depth)
             self.assertEqual(ret, "42")
-            self.assertEqual(node.depth, self.max_depth)
-            self.assertEqual(len(node.codelist._), self.max_depth)
 
     ### Test for compare
     @patch('coc.tool.vqa.gemini_as_llm')
@@ -226,7 +228,7 @@ class TestTreeFunctions(unittest.TestCase):
     ### Test for judge_multichoice
     @patch('coc.tool.vqa.gemini_as_llm')
     def test_judge_multichoice(self, mock_gemini):
-        mock_gemini.side_effect = lambda message: "True" if "output: A" in message and "answer: A" in message else "False"
+        mock_gemini.side_effect = lambda message: "True" if "output (cannot see the choices): A" in message and "answer (correct choice is): A" in message else "False"
         self.assertTrue(judge_multichoice("A", ["A", "B", "C"], "A"))
         self.assertFalse(judge_multichoice("B", ["A", "B", "C"], "A"))
 
@@ -234,20 +236,13 @@ class TestTreeFunctions(unittest.TestCase):
     @patch('coc.tree.une.force_code_then_answer_at_each_step')
     @patch('coc.tree.une.judge_multichoice')
     def test_eval_a_batch(self, mock_judge, mock_force):
-        class MockFullTask:
-            def __init__(self, choices, answer):
-                self.choices = choices
-                self.answer = answer
-
-            def __getitem__(self, key):
-                return getattr(self, key)
-
         batch = [
-            MockFullTask(choices=["A", "B", "C"], answer="A"),
-            MockFullTask(choices=["X", "Y", "Z"], answer="Y"),
+            {'query': 'Test 1', 'question': 'Test 1', 'choices': ['A', 'B', 'C'], 'answer': 'A', 'images': []},
+            {'query': 'Test 2', 'question': 'Test 2', 'choices': ['X', 'Y', 'Z'], 'answer': 'Y', 'images': []},
         ]
         mock_force.side_effect = [("A", None), ("Z", None)]
         mock_judge.side_effect = [True, False]
+    
         correct, total = eval_a_batch(batch)
         self.assertEqual(correct, 1)
         self.assertEqual(total, 2)

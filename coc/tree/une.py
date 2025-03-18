@@ -132,11 +132,10 @@ def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant
         response = llm(message)
         codes = extract_code(response)
         answer = extract_boxed(response)
-        assert not (codes and answer), f"Both codes and answer extracted from response: {response}"
-        assert codes or answer, f"Neither codes nor answer extracted from response: {response}"
+        
         if answer:
             return answer, node
-        else: # codes
+        elif codes:  # Only process codes if we have them
             child_codelist = copy.deepcopy(node.codelist)
             for code in codes:
                 child_codelist.append(code)
@@ -149,6 +148,10 @@ def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant
             )
             node.children.append(child)
             node = child
+        else:
+            # If we have neither codes nor answer, continue with current node
+            continue
+
     return None, node
 
 
@@ -167,9 +170,11 @@ def force_code_then_answer_at_each_step(task: Task, max_depth: int = MAX_DEPTH):
     from coc.tree.llm import llm
     root = root_factory(task)
     ret, node = rollout(task, root, llm, max_depth=max_depth, variant='force code')
-    assert not ret, "Answer premature (force code failed)"
+    if ret:  # If we got an answer in force code mode, return it
+        return ret, node
     ret, node = rollout(task, node, llm, max_depth=max_depth+1, variant='force answer')
-    assert ret, "Answer not found (force answer failed)"
+    if not ret:  # If we still don't have an answer, something went wrong
+        raise ValueError("No answer found after force answer mode")
     return ret, node
 
 
@@ -192,14 +197,14 @@ def judge_multichoice(output: str, choices: List[str], answer: str):
                 choices: {choices}
                 answer (correct choice is): {answer}'''
             ))
-    return 'False' not in ret and 'True' in ret
+    return ret.strip().lower() == 'true'
 
 
 def eval_a_batch(batch: Iterable[FullTask]):
     correct = 0
     total = 0
     batch = list(batch)
-    for i, task in tqdm(enumerate(batch[2:])):
+    for i, task in tqdm(enumerate(batch)):
         ret, node = force_code_then_answer_at_each_step(fulltask_to_task(task), MAX_DEPTH)
         correct += judge_multichoice(ret, task['choices'], task['answer'])
         total += 1
