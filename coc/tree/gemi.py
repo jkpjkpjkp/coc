@@ -1389,7 +1389,7 @@ def crop_and_zoom(image, bbox): ...
             code_generation_prompt = code_gen_template
         
         # Get code from Gemini
-        generated_code = self.gemini.run_freestyle([code_generation_prompt])
+        generated_code = self.gemini.run_freestyle(code_generation_prompt)
         
         # Extract just the code
         code = extract_code(generated_code) or extract_boxed(generated_code) or generated_code
@@ -1418,7 +1418,7 @@ def crop_and_zoom(image, bbox): ...
                 ONLY provide the corrected code with no explanations.
                 """
                 
-                fixed_code = self.gemini.run_freestyle([debug_prompt])
+                fixed_code = self.gemini.run_freestyle(debug_prompt)
                 fixed_code = extract_code(fixed_code) or extract_boxed(fixed_code) or fixed_code
                 
                 # Try running the fixed code
@@ -1458,7 +1458,7 @@ def crop_and_zoom(image, bbox): ...
             which is most reliable and why.
             """
             
-            interpretation = self.gemini.run_freestyle([interpretation_prompt])
+            interpretation = self.gemini.run_freestyle(interpretation_prompt)
             result += interpretation
             
             return result
