@@ -1,4 +1,4 @@
-from coc.exec.symbol_extraction import parse_cell_for_symbols
+from coc.exec.dag import parse_cell_for_symbols
 
 import unittest
 

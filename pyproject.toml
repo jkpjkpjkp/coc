@@ -17,16 +17,13 @@ dependencies = [
     "pointr",
     "pyjwt>=2.10.1",
     "sam-2",
-    "torch>=2.5.1",
+    "torch>=2.6.0",
     "trellis",
     "watchdog>=6.0.0",
 ]
 
 
 [tool.uv.sources]
-torch = [
-    { index = "pytorch-cu" },
-]
 torchvision = [
     { index = "pytorch-cu" },
 ]
@@ -39,12 +36,12 @@ trellis = { workspace = true }
 
 [[tool.uv.index]]
 name = "pytorch-cu"
-url = "https://download.pytorch.org/whl/cu121"
+url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
 [[tool.uv.index]]
 name = "kaolin"
-url = "https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html"
+url = "https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu124.html"
 explicit = true
 
 [tool.uv.workspace]
@@ -52,4 +49,4 @@ members = ["submodules/TRELLIS", "submodules/Depth-Anything-V2", "submodules/fas
 
 [tool.uv]
 index-url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
-find-links = ["https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu121.html"]
+find-links = ["https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu124.html"]

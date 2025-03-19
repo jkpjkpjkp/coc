@@ -819,7 +819,7 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
             inputs.extend(images)
         
         # Add segmentation visualizations if available
-        if is_counting_task or is_retail_task:
+        if is_counting_task:
             if 'seg_vis' in locals() and seg_vis is not None:
                 inputs.append("Segmentation visualization of counted objects:")
                 inputs.append(seg_vis)

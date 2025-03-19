@@ -7,7 +7,7 @@ from PIL import Image
 import cv2
 
 # Import the required modules
-from fast3r.inference import Fast3R
+from fast3r.models.fast3r import Fast3R
 from fast3r.utils.visualize import visualize_point_cloud
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '../../../submodules/PoinTr'))
