@@ -1,49 +1,17 @@
-# Chain of Cognition - Enhanced Vision Capabilities
+## code structure
 
-## Overview
+coc/ and tests/ has exactly the same structure, where test file of a file is prepended with test_
+logs are kept under data/log, and every module should log its io and errors in 2 files; log with timestamp.
+various images under data/sample can be used for testing, e.g. onions.png is a pile of onions, and 4girls.png is 4 girls. 
 
-This project enhances the capabilities of the GeminiAgent to handle complex visual reasoning tasks through a multi-step orchestrated approach. The implementation focuses on improving accuracy in tasks like counting objects and extracting pricing information from retail shelf images.
-
-## Key Features
-
-- **Orchestrated Vision Analysis**: Uses a multi-step approach with specialized vision tools to analyze images.
-- **Layer-by-Layer Processing**: Divides shelf images into layers for more accurate counting and spatial reasoning.
-- **Enhanced Evaluation Framework**: Updated evaluation tools for testing on the MUIR dataset with configurable options.
-- **3D Vision Capabilities**: Integration with depth segmentation, novel view synthesis, and point cloud analysis.
-
-## Usage
-
-### Testing with an Image
-
-```bash
-python count_bottles.py path/to/image.jpg --verbose --save
-```
-
-### Running MUIR Evaluation
-
-```bash
-python run_muir_eval.py --with-3d --orchestration --verbose
-```
-
-### Comparing Approaches
-
-```bash
-python count_bottles.py path/to/image.jpg --compare
-```
-
-## Implementation Details
-
-The `GeminiAgent` class in `coc/tree/gemi.py` provides:
-
-- Standard generation with `generate()` - direct Gemini model usage
-- Orchestrated generation with `generate_orchestrated()` - multi-step analysis with specialized tools
-
-The orchestrated approach is particularly effective for:
-- Counting objects in complex arrangements
-- Analyzing retail shelves by layer
-- Extracting pricing information from product displays
-
-should we add RAG? (historically successful traj)
+## idea
+in tree/ many vlm(mllm) tree-search inference strategies will be spawned, each writes code to interact with tool/
+to keep local gpu at full capacity, we wrap each gpu-heavy tool into a gradio server.
 
 
+## style guides
+use single quote ', but use """ for google style docstring.
+should use no mocking when writing tests, since this is a small project.
 
+
+## trees
