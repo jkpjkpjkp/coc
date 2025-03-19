@@ -305,30 +305,6 @@ def segment_image(image: Image.Image, prompt: Optional[str] = None) -> List[np.n
     """
     ...
 
-def analyze_layers(image: Image.Image, num_layers: int = 3) -> Dict[str, Any]:
-    """Divide image into horizontal layers and analyze each layer
-    
-    Args:
-        image: Input image
-        num_layers: Number of horizontal layers to divide into
-        
-    Returns:
-        Dictionary with analysis results per layer
-    """
-    ...
-
-def count_objects(image: Image.Image, object_type: str = "bottle") -> Tuple[int, Image.Image]:
-    """Count objects of specified type in the image
-    
-    Args:
-        image: Input image
-        object_type: Type of object to count (e.g., "bottle", "person")
-        
-    Returns:
-        Tuple of (count, visualization image)
-    """
-    ...
-
 def color_based_segmentation(image: Image.Image, color_ranges: Optional[List] = None) -> List[np.ndarray]:
     """Segment image based on color ranges
     
@@ -338,18 +314,6 @@ def color_based_segmentation(image: Image.Image, color_ranges: Optional[List] = 
         
     Returns:
         List of binary masks for each color range
-    """
-    ...
-
-def watershed_segmentation(image: Image.Image, min_distance: int = 20) -> Tuple[np.ndarray, Image.Image]:
-    """Apply watershed algorithm to separate touching objects
-    
-    Args:
-        image: Input image
-        min_distance: Minimum distance between peaks in distance map
-        
-    Returns:
-        Tuple of (segmentation mask, visualization)
     """
     ...
 
@@ -441,20 +405,11 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
             f"\n\nAvailable vision tool interfaces (implement your analysis using these):\n{function_interfaces}"
             "\n\nFor vision tasks, particularly counting objects:"
             "\n1. Break the task into smaller steps that can be solved with code"
-            "\n2. For retail shelf images, divide them into layers for accurate bottle counting"
-            "\n3. Use segmentation with contour analysis to isolate individual objects"
-            "\n4. Apply multiple techniques and cross-verify your results (e.g., edge detection + color segmentation)"
-            "\n5. Employ cropping and zooming to focus on regions with ambiguous counts"
-            "\n\nWhen counting bottles or similar objects:"
-            "\n- Analyze each shelf layer separately"
-            "\n- Use segmentation to distinguish between bottles even when they touch"
-            "\n- Apply contour detection with appropriate area thresholds"
-            "\n- Cross-verify with color-based segmentation"
-            "\n- Explicitly count objects in each region and aggregate results"
+            "\n2. Use segmentation with contour analysis to isolate individual objects"
+            "\n3. Apply multiple techniques and cross-verify your results (e.g., edge detection + color segmentation)"
+            "\n4. Employ cropping and zooming to focus on regions with ambiguous counts"
             
-            "\n\nWhen facing intricate counting problems such as mottled/irregular patterns or detailed textures:"
-            "\n- Use edge detection to identify discontinuities"
-            "\n- Apply watershed segmentation for overlapping objects"
+            "\n\nWhen facing intricate problems such as mottled/irregular patterns or detailed textures:"
             "\n- Try multiple threshold values and merge results"
             "\n- Perform region-by-region analysis with zooming on complex areas"
             
@@ -584,68 +539,6 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
                 count = 0
                 
             return count, image
-    
-    # Method to analyze shelf layers in retail images
-    def analyze_shelf_layers(self, image: Image.Image, num_layers: int = None) -> Dict[str, Any]:
-        """
-        Analyze retail shelf layers to understand product arrangement
-        
-        Args:
-            image: Image of retail shelf
-            num_layers: Number of layers to analyze (automatic detection if None)
-            
-        Returns:
-            Dictionary with layer information
-        """
-        results = {
-            "num_layers": 0,
-            "layers": [],
-            "total_count": 0
-        }
-        
-        # First, try to detect shelf layers using depth information or segmentation
-        if num_layers is None:
-            # Ask Gemini to identify the number of layers
-            response = self.gemini.run_freestyle([
-                "How many distinct shelf layers/rows are visible in this retail display? Return ONLY the number:",
-                image
-            ])
-            
-            try:
-                num_layers = int(response.strip())
-            except:
-                num_layers = 3  # Default assumption
-        
-        results["num_layers"] = num_layers
-        
-        # Analyze each layer
-        layer_height = 1.0 / num_layers
-        for i in range(num_layers):
-            layer_top = i * layer_height
-            layer_bottom = (i + 1) * layer_height
-            
-            # Crop to this layer
-            layer_image = self.crop_and_zoom(image, (0, layer_top, 1.0, layer_bottom))
-            
-            # Count products in this layer
-            count, seg_vis = self.segment_and_count_objects(layer_image, "products/bottles/items")
-            
-            # Get details about products in this layer
-            layer_details = self.gemini.run_freestyle([
-                "Describe the products in this shelf layer. What are they? What's their arrangement (e.g., rows x columns)? Include any visible pricing information:",
-                layer_image
-            ])
-            
-            results["layers"].append({
-                "layer_index": i,
-                "product_count": count,
-                "details": layer_details,
-                "visualization": seg_vis
-            })
-            
-            results["total_count"] += count
-        
-        return results
 
     def _generate_enhanced_vision_data(self, images: List[Image.Image]) -> Dict[str, Any]:
         """
@@ -879,17 +772,10 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
             "total of", "tally", "enumerate"
         ]
         
-        # Check if this is a retail/pricing task
-        retail_indicators = [
-            "price", "cost", "dollar", "$", "save", "discount", 
-            "buy", "purchase", "shelf", "store", "sale", "bottle"
-        ]
-        
         is_counting_task = any(indicator in prompt.lower() for indicator in counting_indicators)
-        is_retail_task = any(indicator in prompt.lower() for indicator in retail_indicators)
         
         # For complex counting/retail tasks, use code execution approach
-        if is_counting_task or is_retail_task:
+        if is_counting_task:
             return self.analyze_with_code_execution(prompt, images)
         
         # For other tasks, use the original orchestrated approach
@@ -898,73 +784,7 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
         
         enhanced_data = {}
         enhanced_results = []
-        
-        if is_retail_task and is_counting_task:
-            # This is a retail counting task - use specialized tools
-            
-            # Determine if we need to focus on specific layers
-            layer_indicators = ["layer", "row", "shelf", "top", "bottom", "middle"]
-            
-            if any(indicator in prompt.lower() for indicator in layer_indicators):
-                # Extract layer information from prompt
-                layer_info = self.gemini.run_freestyle([
-                    f"Extract the shelf layer information from this query: '{prompt}'. How many layers should I analyze and which ones (top, middle, bottom, etc.)? Answer in this format: 'Analyze [number] layers: [which ones]'",
-                ])
-                
-                # Parse how many layers to analyze
-                try:
-                    num_layers_to_analyze = int(''.join(filter(str.isdigit, layer_info.split("layers")[0])))
-                except:
-                    num_layers_to_analyze = 2  # Default to 2 layers
-                
-                # Analyze the shelf
-                shelf_analysis = self.analyze_shelf_layers(image, num_layers_to_analyze)
-                
-                # Create visualization combining all layers
-                enhanced_results.append("SHELF ANALYSIS RESULTS:")
-                enhanced_results.append(f"Detected {shelf_analysis['num_layers']} shelf layers")
-                enhanced_results.append(f"Total product count across analyzed layers: {shelf_analysis['total_count']}")
-                
-                for i, layer in enumerate(shelf_analysis['layers']):
-                    enhanced_results.append(f"\nLAYER {i+1} DETAILS:")
-                    enhanced_results.append(f"Product count: {layer['product_count']}")
-                    enhanced_results.append(f"Description: {layer['details']}")
-                
-                # Add price calculation if needed
-                if "price" in prompt.lower() or "cost" in prompt.lower() or "$" in prompt:
-                    # Extract pricing information
-                    pricing_info = self.gemini.run_freestyle([
-                        "Extract all pricing information from this image. What are the regular prices and sale prices? Format as JSON with regular_price and sale_price keys:",
-                        image
-                    ])
-                    
-                    enhanced_results.append("\nPRICING ANALYSIS:")
-                    enhanced_results.append(pricing_info)
-                    
-                    # Calculate total costs
-                    calculation = self.gemini.run_freestyle([
-                        f"Based on this product count: {shelf_analysis['total_count']} items and this pricing information: {pricing_info}, calculate the total cost at regular price and at sale price. Show your calculation steps."
-                    ])
-                    
-                    enhanced_results.append("\nCOST CALCULATION:")
-                    enhanced_results.append(calculation)
-            else:
-                # General retail analysis
-                # Count all products
-                total_count, seg_vis = self.segment_and_count_objects(image, "products/items/bottles")
-                
-                # Get pricing information
-                pricing_info = self.gemini.run_freestyle([
-                    "Extract all pricing information from this image. What are the regular prices and sale prices?",
-                    image
-                ])
-                
-                enhanced_results.append("PRODUCT ANALYSIS:")
-                enhanced_results.append(f"Total product count: {total_count}")
-                enhanced_results.append("\nPRICING INFORMATION:")
-                enhanced_results.append(pricing_info)
-
-        elif is_counting_task:
+        if is_counting_task:
             # Generic counting task - figure out what to count
             object_to_count = self.gemini.run_freestyle([
                 f"Based on this query: '{prompt}', what specific objects should I count in the image? Answer with just the object type/category:",
@@ -1030,185 +850,139 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
             return f"Error: {str(e)}"
 
     # New method to set up Exec environment for code generation
-    def setup_exec_environment(self) -> Exec:
-        """Set up an Exec environment for code generation and execution
+    def setup_exec_environment(self):
+        """Set up an execution environment for code generation
         
         Returns:
-            Configured Exec instance for vision code execution
+            Exec environment with vision tools
         """
+        from coc.exec.mod import Exec
+        
+        # Create Exec instance
         exec_env = Exec()
         
-        # Import common libraries and set up helper functions
+        # Add safe color conversion utility to avoid OpenCV errors
+        safe_conversion_code = """
+        def safe_convert_to_gray(image):
+            '''Safely convert an image to grayscale, handling already-grayscale images'''
+            import cv2
+            import numpy as np
+            
+            # Check image type
+            if isinstance(image, np.ndarray):
+                # Check if image is already grayscale (2D array)
+                if len(image.shape) == 2:
+                    return image
+                # Convert BGR/RGB to grayscale if 3 channels
+                elif len(image.shape) == 3:
+                    return cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+                else:
+                    raise ValueError(f"Unexpected image shape: {image.shape}")
+            else:
+                # Try to convert to numpy array if not already
+                try:
+                    import numpy as np
+                    from PIL import Image
+                    if isinstance(image, Image.Image):
+                        # Convert PIL Image to numpy array
+                        np_image = np.array(image)
+                        # Handle grayscale vs RGB
+                        if len(np_image.shape) == 2:
+                            return np_image
+                        else:
+                            return cv2.cvtColor(np_image, cv2.COLOR_RGB2GRAY)
+                    else:
+                        raise ValueError(f"Unsupported image type: {type(image)}")
+                except Exception as e:
+                    print(f"Error in safe_convert_to_gray: {e}")
+                    # Return empty image as fallback
+                    return np.zeros((10, 10), dtype=np.uint8)
+        """
+        
+        # Basic setup code for vision tasks
         setup_code = """
         import numpy as np
         import cv2
         from PIL import Image
         import matplotlib.pyplot as plt
-        from io import BytesIO
-        import base64
+        import io
         
-        def image_to_array(img):
-            return np.array(img)
+        # Utility functions for image processing
+        def visualize_results(image, regions=None, labels=None, title=None):
+            '''Visualize image with optional regions and labels'''
+            plt.figure(figsize=(10, 10))
             
-        def array_to_image(arr):
-            return Image.fromarray(arr.astype('uint8'))
-        
-        def visualize_segments(image, masks, alpha=0.5):
-            '''Visualize segmentation masks on image'''
-            vis_image = np.array(image).copy()
-            overlay = np.zeros_like(vis_image)
-            
-            for i, mask in enumerate(masks):
-                color = [(i*50) % 255, ((i+1)*71) % 255, ((i+2)*89) % 255]
-                for c in range(3):
-                    overlay[:,:,c] = np.where(mask, color[c], overlay[:,:,c])
-            
-            vis_image = cv2.addWeighted(vis_image, 1, overlay, alpha, 0)
-            return Image.fromarray(vis_image)
-        
-        def divide_image_into_layers(image, num_layers):
-            '''Divide image into horizontal layers for shelf analysis'''
-            width, height = image.size
-            layer_height = height // num_layers
-            layers = []
-            
-            for i in range(num_layers):
-                top = i * layer_height
-                bottom = (i + 1) * layer_height if i < num_layers - 1 else height
-                layer = image.crop((0, top, width, bottom))
-                layers.append(layer)
-                
-            return layers
-            
-        def apply_threshold(img, threshold=127):
-            '''Apply binary threshold to grayscale image'''
-            if len(np.array(img).shape) == 3:
-                img_gray = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2GRAY)
+            if isinstance(image, np.ndarray):
+                if len(image.shape) == 2 or image.shape[2] == 1:
+                    plt.imshow(image, cmap='gray')
+                else:
+                    plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
             else:
-                img_gray = np.array(img)
+                plt.imshow(image)
                 
-            _, binary = cv2.threshold(img_gray, threshold, 255, cv2.THRESH_BINARY)
-            return binary
+            if regions is not None:
+                for i, region in enumerate(regions):
+                    y, x, h, w = region
+                    rect = plt.Rectangle((x, y), w, h, 
+                                         fill=False, 
+                                         edgecolor='red', 
+                                         linewidth=2)
+                    plt.gca().add_patch(rect)
+                    
+                    if labels is not None and i < len(labels):
+                        plt.text(x, y-5, labels[i], 
+                                 color='red', 
+                                 fontsize=12, 
+                                 bbox=dict(facecolor='white', alpha=0.7))
             
-        def count_contours(binary_img, min_area=100):
-            '''Count objects using contour detection'''
-            contours, _ = cv2.findContours(binary_img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-            valid_contours = [cnt for cnt in contours if cv2.contourArea(cnt) >= min_area]
-            return valid_contours
-            
-        def watershed_segmentation(image, min_distance=20):
-            '''Apply watershed algorithm to separate touching objects
-            
-            Args:
-                image: PIL Image or numpy array
-                min_distance: Minimum distance between peaks in distance map
+            if title:
+                plt.title(title)
                 
-            Returns:
-                Segmentation mask and labeled image
-            '''
-            # Convert to numpy array if PIL Image
+            plt.axis('off')
+            
+            # Save plot to a buffer and return as PIL Image
+            buf = io.BytesIO()
+            plt.savefig(buf, format='png')
+            buf.seek(0)
+            return Image.open(buf)
+        
+        def overlay_mask(image, mask, color=(0, 255, 0), alpha=0.5):
+            '''Overlay a binary mask on an image'''
+            # Convert PIL Image to cv2 if needed
             if isinstance(image, Image.Image):
-                image_np = np.array(image)
+                image_cv = np.array(image)
+                if len(image_cv.shape) == 3 and image_cv.shape[2] == 3:
+                    image_cv = cv2.cvtColor(image_cv, cv2.COLOR_RGB2BGR)
             else:
-                image_np = image
+                image_cv = image.copy()
+            
+            # Create RGB overlay
+            overlay = image_cv.copy()
+            
+            # Apply color to mask regions
+            if len(image_cv.shape) == 2:
+                # Convert grayscale to BGR for overlay
+                overlay = cv2.cvtColor(overlay, cv2.COLOR_GRAY2BGR)
+            
+            if mask.dtype != bool:
+                mask = mask > 0
                 
-            # Convert to grayscale
-            if len(image_np.shape) == 3:
-                gray = cv2.cvtColor(image_np, cv2.COLOR_RGB2GRAY)
-            else:
-                gray = image_np
-                
-            # Apply threshold
-            _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            overlay[mask] = color
             
-            # Noise removal with morphological operations
-            kernel = np.ones((3,3), np.uint8)
-            opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=2)
-            
-            # Sure background area
-            sure_bg = cv2.dilate(opening, kernel, iterations=3)
-            
-            # Finding sure foreground area
-            dist_transform = cv2.distanceTransform(opening, cv2.DIST_L2, 5)
-            _, sure_fg = cv2.threshold(dist_transform, 0.5*dist_transform.max(), 255, 0)
-            
-            # Finding unknown region
-            sure_fg = np.uint8(sure_fg)
-            unknown = cv2.subtract(sure_bg, sure_fg)
-            
-            # Marker labelling
-            _, markers = cv2.connectedComponents(sure_fg)
-            
-            # Add one to all labels so that background is 1 instead of 0
-            markers = markers + 1
-            
-            # Mark unknown region with 0
-            markers[unknown == 255] = 0
-            
-            # Apply watershed
-            markers = cv2.watershed(image_np, markers)
-            
-            # Create visualization
-            segmented = image_np.copy()
-            segmented[markers == -1] = [255, 0, 0]  # Mark watershed boundaries in red
-            
-            return markers, segmented
-            
-        def color_based_segmentation(image, color_ranges=None):
-            '''Segment image based on color ranges
-            
-            Args:
-                image: PIL Image or numpy array
-                color_ranges: List of (lower, upper) HSV color ranges to segment
-                
-            Returns:
-                List of binary masks for each color range
-            '''
-            # Convert to numpy array if PIL Image
-            if isinstance(image, Image.Image):
-                image_np = np.array(image)
-            else:
-                image_np = image
-                
-            # Convert to HSV
-            hsv = cv2.cvtColor(image_np, cv2.COLOR_RGB2HSV)
-            
-            # If no color ranges provided, use common bottle colors
-            if color_ranges is None:
-                # Default color ranges for common bottle types (HSV)
-                color_ranges = [
-                    # Brown/amber bottles
-                    (np.array([10, 100, 20]), np.array([30, 255, 200])),
-                    # Green bottles
-                    (np.array([35, 50, 20]), np.array([85, 255, 200])),
-                    # Blue bottles
-                    (np.array([90, 50, 20]), np.array([130, 255, 200])),
-                    # Clear/white bottles (low saturation)
-                    (np.array([0, 0, 150]), np.array([180, 30, 255])),
-                    # Red bottles (wraps around in HSV, so two ranges)
-                    (np.array([0, 100, 20]), np.array([10, 255, 200])),
-                    (np.array([160, 100, 20]), np.array([180, 255, 200]))
-                ]
-            
-            masks = []
-            for lower, upper in color_ranges:
-                # Create mask for this color range
-                mask = cv2.inRange(hsv, lower, upper)
-                
-                # Apply morphological operations to clean up mask
-                kernel = np.ones((5,5), np.uint8)
-                mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
-                mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-                
-                masks.append(mask)
-            
-            return masks
+            # Blend images
+            output = cv2.addWeighted(overlay, alpha, image_cv, 1-alpha, 0)
+            return output
         """
         
         # Execute the setup code
         stdout, stderr, _ = exec_env._run(setup_code)
         if stderr:
             logging.warning(f"Setup code error: {stderr}")
+        
+        # Execute the safe conversion utility
+        stdout, stderr, _ = exec_env._run(safe_conversion_code)
+        if stderr:
+            logging.warning(f"Safe conversion code error: {stderr}")
         
         # Add the segmentation model if available
         if self.use_segmentation and self.modules_available["segmentation"]:
@@ -1265,7 +1039,7 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
             
             # Also save an actual file on disk in case the code attempts to reload it
             try:
-                temp_dir = os.path.join(os.getcwd(), "temp_images")
+                temp_dir = os.path.join(os.getcwd(), "data", "temp_images")
                 os.makedirs(temp_dir, exist_ok=True)
                 img_path = os.path.join(temp_dir, f"image_{i}.jpg")
                 img.save(img_path)
@@ -1275,9 +1049,6 @@ def cross_validate_counts(counts_by_method: Dict[str, int]) -> Tuple[int, float]
         
         # Create a list of all image variables
         exec_env.set_var("images", [exec_env.get_var(f"image_{i}") for i in range(len(images))])
-        
-        # Check if this is a counting task related to bottles or retail shelves
-        is_counting_bottles = any(term in prompt.lower() for term in ["bottle", "bottles", "shelf", "shelves"])
         
         # Get function interfaces for the prompt
         full_prompt = self._get_prompt_capabilities()
@@ -1300,18 +1071,6 @@ def segment_image(image: Image.Image, prompt: Optional[str] = None) -> List[np.n
     """Segment objects in the image using SAM model"""
     ...
 
-def analyze_layers(image: Image.Image, num_layers: int = 3) -> Dict[str, Any]:
-    """Divide image into horizontal layers and analyze each layer"""
-    ...
-
-def count_objects(image: Image.Image, object_type: str = "bottle") -> Tuple[int, Image.Image]:
-    """Count objects of specified type in the image"""
-    ...
-
-def watershed_segmentation(image: Image.Image, min_distance: int = 20) -> Tuple[np.ndarray, Image.Image]:
-    """Apply watershed algorithm to separate touching objects"""
-    ...
-
 def color_based_segmentation(image: Image.Image, color_ranges: Optional[List] = None) -> List[np.ndarray]:
     """Segment image based on color ranges"""
     ...
@@ -1328,9 +1087,6 @@ def crop_and_zoom(image: Image.Image, bbox: Tuple[float, float, float, float]) -
 ```python
 # Basic image processing functions
 def segment_image(image): ...
-def analyze_layers(image, num_layers=3): ...
-def count_objects(image, object_type="bottle"): ...
-def watershed_segmentation(image): ...
 def color_based_segmentation(image): ...
 def crop_and_zoom(image, bbox): ...
 ```
@@ -1359,46 +1115,7 @@ def crop_and_zoom(image, bbox): ...
         focus only on implementing a robust solution that works.
         """
         
-        # Customize the prompt based on the task type
-        if is_counting_bottles:
-            code_generation_prompt = f"""
-            I need Python code to accurately count bottles on retail shelves for this task:
-            
-            "{prompt}"
-            
-            You should utilize the following vision tool interfaces:
-            
-            {function_interfaces_text}
-            
-            Implement a comprehensive bottle counting solution that:
-            
-            1. Divides the shelf image into layers (typically 2-4 horizontal sections) using analyze_layers()
-            2. For each layer, applies multiple counting techniques:
-               - Uses segment_image() to identify bottle regions
-               - Applies watershed_segmentation() to separate touching bottles
-               - Uses color_based_segmentation() to identify bottles by color
-               - Counts objects using appropriate thresholds and filtering
-            3. Cross-validates counts between different methods using cross_validate_counts()
-            4. Zooms into regions with ambiguous counts using crop_and_zoom()
-            5. Visualizes results with annotations showing detected bottles via visualize_results()
-            6. Provides a detailed breakdown of counts by layer
-            
-            CRITICAL: Bottles often touch each other on shelves, making simple contour detection insufficient.
-            You MUST implement multiple techniques and look for consistent counts.
-            
-            The code should handle these common challenges:
-            - Bottles may be partially occluded
-            - Similar colored bottles may appear as one region
-            - Lighting variations across the shelf
-            - Reflections on bottle surfaces
-            - Labels with complex patterns
-            
-            The images are available as 'image_0', 'image_1', etc. and also as a list 'images'.
-            
-            DO NOT include comments or explanations - focus on creating a robust executable solution.
-            """
-        else:
-            code_generation_prompt = code_gen_template
+        code_generation_prompt = code_gen_template
         
         # Get code from Gemini
         generated_code = self.gemini.run_freestyle(code_generation_prompt)
@@ -1553,23 +1270,8 @@ def generate_children(nodes_with_code: list[TreeNode], num_children: int, agent:
                 # Get the code from the node's codelist if available
                 node_code = node._[0].code.lower() if node._ and len(node._) > 0 else ""
                 
-            is_counting_task = any(term in node_code for term in 
-                                  ["count", "bottles", "enumerate", "tally"])
-            
             for i in range(num_children):
-                if is_counting_task:
-                    # For counting tasks, provide more specific hints
-                    if i == 0:
-                        suggestive_hint = "Improve the code by using layer-by-layer segmentation for accurate bottle counting"
-                    elif i == 1:
-                        suggestive_hint = "Enhance accuracy by adding watershed segmentation to separate touching bottles"
-                    elif i == 2:
-                        suggestive_hint = "Improve the counting approach by using color-based segmentation and cross-validation"
-                    else:
-                        suggestive_hint = f"Try a different approach to bottle counting (approach {i+1})"
-                else:
-                    suggestive_hint = f"Improve the code (approach {i+1})"
-                
+                suggestive_hint = f"Improve the code (approach {i+1})"
                 futures.append(executor.submit(generate_one_child, node, suggestive_hint, agent))
         
         for future in as_completed(futures):
