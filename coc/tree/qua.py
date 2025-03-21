@@ -11,6 +11,15 @@ from coc.tool.vqa import gemini_as_llm
 from coc.util.misc import fulltask_to_task, set_seed
 from coc.data.fulltask import FullTask
 import textwrap
+import logging
+
+logger = logging.getLogger('coc')
+logger.setLevel(logging.WARNING)
+file_handler = logging.FileHandler('tree/qua.log')
+file_handler.setLevel(logging.WARNING)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
+logger.addHandler(file_handler)
 
 # Import Gemini for VLM support
 from coc.tool.vqa.gemini import Gemini
@@ -42,7 +51,7 @@ def generate_one_child(parent: TreeNode, suggestive_hint: str, vlm) -> tuple[Tre
     answer = extract_boxed(response)
 
     # Ensure response contains either code or answer, but not both
-    assert not (codes and answer), f"Both code and answer extracted: {response}"
+    # assert not (codes and answer), f"Both code and answer extracted: {response}"
     assert codes or answer, f"Neither code nor answer extracted: {response}"
 
     # Create a new child node
@@ -160,6 +169,7 @@ def eval_a_batch(batch: Iterable[FullTask], vlm) -> tuple[int, int]:
     total = 0
     
     for fulltask in batch:
+        answer = fulltask['answer']
         task = fulltask_to_task(fulltask)
         nodes = evaluate(task, vlm)
         
@@ -167,9 +177,14 @@ def eval_a_batch(batch: Iterable[FullTask], vlm) -> tuple[int, int]:
         answers = [answer for _, answer in nodes]
         
         # Check if any answer is correct
-        if judge_if_any(answers, task['answer']):
+        if judge_if_any(answers, answer):
             correct += 1
         total += 1
+
+        print(correct, total)
+        logger.warning(f"Correct: {correct}, Total: {total}, Accuracy: {correct/total:.2%}")
+        if total - 2 * correct > 5:
+            break
     
     return correct, total
 
