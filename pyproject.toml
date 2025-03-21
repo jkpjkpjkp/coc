@@ -7,18 +7,14 @@ requires-python = ">=3.11"
 dependencies = [
     "datasets>=3.4.0",
     "depth-anything-v2",
-    "fast3r",
     "google-api-python-client>=2.164.0",
     "langchain>=0.3.20",
     "langchain-community>=0.3.19",
     "langchain-core>=0.3.45",
     "langchain-openai>=0.3.8",
-    "open-webui",
-    "pointr",
     "pyjwt>=2.10.1",
     "sam-2",
-    "torch>=2.6.0",
-    "trellis",
+    "torch>=2.5.1",
     "watchdog>=6.0.0",
 ]
 
@@ -28,25 +24,15 @@ torchvision = [
     { index = "pytorch-cu" },
 ]
 depth-anything-v2 = { workspace = true }
-fast3r = { workspace = true }
-open-webui = { path = "submodules/open-webui" }
-pointr = { workspace = true }
 sam-2 = { path = "submodules/sam2" }
-trellis = { workspace = true }
 
 [[tool.uv.index]]
 name = "pytorch-cu"
 url = "https://download.pytorch.org/whl/cu126"
 explicit = true
 
-[[tool.uv.index]]
-name = "kaolin"
-url = "https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu124.html"
-explicit = true
-
 [tool.uv.workspace]
-members = ["submodules/TRELLIS", "submodules/Depth-Anything-V2", "submodules/fast3r", "submodules/PoinTr"]
+members = ["submodules/Depth-Anything-V2"]
 
 [tool.uv]
 index-url = "https://mirrors.bfsu.edu.cn/pypi/web/simple"
-find-links = ["https://nvidia-kaolin.s3.us-east-2.amazonaws.com/torch-2.5.1_cu124.html"]

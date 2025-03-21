@@ -1,6 +1,6 @@
 from PIL import Image as Img
 from typing import List, Optional, Dict
-from coc.exec.context.mod import grounding, grounding_dino, owl, glm, qwen, gemini  # Assuming the interface is in interface.py
+from coc.tool.context.mod import grounding, grounding_dino, owl, glm, qwen, gemini  # Assuming the interface is in interface.py
 
 def create_dummy_image(width: int = 100, height: int = 100) -> Img:
     """Create a dummy white image for testing."""
@@ -28,7 +28,7 @@ def test_grounding():
     objects_of_interest = ['cat', 'dog']
     result = grounding(image, objects_of_interest)
     assert result == []
-    
+
 def test_grounding_dino():
     """Test the grounding_dino function with and without objects_of_interest."""
     image = create_dummy_image()
