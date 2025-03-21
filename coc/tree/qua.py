@@ -15,7 +15,7 @@ import logging
 
 logger = logging.getLogger('coc')
 logger.setLevel(logging.WARNING)
-file_handler = logging.FileHandler('tree/qua.log')
+file_handler = logging.FileHandler('data/log/qua.log')
 file_handler.setLevel(logging.WARNING)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 file_handler.setFormatter(formatter)
