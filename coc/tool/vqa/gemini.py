@@ -43,6 +43,7 @@ class Gemini(BaseTool):
             openai_api_base=os.environ['GEMINI_BASE_URL'],
             max_tokens=8192,
             temperature=TEMPERATURE,
+            stop=['```\n'],
         )
         super().__init__(mllm=mllm)
 

@@ -6,7 +6,7 @@ from typing import Dict, List, Iterator, Union, Literal
 from pathlib import Path
 
 from coc.data.fulltask import FullTask
-from coc.data.zero import zero, LoadZero
+from coc.data.zero import zero
 
 def load_gemini_solved_tasks(path: str = 'data/gemini_solved_tasks.pkl') -> Dict[str, bool]:
     """
@@ -71,11 +71,8 @@ def zero_wrong(offer: Literal['full', 'sub'] = 'sub', solved_tasks_path: str = '
     # Load tasks that Gemini can solve
     solved_tasks = load_gemini_solved_tasks(solved_tasks_path)
     
-    # Use the LoadZero class directly for consistent interface
-    data_loader = LoadZero(split_name='zerobench_subquestions' if offer == 'sub' else 'zerobench')
-    
-    # Filter tasks
-    for task in data_loader.convert_to_tasks():
+    # Use zero directly to avoid circular imports
+    for task in zero(offer=offer):
         task_id = task['task_type']
         is_solved = solved_tasks.get(task_id, False)
         
