@@ -15,3 +15,4 @@ should use no mocking when writing tests, since this is a small project.
 
 
 ## trees
+should we add RAG? (historically successful traj)
