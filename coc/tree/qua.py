@@ -402,10 +402,9 @@ def create_vlm_wrapper(use_gemini=USE_OPENAI_FORMAT, **kwargs):
 
 if __name__ == '__main__':
     import argparse
-    
     parser = argparse.ArgumentParser(description='Evaluate programming tasks using tree search with VLM')
-    parser.add_argument('--model', type=str, choices=['gemini', 'webui', 'gemini-openai'], default='gemini-openai',
-                        help='VLM backend to use (default: gemini-openai)')
+    parser.add_argument('--model', type=str, choices=['gemini', 'webui', 'gemini-openai'], default='gemini',
+                        help='VLM backend to use (default: gemini)')
     parser.add_argument('--webui-api-key', type=str, default=None,
                         help='API key for WebUI authentication (default: read from WEBUI_API_KEY env var)')
     parser.add_argument('--gemini-url', type=str, default=GEMINI_BASE_URL,
@@ -426,43 +425,16 @@ if __name__ == '__main__':
         set_seed(args.seed)
     else:
         set_seed()
-    
     # Load tasks
     from coc.data.zero import zero
-    batch = zero(offer=args.offer)
-    
+    print('C')
+    batch = list(zero(offer=args.offer))
+    print('D')
     # Run evaluation with selected model
     if args.model == 'gemini':
         print(f"Evaluating {len(batch)} tasks using Gemini...")
         correct, total = eval_a_batch(batch, vlm)
-    elif args.model == 'gemini-openai':
-        print(f"Evaluating {len(batch)} tasks using Gemini via OpenAI format ({args.gemini_model})...")
-        print(f"Gemini broker URL: {args.gemini_url}")
-        api_key = args.gemini_api_key or os.environ.get("GEMINI_API_KEY", "")
-        if api_key:
-            print("Using API key from command line or environment variable")
-        else:
-            print("Warning: No API key provided for Gemini")
-            
-        correct, total = run_with_webui(
-            batch, 
-            model_name=args.gemini_model, 
-            base_url=args.gemini_url,
-            api_key=api_key,
-            use_gemini=True
-        )
     else:
-        print(f"Evaluating {len(batch)} tasks using WebUI ({args.webui_model})...")
-        print(f"WebUI URL: {args.webui_url}")
-        api_key = args.webui_api_key or os.environ.get("WEBUI_API_KEY", "")
-        if api_key:
-            print("Using API key from command line or environment variable")
-        correct, total = run_with_webui(
-            batch, 
-            model_name=args.webui_model, 
-            base_url=args.webui_url,
-            api_key=api_key,
-            use_gemini=False
-        )
+        raise NotImplementedError(f"Model {args.model} not supported")
     
     print(f"Correct: {correct}, Total: {total}, Accuracy: {correct/total:.2%}")
