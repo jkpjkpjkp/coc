@@ -44,6 +44,7 @@ from coc.tree.webui_config import (
     GEMINI_MODEL,
     USE_OPENAI_FORMAT,
 )
+import numpy as np
 
 class MockResponse:
     def __init__(self, status=200, data=None):
@@ -507,6 +508,71 @@ class TestGeminiIntegration(unittest.TestCase):
         # Verify correct results
         self.assertEqual(correct, 1)
         self.assertEqual(total, 1)
+
+class TestImageVariables(unittest.TestCase):
+    
+    def setUp(self):
+        # Create mock images
+        self.mock_image1 = Image.new('RGB', (10, 10), color='red')
+        self.mock_image2 = Image.new('RGB', (10, 10), color='blue')
+        
+        # Create a task with images
+        self.task = Task(
+            images=[self.mock_image1, self.mock_image2],
+            question="Test question"
+        )
+        
+        # Create a mock VLM function
+        self.mock_vlm = MagicMock()
+        self.mock_vlm.return_value = "```python\nprint('test')\n```"
+    
+    def test_image_variables_in_exec_env(self):
+        """Test that image variables are correctly set in the exec environment"""
+        root = root_factory(self.task)
+        
+        # Check that image variables exist in the environment
+        self.assertIn('image_1', root.codelist.env.globals)
+        self.assertIn('image_2', root.codelist.env.globals)
+        
+        # Check that the images are correct
+        self.assertEqual(root.codelist.env.globals['image_1'], self.mock_image1)
+        self.assertEqual(root.codelist.env.globals['image_2'], self.mock_image2)
+    
+    @patch('coc.tree.qua.build_trunk')
+    def test_generate_one_child_uses_image_variables(self, mock_build_trunk):
+        """Test that generate_one_child correctly uses image variables"""
+        mock_build_trunk.return_value = "Test message"
+        
+        root = root_factory(self.task)
+        
+        # Call generate_one_child
+        generate_one_child(root, "Test hint", self.mock_vlm)
+        
+        # Check that VLM was called with the correct arguments
+        self.mock_vlm.assert_called_once()
+        call_args = self.mock_vlm.call_args[0][0]
+        
+        # First argument should be the message
+        self.assertEqual(call_args[0], "Test message")
+        
+        # Next arguments should be the images
+        self.assertEqual(call_args[1], self.mock_image1)
+        self.assertEqual(call_args[2], self.mock_image2)
+        
+    def test_deepcopy_preserves_image_variables(self):
+        """Test that deepcopy preserves image variables"""
+        root = root_factory(self.task)
+        
+        # Deepcopy the codelist
+        copied_codelist = root.codelist.deepcopy()
+        
+        # Check that image variables exist in the copied environment
+        self.assertIn('image_1', copied_codelist.env.globals)
+        self.assertIn('image_2', copied_codelist.env.globals)
+        
+        # Check that the images are correct
+        self.assertEqual(copied_codelist.env.globals['image_1'], self.mock_image1)
+        self.assertEqual(copied_codelist.env.globals['image_2'], self.mock_image2)
 
 if __name__ == '__main__':
     unittest.main()

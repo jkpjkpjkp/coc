@@ -78,6 +78,12 @@ class CodeList:
         # Deep copy all attributes
         result._ = copy.deepcopy(self._)
         result.env = copy.deepcopy(self.env)
+        
+        # Ensure image variables are properly copied
+        task = self.env.get_var('task')
+        if task and 'images' in task:
+            for i, img in enumerate(task['images']):
+                result.env.set_var(f'image_{i+1}', img)
 
         return result
 
@@ -157,8 +163,15 @@ def rollout(task: Task, node: TreeNode, llm, max_depth: int = MAX_DEPTH, variant
 
 def root_factory(task: Task) -> TreeNode:
     """returns a new root. """
+    codelist = CodeList(context=CONTEXT_FILE, task=task)
+    
+    # Ensure image variables are set up correctly in the root node's environment
+    if 'images' in task:
+        for i, img in enumerate(task['images']):
+            codelist.env.set_var(f'image_{i+1}', img)
+    
     return TreeNode(
-        codelist=CodeList(context=CONTEXT_FILE, task=task),
+        codelist=codelist,
         outputs=[],
         parent=None,
         children=[],

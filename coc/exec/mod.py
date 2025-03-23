@@ -43,6 +43,10 @@ class Exec:
         # Add task to environment if provided
         if task:
             self.globals['task'] = copy.deepcopy(task)
+            # Also set up individual image variables (image_1, image_2, etc.)
+            if 'images' in task:
+                for i, img in enumerate(task['images']):
+                    self.globals[f'image_{i+1}'] = img
 
 
 

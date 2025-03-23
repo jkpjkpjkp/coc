@@ -38,7 +38,7 @@ You can write yython code calling them. Enclose your code:
 # Your code here
 ```
 
-Use task['images'][0] to refer to the 1st image as PIL.Image.Image, and so on. there are {num_images} images in total.
+Use image_1 to refer to the 1st image as PIL.Image.Image, image_2 for the 2nd image, and so on. There are {num_images} images in total.
 
 example code and outputs (executed with same images; you can use their intermediate results in code):
 {codelist}
