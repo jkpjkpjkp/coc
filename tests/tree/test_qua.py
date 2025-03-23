@@ -8,7 +8,6 @@ from PIL import Image
 import io
 import base64
 from coc.tree.qua import (
-    WebUIWrapper,
     GeminiOpenAIWrapper,
     create_vlm_wrapper,
     generate_one_child,
@@ -188,11 +187,6 @@ class TestGeminiOpenAIWrapper(unittest.TestCase):
 
 class TestWrapperFactory(unittest.TestCase):
     def test_create_vlm_wrapper(self):
-        # Test creating WebUIWrapper
-        wrapper = create_vlm_wrapper(use_gemini=False, base_url="http://test-url.com")
-        self.assertIsInstance(wrapper, WebUIWrapper)
-        self.assertEqual(wrapper.base_url, "http://test-url.com")
-
         # Test creating GeminiOpenAIWrapper
         wrapper = create_vlm_wrapper(use_gemini=True, base_url="http://gemini-broker.com")
         self.assertIsInstance(wrapper, GeminiOpenAIWrapper)
