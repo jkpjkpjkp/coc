@@ -8,13 +8,13 @@ import ast
 from langchain_core.tools import BaseTool
 import copy
 import os
-import logging
 from datetime import datetime
 import pickle
 import warnings
 import contextlib
 
 from pydantic import Field
+from coc.util.logging import get_logger
 
 class Exec:
     """Python code interpreter with proper initialization."""
@@ -186,20 +186,15 @@ class Exec:
         This method creates a new Exec instance and copies only
         serializable global variables, logging skipped items.
         """
-        # Setup logging
+        # Create log directory if it doesn't exist
         log_dir = os.path.join(os.getcwd(), 'data/log/deepcopy')
         os.makedirs(log_dir, exist_ok=True)
 
         # Create a unique log filename with timestamp
-        log_filename = os.path.join(log_dir, f'deepcopy_skipped_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
+        log_filename = f'deepcopy_skipped_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
 
-        # Configure logging
-        logging.basicConfig(
-            filename=log_filename,
-            level=logging.INFO,
-            format='%(asctime)s - %(levelname)s: %(message)s'
-        )
-        logger = logging.getLogger(__name__)
+        # Get logger instance
+        logger = get_logger(__name__, f'deepcopy/{log_filename}')
 
         # Create a new instance of the class
         new_exec = self.__class__()

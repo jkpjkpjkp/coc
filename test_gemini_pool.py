@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 
 import os
-import logging
 from PIL import Image
 import numpy as np
 import time
 import random
 
+from coc.util.logging import get_logger
 from coc.tool.vqa.gemini import Gemini, GEMINI_BROKERS
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+# Get logger instance
+logger = get_logger(__name__)
 
 def create_test_image(width=512, height=512):
     """Create a simple test image with some shapes for VQA testing"""

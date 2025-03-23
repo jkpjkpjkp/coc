@@ -11,15 +11,9 @@ from coc.tool.vqa import gemini_as_llm
 from coc.util.misc import fulltask_to_task, set_seed
 from coc.data.fulltask import FullTask
 import textwrap
-import logging
+from coc.util.logging import get_logger
 
-logger = logging.getLogger('coc')
-logger.setLevel(logging.WARNING)
-file_handler = logging.FileHandler('data/log/qua.log')
-file_handler.setLevel(logging.WARNING)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-file_handler.setFormatter(formatter)
-logger.addHandler(file_handler)
+logger = get_logger('coc', 'qua.log')
 
 # Import Gemini for VLM support
 from coc.tool.vqa.gemini import Gemini

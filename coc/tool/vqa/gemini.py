@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import logging
 from datetime import datetime
 from pathlib import Path
 
@@ -11,15 +10,14 @@ from langchain_core.messages import HumanMessage
 
 import os, sys
 
-# Configure logging
+# Import the new logging module
+from coc.util.logging import get_logger
+
+# Get logger instance with specific log file
 log_dir = Path("data/log/gemini")
 log_dir.mkdir(parents=True, exist_ok=True)
-logging.basicConfig(
-    filename=log_dir / f"gemini_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log",
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__, f"gemini/gemini_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+
 from coc.config import TEMPERATURE
 from langchain_openai import ChatOpenAI
 import coc.secret
@@ -27,6 +25,7 @@ import coc.secret
 import base64
 from PIL.Image import Image as Img
 from PIL import Image
+
 class Gemini(BaseTool):
     name: str = 'VQA'
     description: str = (
