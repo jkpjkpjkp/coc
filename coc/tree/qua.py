@@ -184,8 +184,8 @@ def eval_a_batch(batch: Iterable[FullTask], vlm) -> tuple[int, int]:
 
 if __name__ == '__main__':
     set_seed()
-    from coc.data.zero_wrong import zero_wrong
-    batch = list(zero_wrong(offer='sub'))[10:]
+    from coc.data.zero import zero
+    batch = list(zero(offer='failed'))
     print(f"Evaluating {len(batch)} tasks using Gemini VLM...")
     correct, total = eval_a_batch(batch, vlm)
     print(f"Correct: {correct}, Total: {total}, Accuracy: {correct/total:.2%}")

@@ -57,7 +57,7 @@ class LoadZero(TaskLoader):
                 answer=item['question_answer']
             )
 
-def zero(offer: Literal['full', 'sub', 'failed'] = 'sub') -> Iterator[FullTask]:
+def zero(offer: Literal['full', 'sub', 'failed'] = 'failed') -> Iterator[FullTask]:
     """
     Load ZeroBench dataset tasks.
     
