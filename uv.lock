@@ -267,6 +267,7 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-core" },
     { name = "langchain-openai" },
+    { name = "loguru" },
     { name = "pyjwt" },
     { name = "torch" },
     { name = "watchdog" },
@@ -281,6 +282,7 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.3.19" },
     { name = "langchain-core", specifier = ">=0.3.45" },
     { name = "langchain-openai", specifier = ">=0.3.8" },
+    { name = "loguru", specifier = ">=0.7.0" },
     { name = "pyjwt", specifier = ">=2.10.1" },
     { name = "torch", specifier = ">=2.5.1" },
     { name = "watchdog", specifier = ">=6.0.0" },
@@ -986,6 +988,19 @@ dependencies = [
 sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/bc/1e/642ad730f8b1960e777a199c371c2f4607b1e411ea61516e90dba56912a6/langsmith-0.3.18.tar.gz", hash = "sha256:18ff2d8f2e77b375485e4fb3d0dbf7b30fabbd438c7347c3534470e9b7d187b8", size = 337237 }
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/cd/78/a114e3697aa7a161b2b1a4ec4162b1ef15f97e7fe4cbd981781211dfca5a/langsmith-0.3.18-py3-none-any.whl", hash = "sha256:7ad65ec26084312a039885ef625ae72a69ad089818b64bacf7ce6daff672353a", size = 351863 },
+]
+
+[[package]]
+name = "loguru"
+version = "0.7.3"
+source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
+dependencies = [
+    { name = "colorama", marker = "sys_platform == 'win32'" },
+    { name = "win32-setctime", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/3a/05/a1dae3dffd1116099471c643b8924f5aa6524411dc6c63fdae648c4f1aca/loguru-0.7.3.tar.gz", hash = "sha256:19480589e77d47b8d85b2c827ad95d49bf31b0dcde16593892eb51dd18706eb6", size = 63559 }
+wheels = [
+    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/0c/29/0348de65b8cc732daa3e33e67806420b2ae89bdce2b04af740289c5c6c8c/loguru-0.7.3-py3-none-any.whl", hash = "sha256:31a33c10c8e1e10422bfd431aeb5d351c7cf7fa671e3c4df004162264b28220c", size = 61595 },
 ]
 
 [[package]]
@@ -2109,6 +2124,15 @@ wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/07/f6/d0e5b343768e8bcb4cda79f0f2f55051bf26177ecd5651f84c07567461cf/watchdog-6.0.0-py3-none-win32.whl", hash = "sha256:07df1fdd701c5d4c8e55ef6cf55b8f0120fe1aef7ef39a1c6fc6bc2e606d517a", size = 79065 },
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/db/d9/c495884c6e548fce18a8f40568ff120bc3a4b7b99813081c8ac0c936fa64/watchdog-6.0.0-py3-none-win_amd64.whl", hash = "sha256:cbafb470cf848d93b5d013e2ecb245d4aa1c8fd0504e863ccefa32445359d680", size = 79070 },
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/33/e8/e40370e6d74ddba47f002a32919d91310d6074130fe4e17dabcafc15cbf1/watchdog-6.0.0-py3-none-win_ia64.whl", hash = "sha256:a1914259fa9e1454315171103c6a30961236f508b9b623eae470268bbcc6a22f", size = 79067 },
+]
+
+[[package]]
+name = "win32-setctime"
+version = "1.2.0"
+source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
+sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/b3/8f/705086c9d734d3b663af0e9bb3d4de6578d08f46b1b101c2442fd9aecaa2/win32_setctime-1.2.0.tar.gz", hash = "sha256:ae1fdf948f5640aae05c511ade119313fb6a30d7eabe25fef9764dca5873c4c0", size = 4867 }
+wheels = [
+    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/e1/07/c6fe3ad3e685340704d314d765b7912993bcb8dc198f0e7a89382d37974b/win32_setctime-1.2.0-py3-none-any.whl", hash = "sha256:95d644c4e708aba81dc3704a116d8cbc974d70b3bdb8be1d150e36be6e9d1390", size = 4083 },
 ]
 
 [[package]]
