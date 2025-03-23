@@ -3,192 +3,104 @@
 import json
 import os
 import sys
-from typing import Dict, List, Tuple, Iterator
+from typing import Dict, List, Tuple
 from tqdm import tqdm
-import pickle
-import time
-import random
 
-# Ensure script can be run from anywhere
-script_dir = os.path.dirname(os.path.abspath(__file__))
-project_root = os.path.dirname(script_dir)
-if project_root not in sys.path:
-    sys.path.insert(0, project_root)
+# Import datasets for Hugging Face format
+try:
+    from datasets import Dataset, DatasetDict
+except ImportError:
+    print("ERROR: 'datasets' library not found. Install with 'pip install datasets'")
+    sys.exit(1)
 
-from coc.data.zero import zero
-from coc.data.fulltask import FullTask
-# Import Gemini from gromini instead of gemini
-from coc.tool.vqa.gromini import Gemini
-from coc.secret import GEMINI_BROKERS
-from coc.util.misc import fulltask_to_task
-from coc.prompts.baseline.prompt_gemini import build_trunk
-
-def extract_rate_limited_tasks():
+def create_huggingface_dataset():
     """
-    Extract the list of task IDs that failed due to rate limiting (429 errors)
-    from the log file.
-    
-    Returns:
-        List of task IDs that need to be retried
+    Create a HuggingFace dataset from the failed tasks JSON file,
+    facilitating easy drop-in replacement of filtered data.
     """
-    rate_limited_tasks = []
+    # Load the failed tasks from JSON
+    failed_tasks_path = 'data/gemini_failed_tasks.json'
+    if not os.path.exists(failed_tasks_path):
+        print(f"Error: Could not find {failed_tasks_path}")
+        sys.exit(1)
     
-    try:
-        with open('data/gemini_yanked_tasks.txt', 'r') as f:
-            for line in f:
-                if 'Error processing task' in line and 'Error code: 429' in line:
-                    # Extract task ID from lines like: "Error processing task 5_5: Error code: 429"
-                    parts = line.split('Error processing task ')
-                    if len(parts) > 1:
-                        task_id = parts[1].split(':')[0].strip()
-                        rate_limited_tasks.append(task_id)
-    except Exception as e:
-        print(f"Error extracting rate limited tasks: {e}")
-        
-    return rate_limited_tasks
-
-def retry_rate_limited_tasks():
-    """
-    Retry only the tasks that failed due to rate limiting.
+    # Load failed task IDs
+    with open(failed_tasks_path, 'r') as f:
+        failed_task_ids = json.load(f)
     
-    Returns:
-        Updated dictionary of solved tasks
-    """
-    # Load the existing results
-    solved_tasks = {}
-    checkpoint_path = 'data/gemini_solved_tasks.pkl'
+    print(f"Loaded {len(failed_task_ids)} failed task IDs from {failed_tasks_path}")
     
-    if os.path.exists(checkpoint_path):
-        try:
-            with open(checkpoint_path, 'rb') as f:
-                solved_tasks = pickle.load(f)
-                print(f"Loaded checkpoint with {len(solved_tasks)} completed tasks")
-        except Exception as e:
-            print(f"Error loading checkpoint: {e}")
-            solved_tasks = {}
+    # Create a list of dictionaries with task_id and failed status
+    tasks = [{"task_id": task_id, "failed_by_gemini": True} for task_id in failed_task_ids]
     
-    # Also load the JSON version for better readability if needed
-    json_path = 'data/gemini_solved_tasks.json'
-    if os.path.exists(json_path):
-        try:
-            with open(json_path, 'r') as f:
-                json_solved = json.load(f)
-                # If the pickle file failed to load, use the JSON as fallback
-                if not solved_tasks:
-                    solved_tasks = json_solved
-                    print(f"Loaded JSON backup with {len(solved_tasks)} tasks")
-        except Exception as e:
-            print(f"Error loading JSON backup: {e}")
+    # Create dataset
+    dataset = Dataset.from_list(tasks)
+    dataset_dict = DatasetDict({"test": dataset})
     
-    # Get the list of rate-limited tasks to retry
-    rate_limited_tasks = extract_rate_limited_tasks()
-    print(f"Found {len(rate_limited_tasks)} rate-limited tasks to retry")
+    # Save to disk
+    output_path = 'data/gemini_failed_huggingface'
+    dataset_dict.save_to_disk(output_path)
+    print(f"Saved dataset with {len(tasks)} failed task IDs to {output_path}")
     
-    if not rate_limited_tasks:
-        print("No rate-limited tasks found. Exiting.")
-        return solved_tasks
+    # Display info
+    print(f"Dataset structure: {dataset}")
+    print(f"Dataset fields: {dataset.column_names}")
     
-    # Initialize Gemini with broker pool - same as original
-    gemini = Gemini(
-        max_retries=3,
-        base_delay=1.0,
-        max_delay=30.0,
-        backoff_factor=2.0,
-        broker_pool=GEMINI_BROKERS,
-        model_name='gemini-2.0-pro-exp-02-05'
-    )
+    print("\nTo use this dataset, you can load it with:")
+    print("from datasets import load_from_disk")
+    print(f"dataset = load_from_disk('{output_path}')")
+    print("test_data = dataset['test']")
     
-    # Load all zerobench subtasks
-    all_tasks = list(zero(offer='sub'))
-    print(f"Loaded {len(all_tasks)} zerobench subtasks")
+    # Try to locate zerobench data to enhance the dataset with full task data
+    print("\nLooking for zerobench data to enhance the dataset...")
+    zerobench_paths = [
+        'data/zerobench.json',
+        'data/zero/zerobench.json',
+        'submodules/zerobench/zerobench.json'
+    ]
     
-    # Filter to only the rate-limited tasks that need retrying
-    retry_tasks = [task for task in all_tasks if task['task_type'] in rate_limited_tasks]
-    print(f"Filtered to {len(retry_tasks)} tasks that need retrying")
-    
-    # Process the retry tasks
-    correct = sum(1 for value in solved_tasks.values() if value)
-    total = len(solved_tasks)
-    
-    for task in tqdm(retry_tasks):
-        task_id = task['task_type']
-        task_dict = fulltask_to_task(task)
-        
-        # Run Gemini on this task
-        prompt = build_trunk(task=task_dict, offer='direct')
-        try:
-            # Add a small random delay to prevent rate limiting
-            time.sleep(random.uniform(2.0, 5.0))  # Slightly longer delays to avoid rate limits
-            
-            response = gemini._run_multiimage(task_dict['images'], prompt)
-            
-            # Check if the answer is correct
-            is_correct = response.lower().find(task['answer'].lower()) != -1
-            
-            if is_correct:
-                correct += 1
-                solved_tasks[task_id] = True
-                print(f"✓ Correct: {task_id}")
-            else:
-                solved_tasks[task_id] = False
-                print(f"✗ Incorrect: {task_id}")
-                print(f"  Question: {task['question']}")
-                print(f"  Expected: {task['answer']}")
-                print(f"  Got: {response}")
-            
-            # Save after each task to preserve progress
-            with open(checkpoint_path, 'wb') as f:
-                pickle.dump(solved_tasks, f)
-            
-            with open(json_path, 'w') as f:
-                json.dump(solved_tasks, f, indent=2)
+    for path in zerobench_paths:
+        if os.path.exists(path):
+            print(f"Found zerobench data at {path}")
+            try:
+                # Load the zerobench data
+                with open(path, 'r') as f:
+                    zerobench_data = json.load(f)
                 
-        except Exception as e:
-            print(f"Error processing task {task_id}: {e}")
-            # Don't mark as failed again if we get another error
-            # Only overwrite if we successfully complete the task
-            
-            # Save after error to preserve progress
-            with open(checkpoint_path, 'wb') as f:
-                pickle.dump(solved_tasks, f)
-            
-            with open(json_path, 'w') as f:
-                json.dump(solved_tasks, f, indent=2)
-    
-    # Recalculate final stats
-    correct = sum(1 for value in solved_tasks.values() if value)
-    total = len(solved_tasks)
-    print(f"Final results after retrying: {correct}/{total} correct ({(correct/total)*100:.2f}%)")
-    
-    return solved_tasks
-
-def create_failed_tasks_dataset(solved_tasks):
-    """
-    Create a dataset containing only the tasks that Gemini genuinely failed on 
-    (not those that failed due to API errors).
-    
-    Args:
-        solved_tasks: Dictionary of {task_id: is_solved}
-    """
-    # Filter to only the failed tasks
-    failed_tasks = {task_id: False for task_id, is_solved in solved_tasks.items() if not is_solved}
-    
-    # Save to JSON
-    with open('data/gemini_failed_tasks.json', 'w') as f:
-        json.dump(failed_tasks, f, indent=2)
-    
-    # Also save as pickle for convenience
-    with open('data/gemini_failed_tasks.pkl', 'wb') as f:
-        pickle.dump(failed_tasks, f)
-    
-    print(f"Created dataset of {len(failed_tasks)} failed tasks")
-    print("Saved to data/gemini_failed_tasks.json and data/gemini_failed_tasks.pkl")
-    
-    return failed_tasks
+                # Filter to only include failed tasks
+                failed_tasks = []
+                for task in tqdm(zerobench_data, desc="Filtering tasks"):
+                    if task.get('task_type') in failed_task_ids:
+                        task_copy = task.copy()
+                        task_copy['failed_by_gemini'] = True
+                        failed_tasks.append(task_copy)
+                
+                if failed_tasks:
+                    # Create enhanced dataset
+                    enhanced_dataset = Dataset.from_list(failed_tasks)
+                    enhanced_dataset_dict = DatasetDict({"test": enhanced_dataset})
+                    
+                    # Save enhanced dataset
+                    enhanced_output_path = 'data/gemini_failed_huggingface_enhanced'
+                    enhanced_dataset_dict.save_to_disk(enhanced_output_path)
+                    print(f"Saved enhanced dataset with {len(failed_tasks)} tasks to {enhanced_output_path}")
+                    
+                    # Display info
+                    print(f"Enhanced dataset structure: {enhanced_dataset}")
+                    print(f"Enhanced dataset fields: {enhanced_dataset.column_names}")
+                    
+                    print("\nTo use the enhanced dataset, you can load it with:")
+                    print("from datasets import load_from_disk")
+                    print(f"dataset = load_from_disk('{enhanced_output_path}')")
+                    print("test_data = dataset['test']")
+                else:
+                    print("Warning: No matching tasks found in zerobench data")
+                
+                break
+            except Exception as e:
+                print(f"Error processing zerobench data from {path}: {e}")
+    else:
+        print("Could not find zerobench data to enhance the dataset")
 
 if __name__ == "__main__":
-    # Step 1: Retry rate-limited tasks
-    solved_tasks = retry_rate_limited_tasks()
-    
-    # Step 2: Create failed tasks dataset
-    failed_tasks = create_failed_tasks_dataset(solved_tasks) 
+    create_huggingface_dataset() 

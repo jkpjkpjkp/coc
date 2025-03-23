@@ -13,7 +13,6 @@ dependencies = [
     "langchain-core>=0.3.45",
     "langchain-openai>=0.3.8",
     "pyjwt>=2.10.1",
-    "sam-2",
     "torch>=2.5.1",
     "watchdog>=6.0.0",
 ]
@@ -24,7 +23,6 @@ torchvision = [
     { index = "pytorch-cu" },
 ]
 depth-anything-v2 = { workspace = true }
-sam-2 = { path = "submodules/sam2" }
 
 [[tool.uv.index]]
 name = "pytorch-cu"

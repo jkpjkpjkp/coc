@@ -11,3 +11,4 @@ data/
 !data/gemini_solved_tasks.json
 *.log
 .pytest_cache
+venv/

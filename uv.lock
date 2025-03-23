@@ -122,12 +122,6 @@ wheels = [
 ]
 
 [[package]]
-name = "antlr4-python3-runtime"
-version = "4.9.3"
-source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
-sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/3e/38/7859ff46355f76f8d19459005ca000b6e7012f2f1ca597746cbcd1fbfe5e/antlr4-python3-runtime-4.9.3.tar.gz", hash = "sha256:f224469b4168294902bb1efa80a8bf7855f24c99aef99cbefc1bcd3cce77881b" }
-
-[[package]]
 name = "anyio"
 version = "4.9.0"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
@@ -274,7 +268,6 @@ dependencies = [
     { name = "langchain-core" },
     { name = "langchain-openai" },
     { name = "pyjwt" },
-    { name = "sam-2" },
     { name = "torch" },
     { name = "watchdog" },
 ]
@@ -289,7 +282,6 @@ requires-dist = [
     { name = "langchain-core", specifier = ">=0.3.45" },
     { name = "langchain-openai", specifier = ">=0.3.8" },
     { name = "pyjwt", specifier = ">=2.10.1" },
-    { name = "sam-2", directory = "submodules/sam2" },
     { name = "torch", specifier = ">=2.5.1" },
     { name = "watchdog", specifier = ">=6.0.0" },
 ]
@@ -739,20 +731,6 @@ wheels = [
 ]
 
 [[package]]
-name = "hydra-core"
-version = "1.3.2"
-source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "antlr4-python3-runtime" },
-    { name = "omegaconf" },
-    { name = "packaging" },
-]
-sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/6d/8e/07e42bc434a847154083b315779b0a81d567154504624e181caf2c71cd98/hydra-core-1.3.2.tar.gz", hash = "sha256:8a878ed67216997c3e9d88a8e72e7b4767e81af37afb4ea3334b269a4390a824" }
-wheels = [
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/c6/50/e0edd38dcd63fb26a8547f13d28f7a008bc4a3fd4eb4ff030673f22ad41a/hydra_core-1.3.2-py3-none-any.whl", hash = "sha256:fa0238a9e31df3373b35b0bfb672c34cc92718d21f81311d8996a16de1141d8b" },
-]
-
-[[package]]
 name = "idna"
 version = "3.10"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
@@ -760,17 +738,6 @@ sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/f1/70/7703c296856
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl", hash = "sha256:946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3", size = 70442 },
 ]
-
-[[package]]
-name = "iopath"
-version = "0.1.10"
-source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "portalocker" },
-    { name = "tqdm" },
-    { name = "typing-extensions" },
-]
-sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/72/73/b3d451dfc523756cf177d3ebb0af76dc7751b341c60e2a21871be400ae29/iopath-0.1.10.tar.gz", hash = "sha256:3311c16a4d9137223e20f141655759933e1eda24f8bff166af834af3c645ef01", size = 42226 }
 
 [[package]]
 name = "jinja2"
@@ -1261,19 +1228,6 @@ wheels = [
 ]
 
 [[package]]
-name = "omegaconf"
-version = "2.3.0"
-source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "antlr4-python3-runtime" },
-    { name = "pyyaml" },
-]
-sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/09/48/6388f1bb9da707110532cb70ec4d2822858ddfb44f1cdf1233c20a80ea4b/omegaconf-2.3.0.tar.gz", hash = "sha256:d5d4b6d29955cc50ad50c46dc269bcd92c6e00f5f90d23ab5fee7bfca4ba4cc7" }
-wheels = [
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/e3/94/1843518e420fa3ed6919835845df698c7e27e183cb997394e4a670973a65/omegaconf-2.3.0-py3-none-any.whl", hash = "sha256:7b4df175cdb08ba400f45cae3bdcae7ba8365db4d165fc65fd04b050ab63b46b" },
-]
-
-[[package]]
 name = "openai"
 version = "1.67.0"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
@@ -1453,18 +1407,6 @@ wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/e5/fb/a7960e838bc5df57a2ce23183bfd2290d97c33028b96bde332a9057834d3/pillow-11.1.0-cp313-cp313t-win32.whl", hash = "sha256:dda60aa465b861324e65a78c9f5cf0f4bc713e4309f83bc387be158b077963d9", size = 2295494 },
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/d7/6c/6ec83ee2f6f0fda8d4cf89045c6be4b0373ebfc363ba8538f8c999f63fcd/pillow-11.1.0-cp313-cp313t-win_amd64.whl", hash = "sha256:ad5db5781c774ab9a9b2c4302bbf0c1014960a0a7be63278d13ae6fdf88126fe", size = 2631595 },
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/cf/6c/41c21c6c8af92b9fea313aa47c75de49e2f9a467964ee33eb0135d47eb64/pillow-11.1.0-cp313-cp313t-win_arm64.whl", hash = "sha256:67cd427c68926108778a9005f2a04adbd5e67c442ed21d95389fe1d595458756", size = 2377651 },
-]
-
-[[package]]
-name = "portalocker"
-version = "3.1.1"
-source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
-dependencies = [
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/ac/91/8bfe23e1f7f630f2061ef38b5225d9fda9068d6a30fcbc187951e678e630/portalocker-3.1.1.tar.gz", hash = "sha256:ec20f6dda2ad9ce89fa399a5f31f4f1495f515958f0cb7ca6543cef7bb5a749e", size = 43708 }
-wheels = [
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/f7/60/1974cfdd5bb770568ddc6f89f3e0df4cfdd1acffd5a609dff5e95f48c6e2/portalocker-3.1.1-py3-none-any.whl", hash = "sha256:80e984e24de292ff258a5bea0e4f3f778fff84c0ae1275dbaebc4658de4aacb3", size = 19661 },
 ]
 
 [[package]]
@@ -1760,22 +1702,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pywin32"
-version = "310"
-source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
-wheels = [
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/f7/b1/68aa2986129fb1011dabbe95f0136f44509afaf072b12b8f815905a39f33/pywin32-310-cp311-cp311-win32.whl", hash = "sha256:1e765f9564e83011a63321bb9d27ec456a0ed90d3732c4b2e312b855365ed8bd", size = 8784284 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/b3/bd/d1592635992dd8db5bb8ace0551bc3a769de1ac8850200cfa517e72739fb/pywin32-310-cp311-cp311-win_amd64.whl", hash = "sha256:126298077a9d7c95c53823934f000599f66ec9296b09167810eb24875f32689c", size = 9520748 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/90/b1/ac8b1ffce6603849eb45a91cf126c0fa5431f186c2e768bf56889c46f51c/pywin32-310-cp311-cp311-win_arm64.whl", hash = "sha256:19ec5fc9b1d51c4350be7bb00760ffce46e6c95eaf2f0b2f1150657b1a43c582", size = 8455941 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/6b/ec/4fdbe47932f671d6e348474ea35ed94227fb5df56a7c30cbbb42cd396ed0/pywin32-310-cp312-cp312-win32.whl", hash = "sha256:8a75a5cc3893e83a108c05d82198880704c44bbaee4d06e442e471d3c9ea4f3d", size = 8796239 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/e3/e5/b0627f8bb84e06991bea89ad8153a9e50ace40b2e1195d68e9dff6b03d0f/pywin32-310-cp312-cp312-win_amd64.whl", hash = "sha256:bf5c397c9a9a19a6f62f3fb821fbf36cac08f03770056711f765ec1503972060", size = 9503839 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/1f/32/9ccf53748df72301a89713936645a664ec001abd35ecc8578beda593d37d/pywin32-310-cp312-cp312-win_arm64.whl", hash = "sha256:2349cc906eae872d0663d4d6290d13b90621eaf78964bb1578632ff20e152966", size = 8459470 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/1c/09/9c1b978ffc4ae53999e89c19c77ba882d9fce476729f23ef55211ea1c034/pywin32-310-cp313-cp313-win32.whl", hash = "sha256:5d241a659c496ada3253cd01cfaa779b048e90ce4b2b38cd44168ad555ce74ab", size = 8794384 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/45/3c/b4640f740ffebadd5d34df35fecba0e1cfef8fde9f3e594df91c28ad9b50/pywin32-310-cp313-cp313-win_amd64.whl", hash = "sha256:667827eb3a90208ddbdcc9e860c81bde63a135710e21e4cb3348968e4bd5249e", size = 9503039 },
-    { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/b4/f4/f785020090fb050e7fb6d34b780f2231f302609dc964672f72bfaeb59a28/pywin32-310-cp313-cp313-win_arm64.whl", hash = "sha256:e308f831de771482b7cf692a1f308f8fca701b2d8f9dde6cc440c7da17e47b33", size = 8458152 },
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.2"
 source = { registry = "https://mirrors.bfsu.edu.cn/pypi/web/simple" }
@@ -1901,57 +1827,6 @@ sdist = { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/aa/65/7d973b89c4d
 wheels = [
     { url = "https://mirrors.bfsu.edu.cn/pypi/web/packages/49/97/fa78e3d2f65c02c8e1268b9aba606569fe97f6c8f7c2d74394553347c145/rsa-4.9-py3-none-any.whl", hash = "sha256:90260d9058e514786967344d0ef75fa8727eed8a7d2e43ce9f4bcf1b536174f7", size = 34315 },
 ]
-
-[[package]]
-name = "sam-2"
-version = "1.0"
-source = { directory = "submodules/sam2" }
-dependencies = [
-    { name = "hydra-core" },
-    { name = "iopath" },
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "torch" },
-    { name = "torchvision", version = "0.21.0", source = { registry = "https://download.pytorch.org/whl/cu126" }, marker = "platform_machine == 'aarch64' and sys_platform == 'linux'" },
-    { name = "torchvision", version = "0.21.0+cu126", source = { registry = "https://download.pytorch.org/whl/cu126" }, marker = "platform_machine != 'aarch64' or sys_platform != 'linux'" },
-    { name = "tqdm" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "av", marker = "extra == 'interactive-demo'", specifier = ">=13.0.0" },
-    { name = "black", marker = "extra == 'dev'", specifier = "==24.2.0" },
-    { name = "dataclasses-json", marker = "extra == 'interactive-demo'", specifier = ">=0.6.7" },
-    { name = "eva-decord", marker = "extra == 'interactive-demo'", specifier = ">=0.6.1" },
-    { name = "eva-decord", marker = "extra == 'notebooks'", specifier = ">=0.6.1" },
-    { name = "flask", marker = "extra == 'interactive-demo'", specifier = ">=3.0.3" },
-    { name = "flask-cors", marker = "extra == 'interactive-demo'", specifier = ">=5.0.0" },
-    { name = "fvcore", marker = "extra == 'dev'", specifier = ">=0.1.5.post20221221" },
-    { name = "gunicorn", marker = "extra == 'interactive-demo'", specifier = ">=23.0.0" },
-    { name = "hydra-core", specifier = ">=1.3.2" },
-    { name = "imagesize", marker = "extra == 'interactive-demo'", specifier = ">=1.4.1" },
-    { name = "iopath", specifier = ">=0.1.10" },
-    { name = "jupyter", marker = "extra == 'notebooks'", specifier = ">=1.0.0" },
-    { name = "matplotlib", marker = "extra == 'notebooks'", specifier = ">=3.9.1" },
-    { name = "numpy", specifier = ">=1.24.4" },
-    { name = "opencv-python", marker = "extra == 'dev'", specifier = ">=4.7.0" },
-    { name = "opencv-python", marker = "extra == 'notebooks'", specifier = ">=4.7.0" },
-    { name = "pandas", marker = "extra == 'dev'", specifier = ">=2.2.2" },
-    { name = "pillow", specifier = ">=9.4.0" },
-    { name = "pycocotools", marker = "extra == 'dev'", specifier = ">=2.0.8" },
-    { name = "pycocotools", marker = "extra == 'interactive-demo'", specifier = ">=2.0.8" },
-    { name = "scikit-image", marker = "extra == 'dev'", specifier = ">=0.24.0" },
-    { name = "strawberry-graphql", marker = "extra == 'interactive-demo'", specifier = ">=0.243.0" },
-    { name = "submitit", marker = "extra == 'dev'", specifier = ">=1.5.1" },
-    { name = "tensorboard", marker = "extra == 'dev'", specifier = ">=2.17.0" },
-    { name = "tensordict", marker = "extra == 'dev'", specifier = ">=0.6.0" },
-    { name = "torch", specifier = ">=2.5.1" },
-    { name = "torchvision", specifier = ">=0.20.1" },
-    { name = "tqdm", specifier = ">=4.66.1" },
-    { name = "ufmt", marker = "extra == 'dev'", specifier = "==2.0.0b2" },
-    { name = "usort", marker = "extra == 'dev'", specifier = "==1.0.2" },
-]
-provides-extras = ["notebooks", "interactive-demo", "dev"]
 
 [[package]]
 name = "setuptools"
