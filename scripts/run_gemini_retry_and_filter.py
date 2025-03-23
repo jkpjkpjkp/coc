@@ -67,13 +67,20 @@ def create_huggingface_dataset():
                 with open(path, 'r') as f:
                     zerobench_data = json.load(f)
                 
-                # Filter to only include failed tasks
+                # Filter to only include failed tasks and map to the expected schema
                 failed_tasks = []
                 for task in tqdm(zerobench_data, desc="Filtering tasks"):
-                    if task.get('task_type') in failed_task_ids:
-                        task_copy = task.copy()
-                        task_copy['failed_by_gemini'] = True
-                        failed_tasks.append(task_copy)
+                    # Check if this is a task that failed
+                    task_type = task.get('task_type')
+                    if task_type in failed_task_ids:
+                        # Create a new task with the correct field names
+                        failed_tasks.append({
+                            "question_id": task_type,  # Map task_type to question_id
+                            "question_images_decoded": task.get('images', []),  # Map images
+                            "question_text": task.get('question', ''),  # Map question
+                            "question_answer": task.get('answer', ''),  # Map answer
+                            "failed_by_gemini": True  # Add our metadata
+                        })
                 
                 if failed_tasks:
                     # Create enhanced dataset
