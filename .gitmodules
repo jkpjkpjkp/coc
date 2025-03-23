@@ -1,18 +1,6 @@
 [submodule "submodules/sam2"]
 	path = submodules/sam2
 	url = git@github.com:jkpjkpjkp/sam2.git
-[submodule "submodules/TRELLIS"]
-	path = submodules/TRELLIS
-	url = git@github.com:jkpjkpjkp/TRELLIS.git
 [submodule "submodules/Depth-Anything-V2"]
 	path = submodules/Depth-Anything-V2
 	url = git@github.com:jkpjkpjkp/Depth-Anything-V2.git
-[submodule "submodules/fast3r"]
-	path = submodules/fast3r
-	url = git@github.com:jkpjkpjkp/fast3r.git
-[submodule "submodules/PoinTr"]
-	path = submodules/PoinTr
-	url = git@github.com:jkpjkpjkp/PoinTr.git
-[submodule "submodules/open-webui"]
-	path = submodules/open-webui
-	url = git@github.com:jkpjkpjkp/open-webui.git
