@@ -8,6 +8,7 @@ import ast
 from langchain_core.tools import BaseTool
 import copy
 import os
+from multiprocessing import Process, Manager
 from datetime import datetime
 import pickle
 import warnings
@@ -180,57 +181,28 @@ class Exec:
     def set_var(self, name: str, value):
         """Add a new variable into the execution environment."""
         self.globals[name] = value
-    def __deepcopy__(self, memo):
-        """Custom deep copy method that handles globals carefully.
+    def deep_copy(self):
+        """Create a deep copy of the Exec instance using fork and shared memory."""
+        # Use Manager to create a shared dictionary for transferring state
+        with Manager() as manager:
+            shared_globals = manager.dict()
 
-        This method creates a new Exec instance and copies only
-        serializable global variables, logging skipped items.
-        """
-        # Create log directory if it doesn't exist
-        log_dir = os.path.join(os.getcwd(), 'data/log/deepcopy')
-        os.makedirs(log_dir, exist_ok=True)
+            def child_process(pid, shared_globals):
+                # In the child process, populate the shared dictionary with the state
+                shared_globals.update(self.globals)
+                # Exit the child process cleanly
+                os._exit(0)
 
-        # Create a unique log filename with timestamp
-        log_filename = f'deepcopy_skipped_{datetime.now().strftime("%Y%m%d_%H%M%S")}.log'
-
-        # Get logger instance
-        logger = get_logger(__name__, f'deepcopy/{log_filename}')
-
-        # Create a new instance of the class
-        new_exec = self.__class__()
-
-        # Copy the name and description
-        new_exec.name = copy.deepcopy(self.name)
-        new_exec.description = copy.deepcopy(self.description)
-
-        # Create a new globals dictionary with only serializable items
-        new_exec.globals = {}
-        skipped_items = {}
-
-        for key, value in self.globals.items():
-            try:
-                # Try to deep copy the value
-                new_exec.globals[key] = copy.deepcopy(value)
-            except (TypeError, pickle.PicklingError) as e:
-                # Log detailed information about skipped items
-                skipped_items[key] = {
-                    'type': type(value).__name__,
-                    'error': str(e),
-                    'traceback': traceback.format_exc()
-                }
-                logger.warning(f"Skipped item: {key}")
-                logger.warning(f"Type: {type(value).__name__}")
-                logger.warning(f"Error: {e}")
-                logger.warning(f"Traceback:\n{traceback.format_exc()}")
-
-        # Log summary of skipped items
-        if skipped_items:
-            logger.info(f"Total skipped items: {len(skipped_items)}")
-            logger.info("Skipped items details:")
-            for key, details in skipped_items.items():
-                logger.info(f"{key}: {details}")
-
-        # Ensure '__name__' is set in the new globals
-        new_exec.globals['__name__'] = '__main__'
-
+            # Fork a new process
+            pid = os.fork()
+            if pid == 0:
+                # Child process
+                child_process(pid, shared_globals)
+            else:
+                # Parent process: wait for the child to finish
+                os.waitpid(pid, 0)
+                # Create a new Exec instance and populate it with the shared state
+                new_exec = Exec()
+                new_exec.globals = dict(shared_globals)
+                return new_exec
         return new_exec
