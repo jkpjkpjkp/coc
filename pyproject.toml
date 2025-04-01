@@ -26,7 +26,6 @@ torchvision = [
     { index = "pytorch-cu" },
 ]
 depth-anything-v2 = { workspace = true }
-open-webui = { path = "submodules/open-webui" }
 sam-2 = { path = "submodules/sam2" }
 
 [[tool.uv.index]]
