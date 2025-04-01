@@ -242,7 +242,7 @@ all these tools can be simply implemented with various python packages (remember
 remember, we do not care how much resource you use, but a strong and correct conclusion is paramountly important.
 """
 
-from coc.exec.context.info import info
+from coc.tool.context.info import info
 
 def display(image: Img) -> str:
     """a pseudo-display function, that instead returns a dense caption. """

@@ -6,6 +6,8 @@ from typing import Generic, TypeVar, Iterator, Iterable
 import os
 from coc.data.fulltask import FullTask
 from coc.tool.task import Task
+import functools
+from coc.util.logging import get_logger
 
 
 def image_to_numpy(image: Img) -> np.ndarray:
@@ -71,24 +73,17 @@ def generate_files(tasks: Iterable[FullTask], path: str):
             # Write the indexed answer to answers.txt
             af.write(f"{index}. {task['answer']}\n")
 
-import logging
-import functools
-
-# Configure logging to file
-logging.basicConfig(
-    filename='data/log/vqa_mod.log',
-    level=logging.INFO,
-    format='%(asctime)s - %(message)s'
-)
+# Get logger instance
+logger = get_logger(__name__, 'vqa_mod.log')
 
 def _wrap_run_method(instance):
     original_run = instance._run
 
     @functools.wraps(original_run)
     def wrapped_run(*args, **kwargs):
-        logging.info(f"Input to {instance.__class__.__name__}._run: args={args}, kwargs={kwargs}")
+        logger.info(f"Input to {instance.__class__.__name__}._run: args={args}, kwargs={kwargs}")
         result = original_run(*args, **kwargs)
-        logging.info(f"Output from {instance.__class__.__name__}._run: {result}")
+        logger.info(f"Output from {instance.__class__.__name__}._run: {result}")
         return result
 
     instance._run = wrapped_run

@@ -26,8 +26,8 @@ os.environ['OPEN_ROUTER_API_BASE'] = 'https://openrouter.ai/api/v1'
 os.environ['GEMINI_API_KEY'] = 'sk-5NSZg1YG59VMxq6VUxvL6nrqFSk9RbSyoDo9RmOAE8QkumFU'
 os.environ['GEMINI_BASE_URL'] = 'https://api.aigogo.top/v1'
 
-os.environ['GEMINI_API_KEY'] = 'sk-RCVzYMPoI88wxNspjIv3565VesujOuhrcDOqEuy9xi6vcLaJ' # override
-os.environ['GEMINI_BASE_URL'] = 'http://www.axs188.club/v1' # override
+# os.environ['GEMINI_API_KEY'] = 'sk-RCVzYMPoI88wxNspjIv3565VesujOuhrcDOqEuy9xi6vcLaJ' # override
+# os.environ['GEMINI_BASE_URL'] = 'http://www.axs188.club/v1' # override
 
 os.environ['DASHSCOPE_API_KEY'] = 'sk-3a88a7f6a9264d54b62eeb4181192248'
 

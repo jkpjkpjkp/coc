@@ -6,7 +6,7 @@ from coc.tool.task import Task
 from typing import Optional, List, Iterable
 from coc.util.text import extract_code, extract_boxed
 from coc.prompts.prompt_troi import prompts_2nd_person
-from coc.exec.context.prompt_brev import build_trunk
+from coc.tool.context.prompt_brev import build_trunk
 from coc.tool.vqa import gemini_as_llm
 from coc.util.misc import fulltask_to_task, set_seed
 from coc.data.fulltask import FullTask

@@ -2,7 +2,7 @@
 
 import pickle
 import os
-from typing import Dict, List, Iterator, Union
+from typing import Dict, List, Iterator, Union, Literal
 from pathlib import Path
 
 from coc.data.fulltask import FullTask
@@ -54,6 +54,29 @@ def filter_zerobench_tasks(
         is_solved = solved_tasks.get(task_id, False)
         
         if include_solved or not is_solved:
+            yield task
+
+def zero_wrong(offer: Literal['full', 'sub'] = 'sub', solved_tasks_path: str = 'data/gemini_solved_tasks.pkl') -> Iterator[FullTask]:
+    """
+    Return an iterator of FullTask objects only for tasks that vanilla Gemini cannot solve.
+    Provides identical interface to zero() but with filtering applied.
+    
+    Args:
+        offer: Which zerobench split to use ('sub' or 'full')
+        solved_tasks_path: Path to the pickle file containing solved tasks
+        
+    Returns:
+        Iterator of unsolved FullTask objects
+    """
+    # Load tasks that Gemini can solve
+    solved_tasks = load_gemini_solved_tasks(solved_tasks_path)
+    
+    # Use zero directly to avoid circular imports
+    for task in zero(offer=offer):
+        task_id = task['task_type']
+        is_solved = solved_tasks.get(task_id, False)
+        
+        if not is_solved:
             yield task
 
 def get_task_stats(solved_tasks_path: str = 'data/gemini_solved_tasks.pkl') -> Dict[str, int]:

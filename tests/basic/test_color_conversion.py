@@ -12,12 +12,11 @@ import cv2
 from PIL import Image
 import os
 import sys
-import logging
 import tempfile
+from coc.util.logging import get_logger
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Get logger instance
+logger = get_logger(__name__)
 
 class TestColorConversion(unittest.TestCase):
     """Test cases for OpenCV color conversion errors"""

@@ -141,4 +141,4 @@ def evaluate_gemini_on_zerobench() -> Tuple[int, int, Dict[str, bool]]:
 
 if __name__ == "__main__":
     # Run evaluation
-    evaluate_gemini_on_zerobench() 
+    evaluate_gemini_on_zerobench()
