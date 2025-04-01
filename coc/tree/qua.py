@@ -401,6 +401,7 @@ def create_vlm_wrapper(use_gemini=USE_OPENAI_FORMAT, **kwargs):
         raise NotImplementedError("WebUI is not supported")
 
 if __name__ == '__main__':
+    print('A')
     import argparse
     parser = argparse.ArgumentParser(description='Evaluate programming tasks using tree search with VLM')
     parser.add_argument('--model', type=str, choices=['gemini', 'webui', 'gemini-openai'], default='gemini',

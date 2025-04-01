@@ -1,0 +1,6 @@
+[submodule "submodules/sam2"]
+	path = submodules/sam2
+	url = git@github.com:jkpjkpjkp/sam2.git
+[submodule "submodules/Depth-Anything-V2"]
+	path = submodules/Depth-Anything-V2
+	url = git@github.com:jkpjkpjkp/Depth-Anything-V2.git

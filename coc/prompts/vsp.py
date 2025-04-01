@@ -17,6 +17,12 @@ def detection(image, objects):
     Also, notice that the bounding box label might be out of the image boundary.
     You should use the output as a reference, not as a ground truth.
     When answering questions about the image, you should double-check the detected objects.
+```python
+
+
+```
+output:
+
 
     Args:
         image (PIL.Image.Image): the input image
